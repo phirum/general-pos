@@ -1,0 +1,52 @@
+
+<template name="listLendingStock">
+    <table class="table table-stripe table-responsive">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Remain Qty</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#if hasLendingStocks}}
+            {{#each lendingStock in lendingStocks}}
+                <tr class="prepaid-order-doc">
+                    <td><a href="">{{lendingStock._id}}</a></td>
+                    <td>{{moFormat lendingStock.orderDate 'YYYY-MM-DD HH:mm'}}</td>
+                    <td>{{lendingStock._vendor.name}}</td>
+                    <td>{{numFormat lendingStock.total '0,0.00'}}</td>
+                    <td>{{lendingStock.sumRemainQty}}</td>
+                    <td>{{lendingStock.status}}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th style="background: teal; color: #fff;">Item</th>
+                    <th style="background: teal; color: #fff;">Qty</th>
+                    <th style="background: teal; color: #fff;">Price</th>
+                    <th style="background: teal; color: #fff;">Amount</th>
+                    <th style="background: teal; color: #fff;">Remain QTY</th>
+                </tr>
+                {{#each lendingStock.items}}
+                    <tr class="prepaid-order-item-parents">
+                        <td><span class="hidden lendingStockId">{{lendingStock._id}}</span></td>
+                        <td>{{getItemName itemId}}</td>
+                        <td>{{qty}}</td>
+                        <td>{{price}}</td>
+                        <td>{{amount}}</td>
+                        <td><input type="text" class="remain-qty" value="{{remainQty}}"></td>
+                        <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
+                    </tr>
+                {{/each}}
+            {{/each}}
+        {{else}}
+            <h4>
+                <bold>No Lending Stock available..</bold>
+            </h4>
+        {{/if}}
+        </tbody>
+    </table>
+</template>

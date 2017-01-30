@@ -1,0 +1,92 @@
+<template name="Pos_customerTotalCredit">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='customerTotalCreditReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="date" label= 'As of date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="sortBy" label="SortBy"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default fullScreen">Full Screen
+                                </a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>customerTotalCreditData}}
+        </div>
+    </div>
+</template>
+
+<template name="customerTotalCreditData">
+    <div class="container-fluid" id="customer-total-credit-print">
+        {{#with company}}
+            <table class="table">
+                <tr>
+                    <td class="text-center"><h3 class="text-center">{{khName}}</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h4 class="text-center">{{enName}}</h4></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center">{{khAddress}}</h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}
+                    </h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h3 class="text-center">TOTAL CREDIT</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-left"><strong>Date: </strong>{{data.title.date}}</td>
+                </tr>
+            </table>
+        {{/with}}
+        <div class="col-md-12" align="center"></div>
+        <table class="table table-striped">
+            {{#with data}}
+                <thead class="sub-header">
+                <tr>
+                    {{#each data.fields }}
+                        <th><u>{{field}}</u></th>
+                    {{/each}}
+                </tr>
+                </thead>
+                <tbody class="sub-body">
+                {{#each col in content}}
+                    <tr>
+                        {{{displayField col}}}
+                    </tr>
+                {{/each}}
+                <tr>
+                    {{{getTotalFooter footer.total}}}
+                </tr>
+                </tbody>
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

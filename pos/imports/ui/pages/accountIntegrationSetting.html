@@ -1,0 +1,17 @@
+<!--Index-->
+<template name="Pos_accountIntegrationSetting">
+    <div class="box-body">
+        {{#autoForm collection=collection doc=data id="Pos_accountIntegrationSettingEdit" type="update"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='integrate'}}
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary" id="save-integrate"><i class="fa fa-paper-plane-o"></i> {{_ "form.btnSubmit"}}</button>
+                <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> {{_ "form.btnReset"}}</button>
+            </div>
+        {{/autoForm}}
+    </div>
+</template>

@@ -1,0 +1,276 @@
+<template name="Pos_home">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box-body">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6"><h4 style="font-family: 'Khmer OS Battambang';">ចំណូល(Income)</h4></div>
+                        <div class="col-md-6 text-right"><h4 style="font-family:'Khmer OS Battambang';">អំឡុងពេល ៣៦៥ថ្ងៃ
+                            (Last 365 days)</h4></div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row animated">
+                        <div class="col-md-4">
+                            <div class="small-box bg-aqua">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>{{income.baseCurrency}}{{numFormat income.totalInvoice '0,0.00'}}</h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>វិក័យប័ត្រដែលបានលក់សរុប(OPEN INVOICE)</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-file-o"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countInvoice}} វិក័យប័ត្រ <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small-box bg-red">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>{{income.baseCurrency}}{{numFormat income.totalOverdueInvoice '0,0.00'}}</h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>វិក័យប័ត្រផុតកំណត់(OVERDUE)</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countOverdueInvoice}} វិក័យប័ត្រ <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small-box bg-green">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>
+                                            {{income.baseCurrency}}{{numFormat income.totalPaymentInLast30Days '0,0.00'}}
+                                        </h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>បានបង់លុយសរុបក្នុងរយៈពេល៣០ថ្ងៃ</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-credit-card-alt"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countPaymentInLast30Days}} វិក័យប័ត្រ <i
+                                        class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="small-box bg-yellow">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>
+                                            {{income.baseCurrency}}{{numFormat income.totalGroupInvoice '0,0.00'}}
+                                        </h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>វិក័យប័ត្រក្រុមលក់សរុប(OPEN GROUP INVOICE)</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-clone"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countGroupInvoice}} វិក័យប័ត្រ <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small-box bg-red">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>{{income.baseCurrency}}{{numFormat income.totalOverdueGroupInvoice '0,0.00'}}</h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>វិក័យប័ត្រក្រុមផុតកំណត់(OVERDUE GROUP INVOICE)</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countOverdueGroupInvoice}} វិក័យប័ត្រ <i
+                                        class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small-box bg-aqua">
+                                <div class="inner">
+                                    {{#if income}}
+                                        <h3>{{income.baseCurrency}}{{numFormat income.totalSaleOrder '0,0.00'}}</h3>
+                                    {{else}}
+                                        <h3 style="font-family: 'Khmer OS Battambang'; font-size: 22px;">
+                                            កំពុងដំណើរការ...
+                                        </h3>
+                                    {{/if}}
+                                    <p>វិក័យប័ត្រដែលបានកម្ម៉ង់ទុកសរុប(Sale Order)</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-cart-arrow-down"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{income.countSaleOrder}} វិក័យប័ត្រ <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div id="container" style="width:100%; height:400px;"></div>
+            </div>
+        </div>
+        <div class="col-md-3" style="border-left: 1px solid #ddd;
+">
+            <!-- Box Comment -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h4 class="text-info"> ប្រតិបត្តិការ
+                            </h4>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-control select-transaction">
+                                <option value="invoice">Invoice</option>
+                                <option value="groupInvoice">Group Invoice</option>
+                                <option value="receivePayment">Receive Payment</option>
+                                <option value="enterBill">Bill</option>
+                                <option value="groupBill">Group Bill</option>
+                                <option value="payBill">Pay Bill</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h5 class="text-teal text-center"><i class="fa fa-flag"></i> ក្នុងរយៈពេល ៧ថ្ងៃ</h5>
+                    <!-- /.user-block -->
+                    <div class="box-tools">
+                        <!--<button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Mark as read">-->
+                        <!--<i class="fa fa-circle-o"></i></button>-->
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
+                        </button>
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>-->
+                        <!--</button>-->
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <!-- post text -->
+                    <!--<div class="input-group">-->
+                        <!--<input type="text" class="form-control" placeholder="Search...">-->
+                        <!--<span class="input-group-addon"><i class="fa fa-search"></i></span>-->
+                    <!--</div>-->
+
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer box-comments">
+                    {{#if data}}
+                        {{#if isData data.collection}}
+                            <ul class="timeline animated fadeIn" style="overflow: auto; height: 500px;">
+                                {{#each data.collection}}
+                                    <!-- timeline time label -->
+                                    <li class="time-label">
+                                 <span class="bg-aqua">
+                                    <i class="fa fa-calendar-o"></i> {{checkTypeOfDate}}
+                                  </span>
+                                    </li>
+                                    <!-- /.timeline-label -->
+
+                                    <!-- timeline item -->
+                                    <li>
+                                        <!-- timeline icon -->
+                                        <i class="fa fa-file-o bg-blue"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i
+                                                    class="fa fa-clock-o"></i> {{livestamp checkTypeOfDate}}</span>
+                                            <h3 class="timeline-header"><a href="#">{{_id}}</a></h3>
+
+                                            <div class="timeline-body">
+                                                Customer: {{customerOrVendorObj.name}} | Tel: {{customerOrVendorObj.telephone}} <br>
+                                                Voucher: {{voucherId}}<br>
+                                                Status: <span class="label label-warning">{{status}}</span><br>
+                                                {{{isReceivePayment}}}
+                                            </div>
+
+                                            <!--<div class="timeline-footer">-->
+                                            <!--<a class="btn btn-primary btn-xs">...</a>-->
+                                            <!--</div>-->
+                                        </div>
+                                    </li>
+                                    <!-- END timeline item -->
+
+                                {{/each}}
+
+                            </ul>
+                            <table>
+                                <tr>
+                                    <td colspan="10">
+                                        {{#if Template.subscriptionsReady}}
+                                            {{#if hasMore data.collectionCount}}
+                                                <button class="btn btn-primary load-more col-xs-12"
+                                                        id="get-checked-data">
+                                                    Load More({{data.collectionCount}})
+                                                </button>
+                                            {{/if}}
+                                        {{else}}
+                                            {{> loading}}
+                                            <!--<div class="loading">{{>spinner}}</div>-->
+                                        {{/if}}
+                                    </td>
+                                </tr>
+                            </table>
+                        {{else}}
+                            <h5 class="text-center" style="font-family: 'Khmer OS Fasthand';">
+                                មិនទាន់មានទិន្នន័យ</h5>
+                        {{/if}}
+                    {{else}}
+                        <h5 class="text-center" style="font-family: 'Khmer OS Fasthand';"><i
+                                class="fa fa-spinner fa-spin fa-1x fa-fw"></i>កំពុងស្វែងរក...</h5>
+                    {{/if}}
+                </div>
+                <!-- /.box-footer -->
+                <!--<div class="box-footer">-->
+                <!--<form action="#" method="post">-->
+                <!--<img class="img-responsive img-circle img-sm" src="../dist/img/user4-128x128.jpg"-->
+                <!--alt="Alt Text">-->
+                <!--&lt;!&ndash; .img-push is used to add margin to elements next to floating images &ndash;&gt;-->
+                <!--<div class="img-push">-->
+                <!--<input type="text" class="form-control input-sm" placeholder="Press enter to post comment">-->
+                <!--</div>-->
+                <!--</form>-->
+                <!--</div>-->
+                <!-- /.box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+</template>

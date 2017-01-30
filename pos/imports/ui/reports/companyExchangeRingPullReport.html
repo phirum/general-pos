@@ -1,0 +1,132 @@
+<template name="Pos_companyExchangeRingPullReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='companyExchangeRingPullReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label class="label label-default">
+                                            From Date<span>*</span>
+                                        </label>
+                                        {{> afFieldInput name="fromDate"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="label label-default">
+                                            To Date<span>*</span>
+                                        </label>
+                                        {{> afFieldInput name="toDate"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="label label-default">
+                                            Vendor
+                                        </label>
+                                        {{> afFieldInput name="vendor" label="Vendor"}}
+                                    </div>
+                                    <!--<div class="col-md-4">-->
+                                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
+                                    <!--</div>-->
+
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>companyExchangeRingPullReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="companyExchangeRingPullReportData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>RING PULL TO KHB</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <!-- <address>
+                             <strong>Order Date:</strong><br>
+                             March 7, 2014<br><br>
+                         </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each col in content}}
+                    {{#each field in col.data}}
+                        <tr style="background: #dddddd">
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{reduceField}}}
+                        <th>ITEM</th>
+                        <th>PRICE</th>
+                        <th>QTY</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                    {{#each item in col.items}}
+                        <tr>
+                            {{{reduceField}}}
+                            <td>{{item.itemName}}</td>
+                            <td>{{item.price}}</td>
+                            <td>{{item.qty}}</td>
+                            <td>{{item.amount}}</td>
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total}}}
+                    </tr>
+                {{/each}}
+            {{/with}}
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

@@ -1,0 +1,192 @@
+<template name="Pos_ringPullRequest">
+    <div class="box-body">
+        <span class="pending toggler active" data-toggle="pending"><small><i class="fa fa-circle-o"></i> Pending</small></span>
+        <span class="accepted toggler" data-toggle="accepted"><small><i class="fa fa-check-circle"></i> Accepted</small></span>
+        <span class="declined toggler" data-toggle="declined"><small><i class="fa fa-close"></i> Declined</small></span>
+        <hr>
+        {{#if isNotEmpty}}
+            <div class="row bounceIn">
+                {{#each transferRequest}}
+                    <div class="col-sm-3">
+                        <ul class="surveys grid animated fadeIn">
+                            <li class="survey-item {{#if accepted}}success-bg{{/if}} {{#if declined}}failed-bg{{/if}}">
+            <span class="survey-country list-only">
+              UK
+            </span>
+            <span class="survey-name">
+              Transfered From {{_fromBranch.enName}}({{_fromBranch.khName}})
+            </span>
+            <span class="survey-country grid-only">
+             <a class="text-gray cursor-pointer show-detail"><i class="fa fa-eye"></i> Show</a>
+            </span>
+
+                                <div class="pull-right">
+             <span class="survey-progress">
+                 {{#if pending}}
+                     <a class="btn  btn-sm btn-default accept"><i class="fa fa-check-circle"></i> Accept</a>
+                     <a class="btn  btn-sm  btn-danger decline"><i class="fa fa-close"></i> Decline</a>
+                 {{/if}}
+                 {{#if accepted}}
+                     <h5><i class="fa fa-check"></i> Accepted</h5>
+                 {{/if}}
+                 {{#if declined}}
+                     <h5><i class="fa fa-close"></i> Declined</h5>
+                 {{/if}}
+             </span>
+
+                                    <small>
+                                        Total: {{numFormat total '0,0.00'}}<br>
+                                        Request on: {{moFormat ringPullTransferDate 'YYYY-MM-DD HH:mm'}} <br>
+                                        by: {{_fromUser.username}}
+                                    </small>
+            <span class="survey-stage">
+                {{#if pending}}
+                    <div class="pulse" data-status="running">
+                        <div class="status">
+                        </div>
+                    </div>
+                {{/if}}
+                {{#if declined}}
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                    <div class="pulse" data-status="running">
+                    </div>
+                {{/if}}
+                {{#if accepted}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <div class="pulse" data-status="running">
+                    </div>
+                {{/if}}
+            </span>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="col-md-12 text-center"><h3><i class="fa fa-frown-o"></i> No data available..</h3></div>
+        {{/if}}
+        <div class="col-md-12 text-center">
+            {{#if isHasMore}}
+                <a class="btn btn-default load-more">Load More <i class="fa fa-arrow-circle-down"></i></a>
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+
+<template name="ringPullRequestInfo">
+    <div class="container-fluid">
+        <div class="col-md-2 pull-left">
+            <br>
+            <a class="printTransfer btn btn-primary"><i class="fa fa-print"></i>Print</a>
+        </div>
+    </div>
+    <div class="container" id="to-print">
+        <div class="row">
+            {{#with data}}
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-6 pull-left">
+                            <h2>RING PULL TRANSFER</h2>
+                        </div>
+                        <div class="col-xs-6 pull-left">
+                            <h3 class="pull-right">#{{_id}}</h3>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <address>
+                                <strong>Transfered From:</strong><br>
+                                {{_fromBranch.khName}}({{_fromBranch.enName}})<br>
+                                Stock({{_stockLocation.name}})<br>
+                                {{capitalize _fromUser.username}}<br>
+                            </address>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <address>
+                                <strong>Transfered To:</strong><br>
+                                {{_toBranch.khName}}({{_toBranch.enName}})<br>
+                                {{capitalize _toUser.username}}<br>
+
+                                <!--Stock({{_toStockLocation.name}})<br><br>-->
+                            </address>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <address>
+                                <strong>Status:</strong><br>
+                                {{#if pending}}
+                                    Accepted: <b>No <i class="fa fa-close"></i></b><br>
+                                    Pending: <b>Yes <i class="fa fa-check-circle"></i></b><br>
+                                    Declined: <b>No <i class="fa fa-close"></i></b>
+                                {{/if}}
+                                {{#if accepted}}
+                                    Accepted: <b>Yes <i class="fa fa-check-circle"></i></b><br>
+                                    Pending: <b>No <i class="fa fa-close"></i></b><br>
+                                    Declined: <b>No <i class="fa fa-close"></i></b>
+                                {{/if}}
+                                {{#if declined}}
+                                    Accepted: <b>No <i class="fa fa-close"></i></b><br>
+                                    Pending: <b>No <i class="fa fa-close"></i></b><br>
+                                    Declined: <b>Yes <i class="fa fa-check-circle"></i></b>
+                                {{/if}}
+                            </address>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <address>
+                                <strong>Request on:</strong><br>
+                                {{moFormat ringPullTransferDate 'YYYY-MM-DD HH:mm'}}<br>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            {{/with}}
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="">
+                    <div class="">
+                        <h3><strong>Transfer summary</strong></h3>
+                        <hr>
+                    </div>
+                    <div class="">
+                        <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <td><strong>Ring pull</strong></td>
+                                    <td class="text-center"><strong>Price</strong></td>
+                                    <td class="text-center"><strong>Quantity</strong></td>
+                                    <td class="text-right"><strong>Amount</strong></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                {{#each item in items}}
+                                    <tr>
+                                        <td>{{item.name}}</td>
+                                        <td class="text-center">${{numFormat item.price '0,0.00'}}</td>
+                                        <td class="text-center">{{item.qty}}</td>
+                                        <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
+                                    </tr>
+                                {{/each}}
+                                <tr>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line text-center"><strong>Total</strong></td>
+                                    <td class="no-line text-right">${{numFormat data.total '0,0.00'}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

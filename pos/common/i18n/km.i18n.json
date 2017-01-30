@@ -1,0 +1,459 @@
+{
+  "pos": {
+    "sidebarMenu": {
+      "home": "ទំព័រដើម",
+      "item": "មុខទំនិញ",
+      "customer": "អតិថិជន",
+      "order": "កម្ម៉ង់ទិញ",
+      "prepaidOrder": "ប្រាក់កក់",
+      "purchaseOrder": "បញ្ជាទិញ",
+      "category": "ផ្នែក",
+      "paymentGroup": "ក្រុម",
+      "vendor": "អ្នកផ្គត់ផ្គង់",
+      "rep": "អ្នកតំណាង",
+      "stockLocation": "ទីតាំងស្តុក",
+      "invoice": "វិក្កយបត្រ",
+      "enterBill": "សរសេរវិក្កយបត្រ",
+      "exchangeRingPull": "ប្តូរក្រវិលកំប៉ុង",
+      "ringPullTransfer": "ផ្ទេរក្រវិលកំប៉ុង",
+      "itemPriceForCustomer": "តម្លៃពិសេសសម្រាប់អតិថិជន",
+      "unpaidInvoiceOverdue": "វិក្កយបត្រមិនទាន់បង់លើសថ្ងៃ"
+    },
+    "home": {
+      "title": "ទំព័រដើម",
+      "info": "POS សូមស្វាគមន៍!"
+    },
+    "item": {
+      "title": "ទំនិញ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "photo": {
+          "label": "រូបភាព"
+        }
+      }
+    },
+    "customer": {
+      "title": "អតិថិជន",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "gender": {
+          "label": "ភេទ"
+        },
+        "address": {
+          "label": "អាសយដ្ឋាន"
+        },
+        "telephone": {
+          "label": "ទូរស័ព្ទ"
+        },
+        "email": {
+          "label": "អ៊ីម៉ែល"
+        },
+        "branchId": {
+          "label": "សាខា"
+        },
+        "paymentType": {
+          "label": "ប្រភេទនៃការបង់ប្រាក់"
+        },
+        "term": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroup": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "termId": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroupId": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "creditLimit": {
+          "label": "ដែនកំណត់ឥណទាន"
+        }
+      }
+    },
+    "order": {
+      "title": "កម្ម៉ង់ទិញ",
+      "invoiceAction": "វិក្កយប័ត្រ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "orderDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "customerId": {
+          "label": "អតិថិជន"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "purchaseOrder": {
+      "title": "បញ្ជាទិញ",
+      "invoiceAction": "វិក្កយប័ត្រ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "orderDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "vendorId": {
+          "label": "អ្នកផ្គត់ផ្គង់"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "customerReport": {
+      "title": "របាយការណ៍អតិថិជន"
+    },
+    "orderReport": {
+      "title": "របាយការណ៍ទិញ"
+    },
+    "category": {
+      "title": "ផ្នែក",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "level": {
+          "label": "លំដាប់"
+        },
+        "parent": {
+          "label": "ផ្នែកមេ"
+        },
+        "parentId": {
+          "label": "ផ្នែកមេ"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "paymentGroup": {
+      "title": "ក្រុម",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "numberOfDay": {
+          "label": "ចំនួនថ្ងៃ"
+        }
+      }
+    },
+    "vendor": {
+      "title": "អ្នកផ្គត់ផ្គង់",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "gender": {
+          "label": "ភេទ"
+        },
+        "address": {
+          "label": "អាសយដ្ឋាន"
+        },
+        "telephone": {
+          "label": "ទូរស័ព្ទ"
+        },
+        "email": {
+          "label": "អ៊ីម៉ែល"
+        },
+        "paymentType": {
+          "label": "ប្រភេទនៃការបង់ប្រាក់"
+        },
+        "term": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroup": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "termId": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroupId": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        }
+      }
+    },
+    "rep": {
+      "title": "អ្នកតំណាង",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "gender": {
+          "label": "ភេទ"
+        },
+        "address": {
+          "label": "អាស័យដ្ឋាន"
+        },
+        "telephone": {
+          "label": "ទូរស័ព្ទ"
+        },
+        "email": {
+          "label": "អ៊ីម៉ែល"
+        },
+        "branchId": {
+          "label": "សាខា"
+        },
+        "startDate": {
+          "label": "កាលបរិច្ឆេទចូលធ្វើការ"
+        },
+        "position": {
+          "label": "មុខតំណែង"
+        },
+        "salary": {
+          "label": "ប្រាក់ខែ"
+        },
+        "status": {
+          "label": "ស្ថានភាព"
+        }
+      }
+    },
+    "stockLocation": {
+      "title": "ទីតាំងស្តុក",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "invoice": {
+      "title": "វិក័យបត្រ",
+      "invoiceAction": "វិក័យបត្រ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "invoiceDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "repId": {
+          "label": "បុគ្គលិក"
+        },
+        "stockLocationId": {
+          "label": "ទីតាំងស្តុក"
+        },
+        "customerId": {
+          "label": "អតិថិជន"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "receivePayment": {
+      "title": "ការបង់ប្រាក់"
+    },
+    "enterBill": {
+      "title": "សរសេរវិក័យបត្រ",
+      "invoiceAction": "វិក័យបត្រ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "invoiceDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "repId": {
+          "label": "បុគ្គលិក"
+        },
+        "stockLocationId": {
+          "label": "ទីតាំងស្តុក"
+        },
+        "vendorId": {
+          "label": "អ្នកផ្គត់ផ្គង់"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "subTotal":{
+          "label":"សរុបរង"
+        },
+        "discount":{
+          "label":"បញ្ចុះតម្លៃ"
+        },
+        "status":{
+          "label":"ស្ថានភាព"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "receiveItem": {
+      "title": "ទទួលទំនិញ",
+      "invoiceAction": "ទទួលទំនិញ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "invoiceDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "repId": {
+          "label": "បុគ្គលិក"
+        },
+        "stockLocationId": {
+          "label": "ទីតាំងស្តុក"
+        },
+        "vendorId": {
+          "label": "អ្នកផ្គត់ផ្គង់"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "subTotal":{
+          "label":"សរុបរង"
+        },
+        "discount":{
+          "label":"បញ្ចុះតម្លៃ"
+        },
+        "status":{
+          "label":"ស្ថានភាព"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
+    "custom":{
+      "saveAndPrint":"រក្សាទុក & ​​​បោះពុម្ភ",
+      "pay":"បង់ប្រាក់"
+    },
+    "itemPriceForCustomer": {
+      "title": "តម្លៃពិសេសសម្រាប់អតិថិជន"
+    },
+    "accountMapping": {
+      "title": "ផ្គូរផ្គងគណនេយ្យ"
+    }
+  }
+}

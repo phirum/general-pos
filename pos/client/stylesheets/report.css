@@ -1,0 +1,33 @@
+.report-body-shadow {
+    background: #fff;
+    box-shadow: 0px 0px 75px -10px rgba(0, 0, 0, 0.5);
+}
+.invoice-body-shadow {
+    background: #fff;
+    padding: 5px;
+    box-shadow: 0px 0px 20px -2px rgba(0, 0, 0, 0.5);
+}
+.report-header {
+    background: #E3EAF3;
+    color: #517395;
+}
+.items-header {
+    background: #3C8DBC;
+    color: #fff;
+}
+
+.label-report {
+    background-color: #007da9;
+    color: #fff;
+    padding: 2px;
+    text-align: center;
+}
+.table > thead > tr > th {
+    border-bottom: 1px solid #000000;
+}
+@media print {
+    .report-body-shadow {
+        box-shadow: none;
+        border: none;
+    }
+}

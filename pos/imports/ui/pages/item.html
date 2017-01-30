@@ -1,0 +1,310 @@
+<!--Index-->
+<template name="Pos_item">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_itemAction">
+    {{#columnAction}}
+        <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+    {{/columnAction}}
+</template>
+
+<!--Insert-->
+<template name="Pos_itemNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_itemNew" type="insert"}}
+            <div class="row">
+                <div class="col-md-6">
+                    {{> afQuickField name='name'}}
+                </div>
+                <div class="col-md-6">
+                    {{> afQuickField name='unitId' label="+Base Unit"}}
+                </div>
+
+            </div>
+         <!--   <div class="row">
+                <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"><span
+                        class="label label-primary"> Add Selling-Unit </span></label></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 selling-unit hidden">
+                    {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
+                </div>
+            </div>-->
+            <div class="row">
+                <div class="col-md-3">{{> afQuickField name='categoryId' label="Category" options=categoryList}}
+                </div>
+                <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+                <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+                <!--<div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>-->
+            </div>
+            <div class="row">
+                <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"><span
+                        class="label label-primary"> Add Scheme </span></label></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 scheme hidden">
+                    {{>schemeItem}}
+                </div>
+            </div>
+            <div class="row price-div">
+                <div class="col-md-3">{{> afQuickField name='price'}}
+                </div>
+                <div class="col-md-3">{{> afQuickField name='purchasePrice'}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-6">{{> afQuickField name='photo'}}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><h4 class="text-blue"><u>Enable</u></h4></div>
+                <hr>
+            </div>
+            <div class="row">
+                <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
+            </div>
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Update-->
+<template name="Pos_itemEdit">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_itemEdit" doc=this type="update"}}
+            <div class="row">
+                <div class="col-md-6">
+                    {{> afQuickField name='name'}}
+                </div>
+                <div class="col-md-6">
+                    {{> afQuickField name='unitId' label="+Base Unit"}}
+                </div>
+
+            </div>
+            <div class="row">
+                {{#if checkSellingUnit}}
+                    <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"
+                                                                        checked><span
+                            class="label label-primary"> Add Selling-Unit </span></label></div>
+                {{else}}
+                    <div class="col-md-3 checkbox"><label for=""><input type="checkbox"
+                                                                        class="toggle-selling-unit"><span
+                            class="label label-primary"> Add Selling-Unit </span></label></div>
+                {{/if}}
+            </div>
+            <div class="row">
+                <div class="col-md-12 selling-unit {{toggleSellingUnit}}">
+                    {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">{{> afQuickField name='categoryId' label="Category" options=categoryList}}</div>
+                <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+                <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+                <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+            </div>
+            <div class="row">
+                {{#if checkScheme}}
+                    <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"
+                                                                        checked><span
+                            class="label label-primary"> Add Scheme </span></label></div>
+                {{else}}
+                    <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"><span
+                            class="label label-primary"> Add Scheme </span></label></div>
+                {{/if}}
+            </div>
+            <div class="row">
+                <div class="col-md-12 scheme {{toggleScheme}}">
+                    {{> schemeItem}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    {{> afQuickField name='price'}}
+                </div>
+                <div class="col-md-3">
+                    {{> afQuickField name='purchasePrice'}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-6">{{> afQuickField name='photo'}}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><h4 class="text-blue"><u>Enable</u></h4></div>
+                <hr>
+            </div>
+            <div class="row">
+                <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
+            </div>
+            {{> formFooterWithButton}}
+
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Show-->
+<template name="Pos_itemShow">
+    <div class="box-body">
+        {{#if Template.subscriptionsReady}}
+            {{#with data}}
+                <dl class="dl-horizontal">
+                    <dt>{{i18nLabel "_id"}}</dt>
+                    <dd>{{_id}}</dd>
+                    <dt>{{i18nLabel "name"}}</dt>
+                    <dd>{{name}}</dd>
+                    <dt>{{i18nLabel "price"}}</dt>
+                    <dd>{{price}}</dd>
+                    <dt>Selling Unit</dt>
+                    <dd>{{sellingUnit}}</dd>
+                    <dt>{{i18nLabel "photo"}}</dt>
+                    <dd>{{lightbox url=photoUrl title=name}}</dd>
+                </dl>
+            {{/with}}
+        {{else}}
+            {{> loading}}
+        {{/if}}
+    </div>
+</template>
+
+<!--Custom array field-->
+<template name="afArrayField_customArrayFieldSellingUnit">
+    <div class="box-body">
+        <div class="panel panel-default">
+            <div class="panel-heading">{{fa "fa fa-shopping-cart"}} {{afFieldLabelText name=this.atts.name}}</div>
+            <div class="panel-body">
+
+                {{#if afFieldIsInvalid name=this.atts.name}}
+                    <div class="has-error">
+                        <span class="help-block">{{{afFieldMessage name=this.atts.name}}}</span>
+                    </div>
+                {{/if}}
+                {{> sellingUnitHeader}}
+                {{#afEachArrayItem name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                    <div class="row array-item">
+
+                        {{> UI.dynamic template=../atts.subtemplate}}
+
+                        <div class="col-sm-1">
+                            {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                                <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/afEachArrayItem}}
+
+                {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                    <div class="row">
+                        <div class="col-sm-11"></div>
+                        <!--Add more-->
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-primary autoform-add-item btn-sm btnAdd"
+                                    data-autoform-field="{{this.atts.name}}"
+                                    data-autoform-minCount="{{this.atts.minCount}}"
+                                    data-autoform-maxCount="{{this.atts.maxCount}}">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<!--Custom object field-->
+<template name="customObjectFieldSellingUnit">
+    <div class="col-sm-6">
+        {{> afQuickField name=current.unitId template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
+    </div>
+    <div class="col-sm-5">
+        {{> afQuickField name=current.converter template="bootstrap3" label=false class="input-sm price"}}
+    </div>
+
+
+</template>
+
+<template name="sellingUnitHeader">
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Unit:</label>
+
+        </div>
+        <div class="col-sm-5">
+            <label>Converter:</label>
+        </div>
+
+    </div>
+</template>
+
+<template name="schemeItem">
+    {{#autoForm schema=schema id="schemeItem"}}
+        <div class="row">
+            <div class="col-sm-4">
+                {{> afQuickField name="itemId" label=false}}
+            </div>
+            <div class="col-sm-2">
+                {{> afQuickField name="qty" label=false placeholder="Qty"}}
+            </div>
+            <div class="col-sm-2">
+                {{> afQuickField name="price" label=false value=defaultPrice placeholder="Price"}}
+            </div>
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+            </div>
+        </div>
+    {{/autoForm}}
+    <!--Reactive table-->
+    <div class="well">
+        {{> reactiveTable settings=tableSettings}}
+    </div>
+</template>
+
+
+<template name="Pos_schemeItemsAction">
+    <ul class="list-inline">
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
+</template>
+
+<template name="chartAccountDropDown">
+    <div class="input-group-btn" style="z-index: 999">
+        <div class="btn-group" role="group">
+            <div class="dropdown dropdown-lg">
+                <a class="btn btn-default add-new-chart-account"
+                   aria-expanded="false"><span class="text-blue">+</span></a>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,66 @@
+#format-header {
+    height: 30px;
+    color: white;
+    background-color: #337ab7;
+}
+
+#scroll-horizontal {
+    overflow-y: auto;
+    height: 423px;
+    padding-top: 5px;
+}
+
+#height-field {
+    height: 30px;
+}
+
+#height-top-header {
+    height: 10px;
+}
+
+.item {
+    text-align: right;
+}
+
+/* Form Show */
+.dl-horizontal dt {
+    text-align: left;
+    margin-left: 0;
+}
+
+.dl-horizontal dd {
+    margin-left: 0;
+}
+
+.select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+    padding: 6px 12px;
+    height: 34px;
+}
+
+.custom-switchery-background {
+    box-shadow: #337ab7 0px 0px 0px 11px inset;
+    border-color: #337ab7;
+    background-color: #337ab7;
+    transition: border 0.4s, box-shadow 0.4s, background-color 1.2s;
+}
+
+.btn-add-round {
+    border-radius: 999px;
+    padding: 5px 10px;
+}
+
+.badge-round {
+    border-radius: 999px;
+    padding: 5px 7px;
+}
+
+.box-custom {
+    margin-left: -5px;
+    padding-right: 5px;
+}
+
+.report-pointer {
+    cursor: pointer;
+}

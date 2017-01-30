@@ -1,0 +1,42 @@
+<template name="Pos_mainReport">
+    <div class="inbox-head items-header">
+        {{#autoForm schema=schema id='mainReport'}}
+            <div class="col-md-4">
+                <div class="input-append">
+                    {{>afQuickField name="goToReport" options=selectOptions}}
+                </div>
+            </div>
+        {{/autoForm}}
+
+    </div>
+    <div class="container-fluid report-body-shadow">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Nav tabs -->
+                <div class="card">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
+                                                                  data-toggle="tab">Recommended</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Frequently Used</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <ul>
+
+                            </ul>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="profile">Lorem Ipsum is simply dummy text of the
+                            printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text
+                            ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make
+                            a type
+                            specimen book.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

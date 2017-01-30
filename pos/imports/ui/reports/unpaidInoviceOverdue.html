@@ -1,0 +1,130 @@
+<template name="Pos_unpaidInvoiceOverdue">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='unpaidInvoiceOverdueReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="date" label= 'Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>unpaidInvoiceOverdueData}}
+        </div>
+    </div>
+</template>
+
+<template name="unpaidInvoiceOverdueData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>UNPAID INVOICE OVERDUE REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-3 text-right">
+                        <address class="">
+                            <strong>Exchange: </strong>
+                            {{{data.title.exchange}}}
+                        </address>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            {{#with data}}
+                <thead>
+                <tr>
+                    {{#each data.fields }}
+                        <th><u>{{field}}</u></th>
+                    {{/each}}
+                </tr>
+                </thead>
+                {{#each col in content}}
+
+                    <tr>
+                        <td>
+                            <strong>
+                                <i>{{capitalize col._customer.name}}</i>
+                            </strong>
+                        </td>
+                        <td>
+                            <strong>
+                                <i>Tel: {{col._customer.telephone}}</i>
+                            </strong>
+                        </td>
+                        <td>
+                            <strong>
+                                <i>
+                                    Address: {{col._customer.address}}
+                                </i>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tbody>
+                    {{#each field in col.invoices}}
+                        <tr>
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.dueAmount col.paidAmount col.balanceAmount col._customer.name}}}
+                    </tr>
+                    </tbody>
+
+                {{/each}}
+                <tbody>
+                <!--<tr>-->
+                <!--{{{getTotalFooter footer.total footer.totalKhr footer.totalThb}}}-->
+                <!--</tr>-->
+
+
+                </tbody>
+
+
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

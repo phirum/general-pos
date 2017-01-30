@@ -1,0 +1,67 @@
+<!--Item Temporary-->
+<template name="Pos_locationTransferItems">
+    <div class="container-fluid items-header">
+        <div class="row">
+            <div class="col-md-6" align="center">PRODUCT</div>
+            <div class="col-md-5" align="center">QTY</div>
+            <div class="col-md-2 hidden" align="center">PRICE</div>
+            <div class="col-md-3 hidden" align="center">AMOUNT</div>
+        </div>
+        {{#autoForm schema=schema id="Pos_locationTransferItems"}}
+            <div class="row">
+                <div class="col-sm-6">
+                    {{> afQuickField name="itemId" label=false}}
+                </div>
+                <div class="col-sm-5">
+                    {{> afQuickField name="qty" label=false}}
+                </div>
+                <div class="col-sm-2 hidden">
+                    {{> afQuickField name="price" label=false}}
+                </div>
+                <div class="col-sm-3 hidden">
+                    {{> afQuickField name="amount" value=amount label=false readonly=true}}
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+                </div>
+
+            </div>
+        {{/autoForm}}
+        <!--<hr>-->
+    </div>
+
+    <!--Reactive table-->
+    {{> reactiveTable settings=tableSettings}}
+    <div class="row hidden">
+        <div class="col-sm-8">
+            <div class="pull-right">Total:</div>
+        </div>
+        <div class="col-sm-4">
+            {{> afQuickField name="total" id="total" value=total label=false readonly="true"}}
+        </div>
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_locationTransferItemsAction">
+    <ul class="list-inline">
+        <li><a href="#" class="js-update-item"><i class="fa fa-pencil"></i></a></li>
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
+</template>
+
+<!--Edit Item-->
+<template name="Pos_locationTransferItemsEdit">
+    {{#autoForm schema=schema id="Pos_locationTransferItemsEdit" doc=data}}
+        <div class="row">
+            <div class="col-md-12">
+                {{> afQuickField name="itemId" readonly="true"}}
+                {{> afQuickField name="qty" }}
+                {{> afQuickField name="price" class="hidden"}}
+                {{> afQuickField name="amount" value=amount readonly="true" class="hidden"}}
+            </div>
+        </div>
+
+        {{> formFooterWithButton}}
+    {{/autoForm}}
+</template>

@@ -1,0 +1,148 @@
+<template name="Pos_paymentReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='receivePaymentReport'}}
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <select class="form-control" id="date-range-filter">
+                                            <option value="today">ថ្ងៃនេះ(Today)</option>
+                                            <option value="yesterday">ម្សិលមិញ(Yesterday)</option>
+                                            <option value="last7days">៧ ថ្ងៃមុន(Last 7days)</option>
+                                            <option value="last30days">៣០ ថ្ងៃមុន(Last 30days)</option>
+                                            <option value="thisMonth">ខែនេះ(This Month)</option>
+                                            <option value="lastMonth">ខែមុន(Last Month)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-xs-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date' value=fromDate}}
+                                    </div>
+                                    <div class="col-xs-2">
+                                        {{> afQuickField name="toDate" label='To Date' value=endDate}}
+                                    </div>
+                                    <div class="col-xs-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-xs-3">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            {{> afQuickField name="filter" label="Custom Fields"}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-7">
+                                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i>
+                                            Run
+                                        </button>
+                                    </div>
+                                    <!--<div class="col-xs-3">-->
+                                        <!--<a class="previous btn btn-default"><i class="fa fa-angle-left"> Previous-->
+                                            <!--Page</i></a>-->
+                                        <!--<select class="select" name="skip">-->
+                                            <!--<option value="500">500</option>-->
+                                            <!--<option value="1000">1000</option>-->
+                                            <!--<option value="2000">2000</option>-->
+                                        <!--</select>-->
+                                        <!--<a class="next btn btn-default">Next Page <i class="fa fa-angle-right"></i></a>-->
+
+                                    <!--</div>-->
+                                    <!--<div class="col-xs-2 pull-left">-->
+                                        <!--<label for="" class="text-gray">Limit</label>-->
+                                        <!--<select class="select" name="limit">-->
+                                            <!--<option value="500">500</option>-->
+                                            <!--<option value="1000">1000</option>-->
+                                            <!--<option value="2000">2000</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+                                </div>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>paymentReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="paymentReportData">
+    <div class="container-fluid">
+        <div class="col-xs-4">
+            <br>
+            <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-xs-12" align="center"><h3>RECEIVE PAYMENT REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+
+                <div class="row">
+                    <div class="col-xs-3 ">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <!-- <address>
+                             <strong>Order Date:</strong><br>
+                             March 7, 2014<br><br>
+                         </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each col in content}}
+                    {{#each field in col.data}}
+                        <tr>
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.dueAmount col.paidAmount col.balanceAmount}}}
+                    </tr>
+                {{/each}}
+
+            {{/with}}
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

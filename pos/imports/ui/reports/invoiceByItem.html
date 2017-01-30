@@ -1,0 +1,146 @@
+<template name="Pos_invoiceByItemReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <select class="form-control" id="date-range-filter">
+                                        <option value="today">ថ្ងៃនេះ(Today)</option>
+                                        <option value="yesterday">ម្សិលមិញ(Yesterday)</option>
+                                        <option value="last7days">៧ ថ្ងៃមុន(Last 7days)</option>
+                                        <option value="last30days">៣០ ថ្ងៃមុន(Last 30days)</option>
+                                        <option value="thisMonth">ខែនេះ(This Month)</option>
+                                        <option value="lastMonth">ខែមុន(Last Month)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {{#autoForm schema=schema id='invoiceReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date' value=fromDate}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="toDate" label='To Date' value=endDate}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+
+                                </div>
+                                <input type="checkbox" class="show-items-summary" checked>SHOW ITEMS SUMMARY
+                                <input type="checkbox" class="show-invoices-summary" checked>SHOW INV SUMMARY
+                                <br>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default fullScreen"><i class="fa fa-window-maximize"
+                                                                         aria-hidden="true"></i> Full Screen</a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>invoiceByItemReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="invoiceByItemReportData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid " id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-xs-12" align="center">
+            <h3>
+                <u>SALE BY ITEMS REPORT</u>
+            </h3>
+            <p class="text-center"><b>Date: </b>{{data.title.date}}</p>
+        </div>
+        <table class="table table-responsive table-striped">
+            {{#with data}}
+                {{#if showInvoicesSummary}}
+                    <thead class="rpt-header">
+                    <tr>
+                        {{#each data.fields }}
+                            {{{field}}}
+                        {{/each}}
+                    </tr>
+                    </thead>
+                    <tbody class="rpt-body">
+                    {{#each col in content}}
+                        {{#each field in col.items}}
+                            <tr>
+                                {{{display field}}}
+                            </tr>
+                        {{/each}}
+                        <!--<tr>-->
+                        <!--{{{getTotal col.total.totalUsd}}}-->
+                        <!--</tr>-->
+
+                    {{/each}}
+                    <hr>
+
+                    <tr>
+                        {{{getTotalFooter footer.totalQty footer.total 3}}}
+                    </tr>
+                    </tbody>
+
+                {{/if}}
+                <tbody class="rpt-body">
+                <br>
+                {{#if showItemsSummary}}
+                    <tr style="border-bottom: 1px solid #000">
+                        <td style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
+                                                                       aria-hidden="true"></i> ITEMS SUMMARY</span>
+                        </td>
+                        <td style="background-color: #d0d0d0" class="text-right">Qty</td>
+                        <!--<td style="background-color: #d0d0d0" class="text-right">Price</td>-->
+                        <td colspan="" style="background-color: #d0d0d0" class="text-right">Amount</td>
+                        <td colspan="5" style="background-color: #d0d0d0"></td>
+                    </tr>
+                    {{#each footer.itemsSummary}}
+                        <tr>
+                            <td>{{itemName}}</td>
+                            <td class="text-right">{{numFormat qty '0,0.00'}}</td>
+                            <!--<td class="text-right">{{numFormat price '0,0.00'}}</td>-->
+                            <td class="text-right"><u>{{numFormat amount '0,0.00'}}</u></td>
+                        </tr>
+                    {{/each}}
+                    <br>
+                    <tr>
+                        {{{getTotalFooter footer.totalQty footer.total 9}}}
+                    </tr>
+                {{/if}}
+                </tbody>
+
+
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

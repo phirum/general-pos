@@ -1,0 +1,52 @@
+<!--Layout-->
+<template name="ReportLayout">
+    <!--Content-->
+    {{> Template.dynamic template=content}}
+
+</template>
+
+<template name="CustomReportLayout">
+    {{#AdminLTE skin="skin-blue" sidebarMini=true}}
+
+        <!-- Site wrapper -->
+        <div class="wrapper">
+
+            <!-- Header -->
+            {{> _HeaderLayout}}
+
+            <!-- =============================================== -->
+
+            <!-- Left side column. contains the sidebar -->
+            {{> _SidebarLayout}}
+
+            <!-- =============================================== -->
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+
+                <!-- Content Header (Page header) -->
+                {{> _ContentHeaderLayout}}
+
+                <!-- Main content -->
+                <section class="content">
+
+                    {{> Template.dynamic template=content}}
+
+                    <!-- Alert -->
+                    {{> sAlert}}
+
+                    <!-- Connection Status -->
+                    {{> meteorStatus}}
+
+                </section><!-- /.content -->
+
+            </div><!-- /.content-wrapper -->
+
+            <!-- Footer -->
+            {{> _FooterLayout}}
+
+        </div>
+        <!-- ./wrapper -->
+
+    {{/AdminLTE}}
+</template>

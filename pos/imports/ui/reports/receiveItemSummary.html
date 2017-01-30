@@ -1,0 +1,145 @@
+<template name="Pos_receiveItemSummary">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='posReceiveItemSummary'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label class="label label-default">
+                                            From Date<span class="text-red">*</span>
+                                        </label>
+                                        {{> afFieldInput name="fromDate" }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="label label-default">
+                                            To Date<span class="text-red">*</span>
+                                        </label>
+                                        {{> afFieldInput name="toDate"}}
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="label label-default">
+                                            Type
+                                        </label>
+                                        {{> afFieldInput name="type" label="Type"}}
+                                    </div>
+
+
+                                </div>
+                                <!--<div class="row">-->
+                                <!--<div class="col-md-4">-->
+                                <!--<label class="label label-default">-->
+                                <!--Status-->
+                                <!--</label>-->
+                                <!--{{> afFieldInput name="status" label="Status"}}-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>receiveItemSummaryData}}
+        </div>
+    </div>
+</template>
+
+<template name="receiveItemSummaryData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>RECEIVE ITEM SUMMARY REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address>
+                            <strong>Date: </strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <!--<div class="col-xs-3 text-right">
+                        <address class="">
+                            <strong>Exchange: </strong>
+                            {{{data.title.exchange}}}
+                        </address>
+                    </div>
+                    <div class="col-xs-3 text-right">
+                        <address class="">
+                            <strong>Status: </strong>
+                            {{{data.title.status}}}
+                        </address>
+                    </div>-->
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            {{#with data}}
+                {{#each content}}
+                    <tbody>
+
+                    <tr>
+                        <td colspan="6" style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
+                                                                                   aria-hidden="true"></i> {{_id}}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Item</td>
+                        <td>Total Qty</td>
+                        <td>Lost Qty</td>
+                        <td>Remain Qty</td>
+                        <td>Price</td>
+                        <td>Amount</td>
+                    </tr>
+                    {{#each items}}
+                        <tr>
+                            <td>{{itemName}}</td>
+                            <td>{{totalQty}}</td>
+                            <td>{{lostQty}}</td>
+                            <td>{{remainQty}}</td>
+                            <td>{{numFormat price '0,0.00'}}</td>
+                            <td><u>{{numFormat totalAmount '0,0.00'}}</u></td>
+                        </tr>
+                    {{/each}}
+
+                    </tbody>
+                {{/each}}
+                <br>
+                <tr style="border-top: 1px #ddd solid;">
+                    <td colspan="4"></td>
+                    <td><b>Total:</b></td>
+                    <td><b><u>{{numFormat footer.total '0,0.00'}}</u></b></td>
+                </tr>
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

@@ -1,0 +1,186 @@
+<template name="Pos_adminDashboard">
+    <div class="container-fluid">
+        <div class="col-xs-12">
+            {{>pos_dashboardCustomerDebt}}
+            <hr>
+        </div>
+        <div class="col-xs-12">
+            {{> pos_dashboardCash}}
+        </div>
+        <div class="col-xs-12">
+            {{> pos_dashboardDailySale}}
+        </div>
+        <div class="col-xs-12">
+            {{> pos_dashboardDailyStock}}
+        </div>
+    </div>
+</template>
+
+<template name="pos_dashboardCustomerDebt">
+    <div class="pricingTable">
+        {{#with customerDebtData}}
+            <h1 class="pricingTable-title">របាយការណ៍បំណុលអតិថិជន (
+                <small>គិតត្រឹម:</small> {{displayAsDate}})
+            </h1>
+            <h3 class="pricingTable-subtitle text-black">សរុបទាំងអស់: <b>${{numFormat data.footer.balanceAmount
+                                                                                      '0,0.00'}}</b>
+            </h3>
+            {{#if notReady}}
+                <h4 class="text-center">
+                    {{> Pos_loader}}
+                </h4>
+            {{else}}
+                <ul class="pricingTable-firstTable">
+                    {{#with data}}
+                        {{#each dataByBranches}}
+                            <li class="pricingTable-firstTable_table animated bounceIn">
+                                <h1 class="pricingTable-firstTable_table__header">{{branchDoc.khName}}</h1>
+                                <p class="pricingTable-firstTable_table__pricing">
+                                    <span>$</span><span>{{numFormat balanceAmount '0,0.00'}}</span><span></span>
+                                </p>
+                                <ul class="pricingTable-firstTable_table__options">
+                                    <li>ចំនួនវិក័យប័ត្រមិនទាន់បានបង់អស់នៅសល់: {{invoiceCount}}</li>
+                                    <li>ចំនួនវិក័យប័ត្របានបង់ប្រាក់ខ្លះ: {{paidCount}}</li>
+                                </ul>
+                                <div class="pricingTable-firstTable_table__getstart goToCustomerTotalCredit">Go to
+                                    Report
+                                </div>
+                            </li>
+                        {{/each}}
+                    {{/with}}
+                </ul>
+            {{/if}}
+        {{/with}}
+    </div>
+</template>
+
+<template name="pos_dashboardDailySale">
+    <div class="pricingTable">
+        <h2 class="pricingTable-title">របាយការណ៍លក់ប្រចាំថ្ងៃ ({{displayDailyDate}})</h2>
+        {{#with dailySaleData}}
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!-- Responsive table starts here -->
+            <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
+            <div class="table-responsive-vertical shadow-z-1">
+                <!-- Table starts here -->
+                <table id="table" class="table table-hover table-mc-light-blue">
+                    {{#if noReady}}
+                        <h4 class="text-center">
+                            {{> Pos_loader}}
+                        </h4>
+                    {{else}}
+                        {{#with data}}
+                            <thead>
+                            <tr>
+                                <th>មុខទំនិញ</th>
+                                {{#each branches}}
+                                    <th>{{branchDoc.khName}}</th>
+                                {{/each}}
+                                <th>សរុប</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each field in dataByBranches}}
+                                <tr>
+                                    <td>{{field.itemDoc.name}}</td>
+                                    {{{displayQtyByBranch field}}}
+                                    <!--<td>{{field.totalQty}}</td>-->
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        {{/with}}
+                    {{/if}}
+                </table>
+            </div>
+
+            <!-- Table Constructor change table classes, you don't need it in your project -->
+        {{/with}}
+    </div>
+</template>
+
+<template name="pos_dashboardDailyStock">
+    <div class="pricingTable">
+        <h2 class="pricingTable-title">របាយការណ៍ស្តុក (គិតត្រឹមៈ {{displayDailyDate}})</h2>
+        {{#with dailyStockData}}
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!-- Responsive table starts here -->
+            <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
+            <input type="checkbox" class="showPOSM"> បង្ហាញទំនិញ Free
+            <br>
+            <div class="table-responsive-vertical shadow-z-1">
+                <!-- Table starts here -->
+
+                <table id="table" class="table table-hover table-mc-light-blue">
+                    {{#if noReady}}
+                        <h4 class="text-center">
+                            {{> Pos_loader}}
+                        </h4>
+                    {{else}}
+                        {{#with data}}
+                            <thead>
+                            <tr>
+                                <th>មុខទំនិញ</th>
+                                {{#each branches}}
+                                    <th>{{branchDoc.khName}}</th>
+                                {{/each}}
+                                <th>សរុប</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each field in dataByBranches}}
+                                <tr>
+                                    <td>{{field.itemDoc.name}}</td>
+                                    {{{displayQtyByBranch field}}}
+                                    <!--<td>{{field.totalQty}}</td>-->
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        {{/with}}
+                    {{/if}}
+                </table>
+            </div>
+        {{/with}}
+    </div>
+</template>
+
+<template name="pos_dashboardCash">
+    <div class="pricingTable">
+        <h2 class="pricingTable-title">របាយការណ៍សាច់ប្រាក់</h2>
+        {{#with dailyCashData}}
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!-- Responsive table starts here -->
+            <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
+            <div class="table-responsive-vertical shadow-z-1">
+                <!-- Table starts here -->
+                {{#if noReady}}
+                    <h4 class="text-center">
+                        {{> Pos_loader}}
+                    </h4>
+                {{else}}
+                    <table id="table" class="table table-hover table-mc-light-blue">
+                        {{#with data}}
+                            <thead>
+                            <tr>
+                                <th>សាខា</th>
+                                <th>សរុប</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each field in dataByBranches}}
+                                <tr>
+                                    <td><a href="/acc/cashReportGen?branchId={{field.branchDoc._id}}&currencyId=All&date={{getCurrentDate}}">{{field.branchDoc.khName}}</a></td>
+                                    <td class="text-center">${{numFormat field.balance '0,0.00'}}</td>
+                                </tr>
+                            {{/each}}
+                            <tr style="border-top: 1px dotted black;" class="text-center">
+                                <td class="text-center">សរុបទាំងអស់:</td>
+                                <td>${{numFormat footer '0,0.00'}}</td>
+                            </tr>
+                            </tbody>
+                        {{/with}}
+                    </table>
+                {{/if}}
+            </div>
+        {{/with}}
+    </div>
+</template>

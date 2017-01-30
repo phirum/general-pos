@@ -1,0 +1,52 @@
+<template name="acc_chartAccountDetail">
+    {{#autoForm schema=schema id="acc_chartAccountDetail"}}
+        <div class="row">
+            <div class="col-md-11" style="padding-right:1px;padding-left:0px;">
+                {{> afQuickField name="chartAccount"}}
+            </div>
+            <div class="col-md-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
+                <br>
+                <button type="button" class="btn btn-primary addItem" {{cssClassForAddMore}}>{{fa "plus"}}</button>
+            </div>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Chart Account List</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <th style="width: 10px">#</th>
+                            <th>Account Name</th>
+                            <th style="width: 40px">Action</th>
+                        </tr>
+                        {{#each detail}}
+                            <tr>
+
+                                <td>{{index}}</td>
+
+                                <td>
+                                    <input type="text" value={{chartAccount}} style='padding-bottom: 1px;'
+                                    class="form-control input-sm" readonly=true>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger removeItem input-sm">{{fa "minus"}}</button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+
+        </div>
+
+    {{/autoForm}}
+</template>

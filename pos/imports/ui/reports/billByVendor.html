@@ -1,0 +1,122 @@
+<template name="Pos_billByVendorReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='billByVendorReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="toDate" label='To Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="vendorId" label="Vendor"}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="filter" label="Custom Fields"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>billByVendorReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="billByVendorReportData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>BILL BY VENDOR REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-3 text-right">
+                        <address class="">
+                            <strong>Exchange: </strong>
+                            {{{data.title.exchange}}}
+                        </address>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            {{#with data}}
+                <thead>
+                <tr>
+                    {{#each data.fields }}
+                        <th><u>{{field}}</u></th>
+                    {{/each}}
+                </tr>
+                </thead>
+                {{#each col in content}}
+
+                    <tr>
+                        <td>
+                            <strong><i>{{capitalize col.vendor.name}}</i>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tbody>
+                    {{#each field in col.data}}
+                        <tr>
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total col.customer.name}}}
+                    </tr>
+                    </tbody>
+
+                {{/each}}
+                <tbody>
+                <tr>
+                    {{{getTotalFooter footer.total footer.totalKhr footer.totalThb}}}
+                </tr>
+
+
+                </tbody>
+
+
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

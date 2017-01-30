@@ -1,0 +1,93 @@
+<!--Index-->
+<template name="Pos_targetItem">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--  Insert -->
+<template name="Pos_targetItemNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_targetItemNew" type="insert"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='itemId'}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='startDate' label="Start Date"}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='endDate' label="End Date"}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='amount'}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='description'}}
+                </div>
+            </div>
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+<!-- Action -->
+<template name="Pos_targetItemAction">
+    {{#columnAction align="right"}}
+        <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <!--<li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>-->
+    {{/columnAction}}
+</template>
+<!-- Display -->
+<!--Show-->
+<template name="Pos_targetItemShow">
+    <div class="box-body">
+        <dl class="dl-horizontal">
+            <dt>ID:</dt>
+            <dd>{{_id}}</dd>
+            <dt>Name:</dt>
+            <dd>{{_item.name}}</dd>
+            <dt>Start Qty</dt>
+            <dd>{{startQty}}</dd>
+            <dt>End Qty</dt>
+            <dd>{{endQty}}</dd>
+            <dt>Commission</dt>
+            <dd>{{commission}}</dd>
+        </dl>
+    </div>
+</template>
+
+
+<template name="Pos_targetItemEdit">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_targetItemEdit" doc=data type="update"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='itemId'}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='price'}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='startQty' label="Start Qty"}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='endQty' label="End Qty"}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='commission'}}
+                </div>
+                <div class="col-md-12">
+                    {{> afQuickField name='description'}}
+                </div>
+            </div>
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+<!-- Update -->

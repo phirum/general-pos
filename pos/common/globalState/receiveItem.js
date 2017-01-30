@@ -1,0 +1,1 @@
+export const receiveItemState = new ReactiveObj({});

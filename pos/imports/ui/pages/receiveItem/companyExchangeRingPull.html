@@ -1,0 +1,52 @@
+
+<template name="listCompanyExchangeRingPull">
+    <table class="table table-stripe table-responsive">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Remain Qty</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#if hasCompanyExchangeRingPulls}}
+            {{#each companyExchangeRingPull in companyExchangeRingPulls}}
+                <tr class="prepaid-order-doc">
+                    <td><a href="">{{companyExchangeRingPull._id}}</a></td>
+                    <td>{{moFormat companyExchangeRingPull.orderDate 'YYYY-MM-DD HH:mm'}}</td>
+                    <td>{{companyExchangeRingPull._vendor.name}}</td>
+                    <td>{{numFormat companyExchangeRingPull.total '0,0.00'}}</td>
+                    <td>{{companyExchangeRingPull.sumRemainQty}}</td>
+                    <td>{{companyExchangeRingPull.status}}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th style="background: teal; color: #fff;">Item</th>
+                    <th style="background: teal; color: #fff;">Qty</th>
+                    <th style="background: teal; color: #fff;">Price</th>
+                    <th style="background: teal; color: #fff;">Amount</th>
+                    <th style="background: teal; color: #fff;">Remain QTY</th>
+                </tr>
+                {{#each companyExchangeRingPull.items}}
+                    <tr class="prepaid-order-item-parents">
+                        <td><span class="hidden companyExchangeRingPullId">{{companyExchangeRingPull._id}}</span></td>
+                        <td>{{getItemName itemId}}</td>
+                        <td>{{qty}}</td>
+                        <td>{{price}}</td>
+                        <td>{{amount}}</td>
+                        <td><input type="text" class="remain-qty" value="{{remainQty}}"></td>
+                        <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
+                    </tr>
+                {{/each}}
+            {{/each}}
+        {{else}}
+            <h4>
+                <bold>No Company Exchange Ringpull available..</bold>
+            </h4>
+        {{/if}}
+        </tbody>
+    </table>
+</template>

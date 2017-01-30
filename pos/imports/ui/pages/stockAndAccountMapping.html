@@ -1,0 +1,76 @@
+<!--Index-->
+<template name="Pos_stockAndAccountMapping">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_stockAndAccountMappingAction">
+    {{#columnAction align="right"}}
+        <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+    {{/columnAction}}
+</template>
+
+<!--Insert-->
+<template name="Pos_stockAndAccountMappingNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_stockAndAccountMappingNew" type="insert"}}
+            <div class="row">
+                <div class="col-md-12">
+                    <label>User <span class="text-red">*</span>: {{{userBranches}}}</label>
+                    {{> afQuickField name='userId' label=false}}
+                    {{> afQuickField name='branchId'}}
+                    <!--{{> afQuickField name='chartAccounts'}}-->
+                    {{> afQuickField name='stockLocations'}}
+                </div>
+            </div>
+
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Update-->
+<template name="Pos_stockAndAccountMappingEdit">
+    <div class="box-body">
+        {{#if Template.subscriptionsReady}}
+            {{#autoForm collection=collection id="Pos_stockAndAccountMappingEdit" doc=data type="update"}}
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>User <span class="text-red">*</span>: {{{userBranches}}}</label>
+                        {{> afQuickField name='userId' label=false}}
+                        {{> afQuickField name='branchId'}}
+                        <!--{{> afQuickField name='chartAccounts'}}-->
+                        {{> afQuickField name='stockLocations'}}
+                    </div>
+                </div>
+
+                {{> formFooterWithButton}}
+            {{/autoForm}}
+        {{else}}
+            {{> loading}}
+        {{/if}}
+    </div>
+</template>
+
+<!--Show-->
+<template name="Pos_stockAndAccountMappingShow">
+    <div class="box-body">
+        <dl class="dl-horizontal">
+            <dt>Username:</dt>
+            <dd>{{username}}</dd>
+            <dt>Stock Locations:</dt>
+            <dd>{{extractStockLocations}}</dd>
+            <dt>Branch</dt>
+            <dd>{{branch}}</dd>
+        </dl>
+    </div>
+</template>

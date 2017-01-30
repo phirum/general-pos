@@ -1,0 +1,134 @@
+<template name="Pos_stockDetailReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <select class="form-control" id="date-range-filter">
+                                        <option value="today">ថ្ងៃនេះ(Today)</option>
+                                        <option value="yesterday">ម្សិលមិញ(Yesterday)</option>
+                                        <option value="last7days">៧ ថ្ងៃមុន(Last 7days)</option>
+                                        <option value="last30days">៣០ ថ្ងៃមុន(Last 30days)</option>
+                                        <option value="thisMonth">ខែនេះ(This Month)</option>
+                                        <option value="lastMonth">ខែមុន(Last Month)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {{#autoForm schema=schema id='stockDetailReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="startDate" value=startDate label= 'Start Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="endDate" value=endDate label= 'End Date'}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="items" label= 'Item'}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="branch" label="Branch"}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="location" label="Stock Location"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default fullScreen"><i class="fa fa-print" aria-hidden="true"></i> Full Screen</a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>stockDetailReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="stockDetailReportData">
+    <div class="container-fluid" id="to-printStockDetail">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>STOCK DETAILS REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}<br>
+                            <strong>Branch:</strong>
+                            {{data.title.branch}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <!-- <address>
+                             <strong>Order Date:</strong><br>
+                             March 7, 2014<br><br>
+                         </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead class="rpt-header">
+            <tr>
+                <th>Date</th>
+                <th>N៖</th>
+                <th>Name</th>
+                <th>Rep</th>
+                <th>Des</th>
+                <th>Branch</th>
+                <th>Item</th>
+                <th>Stock In</th>
+                <th>Stock Out</th>
+                <th>Balance</th>
+                <th>Avg Cost</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody class="rpt-body">
+            {{#with data}}
+                {{#each content}}
+                    {{#each items}}
+                        <tr>
+                            <td>{{moFormat createdAt 'DD/MM/YYYY'}}</td>
+                            <td>{{number}}</td>
+                            <td>{{name}}</td>
+                            <td>{{rep}}</td>
+                            <td>{{description}}</td>
+                            <td>{{branchDoc.khName}}</td>
+                            <td>{{item.name}}</td>
+                            {{{displayStockOutQty}}}
+                            <td>{{numFormat remainQty '0,0'}}</td>
+                            <td>{{numFormat averagePrice '0,0.00'}}</td>
+                            <td>{{numFormat lastAmount '0,0.00'}}</td>
+                        </tr>
+                    {{/each}}
+                {{/each}}
+            {{/with}}
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

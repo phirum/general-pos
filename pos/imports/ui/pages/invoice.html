@@ -1,0 +1,416 @@
+<!--Index-->
+<template name="Pos_invoice">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_invoiceAction">
+    {{#columnAction}}
+        <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="/pos/customer/{{customerId}}/receive-payment/{{_id}}"><i class="fa fa-money"></i> Receive
+            Payment</a></li>
+    {{/columnAction}}
+</template>
+
+<!--Insert-->
+<template name="Pos_invoiceNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
+            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                <div class="col-md-3 ">
+                    <div class="input-group">
+                        <label for="email" class="input-group">Customer:<span style="color: red;">*</span></label>
+                        {{> afFieldInput name="customerId" }}
+                        <br>
+                        {{>customerDropDown}}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <br>
+                    <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
+                                                                                        class="sale-order btn btn-default">Sale
+                       Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                </div>
+
+                <div class="col-md-6">
+                    <p class="pull-right ">
+                    <h4 class="text-black">BALANCE DUE</h4>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    {{#if totalOrder.customerId}}
+                        <a class="btn btn-default text-center go-to-receive-payment"
+                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                            Receive Payment
+                        </a>
+                    {{/if}}
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {{#with customerInfo}}
+                            <ul class="list-inline">
+                                {{{fields}}}
+                            </ul>
+                        {{/with}}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="voucherId"}}
+                </div>
+                {{#if isTerm}}
+                    <div class="col-md-2">
+                        {{> afQuickField name="termId" options=termOption value=termId}}
+                    </div>
+                {{/if}}
+                <div class="col-md-2">
+                    {{> afQuickField name="invoiceDate"}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="dueDate" value=dueDate}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="stockLocationId" value=stockLocation resetOnSuccess=false}}
+                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+                </div>
+
+            </div>
+            <div class="col-md-12 well">
+                <!--Item Temporary-->
+                {{> Pos_invoiceItems itemsCollection=itemsCollection}}
+            </div>
+            <div class="row">
+                <div class="col-sm-12 pull-right">
+                    <!--{{> formFooterWithButton}}-->
+                    {{#formFooter}}
+                        <button type="submit" class="btn btn-primary save-invoice" {{disabledSubmitBtn}}>
+                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                        </button>
+                        <button type="reset" class="btn btn-default reset-button">
+                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                        </button>
+                    {{/formFooter}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Memo
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    <!--<div class="col-md-3">-->
+                                    {{> afQuickField name="des"}}
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Update-->
+<template name="Pos_invoiceEdit">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_invoiceUpdate" doc=data type="update"}}
+            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                <div class="hidden">
+                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
+                        New</a>) </label>
+                    {{> afQuickField name="customerId" label=false}}
+                </div>
+                <div class="col-md-3">
+                    <label for="">Customer:</label>
+                    <input type="text" readonly="true" value="{{customerId}} | {{_customer.name}}" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <br>
+                    {{#if isSaleOrder}}
+                        <span><a href="" class="toggle-list sale-order btn btn-default">Sale
+                            Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                    {{/if}}
+                </div>
+                <div class="col-md-6">
+                    <p class="pull-right ">
+                    <h4 class="text-black">BALANCE DUE</h4>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    {{#if totalOrder.customerId}}
+                        <a class="btn btn-default text-center go-to-receive-payment"
+                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                            Receive Payment
+                        </a>
+                    {{/if}}
+                    </p>
+                </div>
+                 <div class="row">
+                    <div class="col-md-12">
+                        {{#with customerInfo}}
+                            <ul class="list-inline">
+                                {{{fields}}}
+                            </ul>
+                        {{/with}}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="voucherId"}}
+                </div>
+                {{#if isTerm}}
+                    <div class="col-md-2">
+                        {{> afQuickField name="termId" options=termOption value=termId}}
+                    </div>
+                {{/if}}
+                <div class="col-md-2">
+                    {{> afQuickField name="invoiceDate"}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="dueDate" value=dueDate}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="stockLocationId"}}
+                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+                </div>
+
+            </div>
+            <div class="col-md-12 well">
+                <!--Item Temporary-->
+                {{> Pos_invoiceItems itemsCollection=itemsCollection currentItemsCollection=currentItemsCollection}}
+            </div>
+            {{closeSwal}}
+            <!-- closing swal -->
+            <div class="row">
+                <div class="col-sm-12 pull-right">
+                    <!--{{> formFooterWithButton}}-->
+                    {{#formFooter}}
+                        <button type="submit" class="btn btn-primary update-invoice" {{disabledSubmitBtn}}>
+                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                        </button>
+                        <button type="reset" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                        </button>
+                    {{/formFooter}}
+                </div>
+            </div>
+            <!--<div class="row">-->
+            <!--<div class="col-md-6" id="main">-->
+            <!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
+            <!--<div class="panel panel-default">-->
+            <!--<div class="panel-heading" role="tab" id="headingTwo">-->
+            <!--<h4 class="panel-title">-->
+            <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"-->
+            <!--href="#customerInfo" aria-expanded="false" aria-controls="collapseTwo">-->
+            <!--Customer Information-->
+            <!--</a>-->
+            <!--</h4>-->
+            <!--</div>-->
+            <!--<div id="customerInfo" class="panel-collapse collapse" role="tabpanel"-->
+            <!--aria-labelledby="headingTwo">-->
+            <!--<div class="panel-body">-->
+            <!--{{>infoTab data=customerInfo info="Customer"}}-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+
+            <!--</div>-->
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Memo
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    <!--<div class="col-md-3">-->
+                                    {{> afQuickField name="des"}}
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Show-->
+<template name="Pos_invoiceShow">
+    <div class="box-body">
+        <div class="container-fluid">
+            <div class="col-md-2 pull-left">
+                <br>
+                <a class="print-invoice-show btn btn-primary"><i class="fa fa-print"></i>Print</a>
+            </div>
+        </div>
+        <div class="container" id="to-print">
+            {{#with company}}
+                    <div class="col-xs-12">
+                        <h3 class="text-center">{{khName}}</h3>
+                        <h4 class="text-center">{{enName}}</h4>
+                        <h5 class="text-center">{{khAddress}}</h5>
+                        <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                        <br>
+                    </div>
+            {{/with}}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-6 pull-left">
+                            <h2>INVOICE</h2>
+                        </div>
+                        <div class="col-xs-6 pull-left">
+                            <h3 class="pull-right">#{{_id}}</h3>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4" style="padding: 10px;">
+                            <strong>Customer: </strong> {{customer}}<br>
+                            <strong>Staff: </strong> {{staff}}<br>
+                            <span><strong>Invoice Date: </strong>{{moFormat invoiceDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
+                            <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
+                            <span><strong>Status: </strong>{{{colorizeStatus status}}}
+                                , <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="">
+                        <div class="">
+                            <h3><strong>ITEMS SUMMARY</strong></h3>
+                            <hr>
+                        </div>
+                        <div class="">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <td><strong>Item</strong></td>
+                                        <td class="text-center"><strong>Qty</strong></td>
+                                        <td class="text-right"><strong>Price</strong></td>
+                                        <td class="text-right"><strong>Amount</strong></td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                    {{#each item in items}}
+                                        <tr>
+                                            <td><a href="#">{{item.name}}</a></td>
+                                            <td class="text-center">{{item.qty}}</td>
+                                            <td class="text-right">${{item.price}}</td>
+                                            <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
+                                        </tr>
+                                    {{/each}}
+                                    <tr>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line text-right"><strong>Total</strong></td>
+                                        <td class="no-line text-right">${{numFormat total '0,0.00'}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<template name="listSaleOrder">
+    <table class="table table-stripe table-responsive">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Remain Qty</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#if hasSaleOrders}}
+            {{#each saleOrder in saleOrders}}
+                <tr class="sale-doc">
+                    <td><a href="">{{saleOrder._id}}</a></td>
+                    <td>{{moFormat saleOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>
+                    <td>{{saleOrder._customer.name}}</td>
+                    <td>{{numFormat saleOrder.total '0,0.00'}}</td>
+                    <td>{{saleOrder.sumRemainQty}}</td>
+                    <td>{{saleOrder.status}}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th style="background: teal; color: #fff;">Item</th>
+                    <th style="background: teal; color: #fff;">Qty</th>
+                    <th style="background: teal; color: #fff;">Price</th>
+                    <th style="background: teal; color: #fff;">Amount</th>
+                    <th style="background: teal; color: #fff;">Remain QTY</th>
+                </tr>
+                {{#each saleOrder.items}}
+                    <tr class="sale-item-parents">
+                        <td><span class="hidden saleId">{{saleOrder._id}}</span></td>
+                        <td>{{getItemName itemId}}</td>
+                        <td>{{qty}}</td>
+                        <td>{{price}}</td>
+                        <td>{{amount}}</td>
+                        <td><input type="text" class="remain-qty" value="{{remainQty}}"></td>
+                        <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
+                    </tr>
+                {{/each}}
+            {{/each}}
+        {{else}}
+            <h4>
+                <bold>No sale orders available..</bold>
+            </h4>
+        {{/if}}
+        </tbody>
+    </table>
+</template>

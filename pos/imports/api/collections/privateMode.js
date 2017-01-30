@@ -1,0 +1,1 @@
+export const PrivateMode = new Mongo.Collection('pos_privateMode');

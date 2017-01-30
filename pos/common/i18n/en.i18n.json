@@ -1,0 +1,754 @@
+{
+  "pos": {
+    "sidebarMenu": {
+      "home": "Home",
+      "item": "Item",
+      "customer": "Customer",
+      "prepaidOrder": "Paid to Order",
+      "order": "Sale Order",
+      "purchaseOrder": "Purchase Order",
+      "category": "Category",
+      "paymentGroup": "Payment Group",
+      "vendor": "Vendor",
+      "rep": "Representative",
+      "stockLocation": "Stock Location",
+      "invoice": "Invoice",
+      "enterBill": "Enter Bill",
+      "lendingStock": "Lending Stock",
+      "exchangeRingPull": "Exchange Ring Pull",
+      "ringPullTransfer": "Ring Pull Transfer",
+      "itemPriceForCustomer": "Special Price For Customer",
+      "unpaidInvoiceOverdue": "Unpaid Invoice Overdue"
+    },
+    "home": {
+      "title": "Home",
+      "info": "Welcome to POS!"
+    },
+    "item": {
+      "title": "Item",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "photo": {
+          "label": "Photo"
+        }
+      }
+    },
+    "customer": {
+      "title": "Customer",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "telephone": {
+          "label": "Telephone"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "branchId": {
+          "label": "Branch"
+        },
+        "termId": {
+          "label": "Term"
+        },
+        "paymentType": {
+          "label": "Payment Type"
+        },
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroupId": {
+          "label": "Payment Group"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
+        },
+        "creditLimit": {
+          "label": "Credit Limit"
+        }
+      }
+    },
+    "order": {
+      "title": "Sale Order",
+      "invoiceAction": "invoice",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "prepaidOrder": {
+      "title": "Paid to Order",
+      "invoiceAction": "Bill",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "purchaseOrder": {
+      "title": "Purchase Order",
+      "invoiceAction": "invoice",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "customerReport": {
+      "title": "Customer Report"
+    },
+    "orderReport": {
+      "title": "Customer Report"
+    },
+    "category": {
+      "title": "Category",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "level": {
+          "label": "Level"
+        },
+        "parent": {
+          "label": "Parent"
+        },
+        "parentId": {
+          "label": "Parent"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "paymentGroup": {
+      "title": "Payment Group",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "numberOfDay": {
+          "label": "Number of day"
+        }
+      }
+    },
+    "vendor": {
+      "title": "Vendor",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "telephone": {
+          "label": "Telephone"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "termId": {
+          "label": "Term"
+        },
+        "paymentType": {
+          "label": "Payment Type"
+        },
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroupId": {
+          "label": "Payment Group"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
+        }
+      }
+    },
+    "rep": {
+      "title": "Representative",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "telephone": {
+          "label": "Telephone"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "branchId": {
+          "label": "Branch"
+        },
+        "startDate": {
+          "label": "Start Date"
+        },
+        "position": {
+          "label": "Position"
+        },
+        "salary": {
+          "label": "Salary"
+        },
+        "status": {
+          "label": "Status"
+        }
+      }
+    },
+    "stockLocation": {
+      "title": "Stock Location",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "invoice": {
+      "title": "Invoice",
+      "invoiceAction": "invoice",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "invoiceDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "receivePayment": {
+      "title": "Receive Payment"
+    },
+    "enterBill": {
+      "title": "Enter Bill",
+      "invoiceAction": "Enter Bill",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "enterBillDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "receiveItem": {
+      "title": "Receive Item",
+      "invoiceAction": "Receive Item",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "lostQty":{
+          "label": "Lost Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "enterBillDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "custom": {
+      "saveAndPrint": "Save & Print",
+      "pay": "Pay"
+    },
+    "locationTransfer": {
+      "title": "Location Transfer",
+      "invoiceAction": "Location Transfer",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "invoiceDate": {
+          "label": "Date"
+        },
+        "fromUserId": {
+          "label": "From User"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "toUserId": {
+          "label": "To User"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "lendingStock": {
+      "title": "Lending Stock",
+      "invoiceAction": "Lending Stock",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "lendingStockDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "exchangeRingPull": {
+      "title": "Exchange Ring Pull",
+      "invoiceAction": "Exchange Ring Pull",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "exchangeRingPullDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "companyExchangeRingPull": {
+      "title": "Company Exchange Ring Pull",
+      "invoiceAction": "Company Exchange Ring Pull",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "companyExchangeRingPullDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "ringPullTransfer": {
+      "title": "Ring Pull Transfer",
+      "invoiceAction": "Ring Pull Transfer",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "ringPullTransferDate": {
+          "label": "Date"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "fromBranchId": {
+          "label": "From Branch"
+        },
+        "toBranchId":{
+          "label":"To Branch"
+        },
+        "fromUserId": {
+          "label": "From User"
+        },
+        "toUserId":{
+          "label":"To User"
+        }
+      }
+    },
+    "exchangeGratis": {
+      "title": "Exchange Gratis",
+      "invoiceAction": "Exchange Gratis",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "itemPriceForCustomer": {
+      "title": "Special Price For Customer"
+    },
+    "accountMapping": {
+      "title": "Account Mapping"
+    },
+    "stockAndAccountMapping":{
+      "title":"Stock And Account Mapping"
+    },
+    "penalty":{
+      "title":"Penalty"
+    }
+  }
+}

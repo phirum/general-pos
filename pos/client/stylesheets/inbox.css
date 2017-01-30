@@ -1,0 +1,8 @@
+
+.inbox-head {
+    background: none repeat scroll 0 0 #e3eaf3;
+    border-radius: 0 4px 0 0;
+    /*color: #fff;*/
+    min-height: 80px;
+    padding: 20px;
+}

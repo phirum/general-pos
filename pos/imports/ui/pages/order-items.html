@@ -1,0 +1,108 @@
+<!--Item Temporary-->
+<template name="Pos_orderItems">
+    <div class="container-fluid items-header">
+        <div class="row ">
+            <div class="col-md-2" align="center">
+                <label for="">Filter:</label>
+                <select name="item-filter" id="" style="background: white; color: #000000;">
+                    <option value="all">All</option>
+                    <option value="none-scheme">None Scheme</option>
+                    <option value="scheme">Scheme</option>
+                </select></div>
+            <div class="col-md-2" align="left">PRODUCT</div>
+            <div class="col-md-2" align="center">QTY</div>
+            <div class="col-md-2" align="center">PRICE</div>
+            <div class="col-md-2" align="center">AMOUNT</div>
+        </div>
+        {{#autoForm schema=schema id="Pos_orderItems"}}
+            <div class="row">
+                <div class="col-sm-4">
+                    {{> afQuickField name="itemId" label=false}}
+                </div>
+                <div class="col-sm-2">
+                    <div class="input-group">
+                        {{> afFieldInput name="qty" label=false }}
+                        <br>
+                        {{>unitConvert}}
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    {{> afQuickField name="price" value=price label=false}}
+                </div>
+                <div class="col-sm-3">
+                    {{> afQuickField name="amount" value=totalAmount label=false readonly=true}}
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+                </div>
+
+            </div>
+        {{/autoForm}}
+        <!--<hr>-->
+    </div>
+    <!--Reactive table-->
+    <div>
+        {{> reactiveTable settings=tableSettings}}
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="pull-right">Total:</div>
+            </div>
+            <div class="col-sm-4">
+                {{> afQuickField name="total" value=total label=false readonly="true"}}
+            </div>
+        </div>
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_orderItemsAction">
+    <ul class="list-inline">
+        <!--<li><a href="#" class="js-update-item"><i class="fa fa-pencil"></i></a></li>-->
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
+</template>
+
+<!--Edit Item-->
+<template name="Pos_orderItemsEdit">
+    {{#autoForm schema=schema id="Pos_orderItemsEdit" doc=data}}
+        <div class="row">
+            <div class="col-md-12">
+                {{> afQuickField name="itemId" readonly="true"}}
+                {{> afQuickField name="qty"}}
+                {{> afQuickField name="price"}}
+                {{> afQuickField name="amount" value=amount readonly="true"}}
+            </div>
+        </div>
+
+        {{> formFooterWithButton}}
+    {{/autoForm}}
+</template>
+<template name="unitConvert">
+    <div class="input-group-btn">
+        <div class="btn-group" role="group">
+            <div class="dropdown dropdown-lg">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                   aria-expanded="false"><span class="text-blue"><i class="fa fa-exchange"></i></span></a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-form-shadow" role="menu">
+                    <h4 class="text-blue"><i class="fa fa-exchange"></i> Unit Convert</h4>
+                    <hr>
+                    <form role="form" action="javascript:;" method="post" id="login-form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="email" class="sr-only">Selling Unit</label>
+                            {{>afFieldInput name="baseUnit" class="form-control"}}
+                            <br>
+                            <!--<input type="email" name="email" id="email" class="form-control" placeholder="somebody@example.com">-->
+                        </div>
+                        <div class="form-group">
+                            <br>
+                            <label for="key" class="sr-only">Convert Qty</label>
+                            {{>afFieldInput name="qtyConvert" placeholder="Convert Amount" class="form-control"}}
+                            <!--<input type="password" name="key" id="key" class="form-control" placeholder="Password">-->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>

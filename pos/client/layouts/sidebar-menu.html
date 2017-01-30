@@ -1,0 +1,601 @@
+<template name="Pos_sidebarMenu">
+    <li class="{{isActiveRoute name='pos.home'}}">
+        <a href="{{pathFor 'pos.home'}}">
+            <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
+        </a>
+    </li>
+    {{#if isInRole 'setting' 'Pos'}}
+        <li class="{{isActiveRoute name='pos.adminDashboard'}}">
+            <a href="{{pathFor 'pos.adminDashboard'}}">
+                <i class="fa fa-tachometer"></i> <span>Admin Dashboard</span>
+            </a>
+        </li>
+    {{/if}}
+    <!--Data-->
+    {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
+        <li class="treeview active">
+            <a href="#">
+                <i class=""></i>
+                <span>CUSTOMER</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu menu-open" style="display: block;">
+                <li class="{{isActiveRoute name='pos.customer'}}">
+                    <a href="{{pathFor 'pos.customer'}}">
+                        <i class="fa fa-male"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.order'}}">
+                    <a href="{{pathFor 'pos.order'}}">
+                        <i class="fa fa-shopping-cart"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.invoice'}}">
+                    <a href="{{pathFor 'pos.invoice'}}">
+                        <i class="fa fa-file-text"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.groupInvoiceList'}}">
+                    <a href="{{pathFor 'pos.groupInvoiceList'}}">
+                        <i class="fa fa-list-alt"></i> <span>Group Invoice List</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.receivePayment'}}">
+                    <a href="{{pathFor 'pos.receivePayment'}}">
+                        <i class="fa fa-money"></i> <span>Receive Payment</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.paymentTransactionList'}}">
+                    <a href="{{pathFor 'pos.paymentTransactionList'}}">
+                        <i class="fa fa-exchange"></i> <span>Payment Transaction</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class=""></i>
+                <span>VENDOR</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.vendor'}}">
+                    <a href="{{pathFor 'pos.vendor'}}">
+                        <i class="fa fa-male" aria-hidden="true"></i> <span>Vendor</span>
+                    </a>
+                </li>
+
+
+                <li class="{{isActiveRoute name='pos.enterBill'}}">
+                    <a href="{{pathFor 'pos.enterBill'}}">
+                        <i class="fa fa-file-text" aria-hidden="true"></i>
+                        <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.groupBillList'}}">
+                    <a href="{{pathFor 'pos.groupBillList'}}">
+                        <i class="fa fa-list-alt" aria-hidden="true"></i> <span>Group Bill List</span>
+                    </a>
+                </li>
+                <!--<li class="{{isActiveRoute name='pos.prepaidOrder'}}">
+				<a href="{{pathFor 'pos.prepaidOrder'}}">
+					<i class="fa fa-cart-arrow-down" aria-hidden="true"></i> <span>Prepaid Order</span>
+				</a>
+			</li>-->
+                <li class="{{isActiveRoute name='pos.payBill'}}">
+                    <a href="{{pathFor 'pos.payBill'}}">
+                        <i class="fa fa-money"></i> <span>Pay Bill</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.payBillTransactionList'}}">
+                    <a href="{{pathFor 'pos.payBillTransactionList'}}">
+                        <i class="fa fa-exchange"></i> <span>PayBill Transaction</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.lendingStock'}}">
+                    <a href="{{pathFor 'pos.lendingStock'}}">
+                        <i class="fa fa-share-square-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.receiveItem'}}">
+                    <a href="{{pathFor 'pos.receiveItem'}}">
+                        <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i>
+                        <span>Receive Item</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-database" aria-hidden="true"></i>
+                <span>Data</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.transferMoney'}}">
+                    <a href="{{pathFor 'pos.transferMoney'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <span>Transfer Money</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.transferMoneyRequest'}}">
+                    <a href="{{pathFor 'pos.transferMoneyRequest'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <span>Transfer Money Request</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.locationTransfer'}}">
+                    <a href="{{pathFor 'pos.locationTransfer'}}">
+                        <i class="fa fa-compress" aria-hidden="true"></i>
+                        <span>Location Transfer</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.confirmTransferLocation'}}">
+                    <a href="{{pathFor 'pos.confirmTransferLocation'}}">
+                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <span>Location Transfers Request</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.ringPullTransfer'}}">
+                    <a href="{{pathFor 'pos.ringPullTransfer'}}">
+                        <i class="fa fa-life-ring" aria-hidden="true"></i>
+                        <span>Ring Pull Transfer</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.ringPullTransferRequest'}}">
+                    <a href="{{pathFor 'pos.ringPullTransferRequest'}}">
+                        <i class="fa fa-life-ring" aria-hidden="true"></i>
+                        <span>Ring Pull Transfer Request</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.exchangeRingPull'}}">
+                    <a href="{{pathFor 'pos.exchangeRingPull'}}">
+                        <i class="fa fa-building-o" aria-hidden="true"></i>
+                        <span>Exchange Ring Pull</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.companyExchangeRingPull'}}">
+                    <a href="{{pathFor 'pos.companyExchangeRingPull'}}">
+                        <i class="fa fa-building" aria-hidden="true"></i>
+                        <span>Company Exchange Ring Pull</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.exchangeGratis'}}">
+                    <a href="{{pathFor 'pos.exchangeGratis'}}">
+                        <i class="fa fa-gift" aria-hidden="true"></i>
+                        <span>Exchange Gratis</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    {{/if}}
+
+    <!--Report-->
+    {{#if isInRole 'reporter' 'Pos'}}
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                <span>REPORT</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="header">
+                    <a href="{{pathFor 'pos.mainReport'}}">
+                        <i class="fa fa-file-o"></i>
+                        <span>MAIN</span>
+                    </a>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Sale Report</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'group-sale-report' 'pos'}}
+                            <li>
+                                <a href="{{groupInvoice}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Sale Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-Balance-report' 'pos'}}
+
+                            <li>
+                                <a href="{{groupBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Balance Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-by-customer-report' 'Pos'}}
+                            <li>
+                                <a href="{{invoiceByCustomer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale By Customer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-by-item-report' 'Pos'}}
+
+                            <li>
+                                <a href="{{invoiceByItem}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale By Item</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'total-sale-report' 'Pos'}}
+                            <li>
+                                <a href="{{invoiceSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Total Sale</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-order-report' 'Pos'}}
+                            <li>
+                                <a href="{{saleOrder}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale Order</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Customer & A/R</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerDebtTracking}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Customer History</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-by-customer-report' 'Pos'}}
+                            <li>
+                                <a href="{{termBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid by Customer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-total-sale-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupInvoice}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Total Sale</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-balance-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Balance Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'total-credit-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerTotalCredit}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Total Credit</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}
+                            <li>
+                                <a href="{{unpaidInvoiceOverdue}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid Invoice Overdue</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}
+                            <li>
+                                <a href="{{unpaidGroupInvoiceOverdue}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid Group Invoice <br>&nbsp;Overdue</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'receive-payment-report' 'Pos'}}
+                            <li>
+                                <a href="{{receivePayment}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Receive Payment</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Ring Pull</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'ring-pull-exchange-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeRingPull}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Exchange</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'ring-pull-to-khb-report' 'Pos'}}
+                            <li>
+                                <a href="{{companyExchangeRingPull}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull To KHB</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'exchange-ring-pull-ending-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeRingPullStockBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Exchange Ringpull Ending </span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'ring-pull-transfer-report' 'Pos'}}
+                            <li>
+                                <a href="{{ringPullTransfer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Transfer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Stock Report</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'stock-transfer-report' 'Pos'}}
+                            <li>
+                                <a href="{{locationTransfer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Transfer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-ending-report' 'Pos'}}
+                            <li>
+                                <a href="{{stockBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Ending</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-detail-report' 'Pos'}}
+                            <li>
+                                <a href="{{stockDetail}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Detail</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-borrow-report' 'Pos'}}
+                            <li>
+                                <a href="{{lendingStock}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Borrow</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Vendor</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'enter-bill-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{bill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'enter-bill-by-item-report' 'Pos'}}
+                            <li>
+                                <a href="{{billByItem}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill By Item</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'enter-bill-by-vendor-report' 'Pos'}}
+                            <li>
+                                <a href="{{billByVendor}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill By Vendor</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-enter-bill-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupBill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Enter Bill</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'pay-enter-bill-report' 'Pos'}}
+                            <li>
+                                <a href="{{payEnterBill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Pay Enter Bill</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'prepaid-order-report' 'Pos'}}
+                            <li>
+                                <a href="{{prepaidOrder}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Prepaid Order</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'prepaid-order-detail-report' 'Pos'}}
+                            <li>
+                                <a href="{{prepaidOrderDetail}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Prepaid Order Detail</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Data</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'exchange-gratis-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeGratis}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Exchange Gratis</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'receive-item-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{receiveItemSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Receive Item Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'transfer-money-report' 'Pos'}}
+                            <li>
+                                <a href="{{transferMoney}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Transfer Money</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    {{/if}}
+
+    <!--Settings-->
+    {{#if isInRole 'setting' 'Pos'}}
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-cogs"></i>
+                <span>SETTING</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.rep'}}">
+                    <a href="{{pathFor 'pos.rep'}}">
+                        <i class="fa fa-group"></i> <span>Reps</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='core.exchange'}}">
+                    <a href="{{pathFor 'core.exchange'}}">
+                        <i class="fa fa-money"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.categroy'}}">
+                    <a href="{{pathFor 'pos.category'}}">
+                        <i class="fa fa-sitemap"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.unit'}}">
+                    <a href="{{pathFor 'pos.unit'}}">
+                        <i class="fa fa-beer"></i> <span>Unit</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.item'}}">
+                    <a href="{{pathFor 'pos.item'}}">
+                        <i class="fa fa-list-ul"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.itemPriceForCustomer'}}">
+                    <a href="{{pathFor 'pos.itemPriceForCustomer'}}">
+                        <i class="fa fa-usd"></i> <span>{{_ "pos.sidebarMenu.itemPriceForCustomer"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.quantityRangeMapping'}}">
+                    <a href="{{pathFor 'pos.quantityRangeMapping'}}">
+                        <i class="fa fa-usd"></i> <span>Quantity Range Mapping</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.targetItem'}}">
+                    <a href="{{pathFor 'pos.targetItem'}}">
+                        <i class="fa fa-usd"></i> <span>Target Item</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.term'}}">
+                    <a href="{{pathFor 'pos.term'}}">
+                        <i class="fa fa-angle-right"></i> <span>Term</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.paymentGroup'}}">
+                    <a href="{{pathFor 'pos.paymentGroup'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.creditValidation'}}">
+                    <a href="{{pathFor 'pos.creditValidation'}}">
+                        <i class="fa fa-angle-right"></i> <span>Credit Validation</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.whiteListCustomer'}}">
+                    <a href="{{pathFor 'pos.whiteListCustomer'}}">
+                        <i class="fa fa-angle-right"></i> <span>White List Customer</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.penalty'}}">
+                    <a href="{{pathFor 'pos.penalty'}}">
+                        <i class="fa fa-angle-right"></i> <span>Penalty</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.accountIntegrationSetting'}}">
+                    <a href="{{pathFor 'pos.accountIntegrationSetting'}}">
+                        <i class="fa fa-angle-right"></i> <span>Account Integrated</span>
+                    </a>
+                </li>
+                <!--<li class="{{isActiveRoute name='pos.accountMapping'}}">-->
+                <!--<a href="{{pathFor 'pos.accountMapping'}}">-->
+                <!--<i class="fa fa-angle-right"></i> <span>Account Mapping</span>-->
+                <!--</a>-->
+                <!--</li>-->
+                <li class="{{isActiveRoute name='pos.stockLocation'}}">
+                    <a href="{{pathFor 'pos.stockLocation'}}">
+                        <i class="fa fa-tasks" aria-hidden="true"></i>
+                        <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.stockAndAccountMapping'}}">
+                    <a href="{{pathFor 'pos.stockAndAccountMapping'}}">
+                        <i class="fa fa-angle-right"></i> <span>Stock Mapping</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.accountMapping'}}">
+                    <a href="{{pathFor 'pos.accountMapping'}}">
+                        <i class="fa fa-angle-right"></i> <span>Account Mapping</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    {{/if}}
+</template>

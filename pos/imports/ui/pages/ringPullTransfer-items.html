@@ -1,0 +1,80 @@
+<!--Item Temporary-->
+<template name="Pos_ringPullTransferItems">
+    <div class="container-fluid items-header">
+        <div class="row ">
+            <!--<div class="col-md-2" align="center">
+                <label for="">Filter:</label>
+                <select name="item-filter" id="" style="border: none;background: white; color: #000000;">
+                    <option value="all">All</option>
+                    <option value="none-scheme">None Scheme</option>
+                    <option value="scheme">Scheme</option>
+                </select></div>-->
+            <div class="col-md-6" align="left">PRODUCT</div>
+            <div class="col-md-5" align="center">QTY</div>
+            <div class="col-md-2 hidden" align="center">PRICE</div>
+            <div class="col-md-3 hidden" align="center">AMOUNT</div>
+        </div>
+        {{#if notActivatedSaleOrder}}
+            {{#autoForm schema=schema id="Pos_ringPullTransferItems"}}
+                <div class="row">
+                    <div class="col-sm-6">
+                        {{> afQuickField name="itemId" label=false}}
+                    </div>
+                    <div class="col-sm-5">
+                        {{> afQuickField name="qty" label=false}}
+                    </div>
+                   <div class="col-sm-2 hidden">
+                        {{> afQuickField name="price" label=false}}
+                    </div>
+                    <div class="col-sm-3 hidden">
+                        {{> afQuickField name="amount" value=amount label=false readonly=true}}
+                    </div>
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-default js-add-item" {{disabledAddItemBtn}}>+</button>
+                    </div>
+
+                </div>
+            {{/autoForm}}
+        {{/if}}
+        <!--<hr>-->
+    </div>
+
+    <!--Reactive table-->
+    <div class="ringPullTransfer-body-shadow">
+        {{> reactiveTable settings=tableSettings}}
+        <div class="row hidden">
+            <div class="col-sm-8">
+                <div class="pull-right">Total:</div>
+            </div>
+            <div class="col-sm-4">
+                {{> afQuickField name="total" value=total label=false readonly="true"}}
+            </div>
+        </div>
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_ringPullTransferItemsAction">
+    <ul class="list-inline">
+        {{#if notActivatedSaleOrder}}
+            <li><a href="#" class="js-update-item"><i class="fa fa-pencil"></i></a></li>
+        {{/if}}
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
+</template>
+
+<!--Edit Item-->
+<template name="Pos_ringPullTransferItemsEdit">
+    {{#autoForm schema=schema id="Pos_ringPullTransferItemsEdit" doc=data}}
+        <div class="row">
+            <div class="col-md-12">
+                {{> afQuickField name="itemId" readonly="true"}}
+                {{> afQuickField name="qty"}}
+                {{> afQuickField name="price" class="hidden"}}
+                {{> afQuickField name="amount" class="hidden" value=amount readonly="true"}}
+            </div>
+        </div>
+
+        {{> formFooterWithButton}}
+    {{/autoForm}}
+</template>
