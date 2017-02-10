@@ -337,6 +337,7 @@
     },
     "invoice": {
       "title": "Invoice",
+      "new":"New Invoice",
       "invoiceAction": "invoice",
       "schema": {
         "_id": {

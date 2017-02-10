@@ -714,3 +714,20 @@ PosRoutes.route('/exchangeRate', {
         parent: 'pos.home'
     }
 });
+
+// Invoice
+import '../imports/ui/pages/invoice.js';
+PosRoutes.route('/invoice/new', {
+    name: 'pos.invoiceNew',
+    title: __('pos.invoice.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_invoiceNew');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.invoice.new'),
+        icon: 'plus',
+        parent: 'pos.invoice'
+    }
+});
