@@ -336,7 +336,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receiveItem-return',doc.receiveItemDate);
+        reduceFromInventory(doc, 'receiveItem-return',moment().toDate());
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {

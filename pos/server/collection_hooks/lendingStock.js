@@ -120,7 +120,7 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
 LendingStocks.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventoryAndLendingStock(doc,doc.lendingStockDate);
+        returnToInventoryAndLendingStock(doc,moment().toDate());
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {

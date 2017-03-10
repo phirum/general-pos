@@ -175,7 +175,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
+        returnToInventory(doc, 'exchangeRingPull-return',moment().toDate());
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {

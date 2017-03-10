@@ -220,7 +220,7 @@ EnterBills.after.remove(function (userId, doc) {
                     doc.stockLocationId,
                     'reduce-from-bill',
                     doc._id,
-                    doc.enterBillDate
+                    moment().toDate()//doc.enterBillDate
                 );
                 inventoryIdList.push(id);
             });
@@ -239,7 +239,7 @@ EnterBills.after.remove(function (userId, doc) {
                     doc.stockLocationId,
                     'reduce-from-bill',
                     doc._id,
-                    doc.enterBillDate
+                    moment().toDate()
                 );
                 inventoryIdList.push(id);
             });
