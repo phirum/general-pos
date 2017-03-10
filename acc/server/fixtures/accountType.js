@@ -66,5 +66,12 @@ Meteor.startup(function () {
             }
         );
 
+        AccountType.insert(
+            {
+                _id: '60',
+                name: 'Cost Of Goods Sold'
+            }
+        );
+
     }
 });

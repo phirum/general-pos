@@ -99,12 +99,17 @@ SelectOptMethods.currencyClosing = new ValidatedMethod({
 
             var list = [];
             list.push({label: "(Select One)", value: ""});
-            var currencyBase = Setting.findOne().baseCurrency;
-            Currency.find({_id: {$not: currencyBase}})
-                .forEach(function (obj) {
-                    list.push({label: obj._id, value: obj._id});
-                });
-            return list;
+
+            var currencyDoc = Setting.findOne();
+            if(currencyDoc){
+                let currencyBase=currencyDoc.baseCurrency;
+                Currency.find({_id: {$not: currencyBase}})
+                    .forEach(function (obj) {
+                        list.push({label: obj._id, value: obj._id});
+                    });
+                return list;
+            }
+
         }
     }
 });

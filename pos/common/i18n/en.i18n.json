@@ -337,6 +337,7 @@
     },
     "invoice": {
       "title": "Invoice",
+      "new":"New Invoice",
       "invoiceAction": "invoice",
       "schema": {
         "_id": {
@@ -749,6 +750,27 @@
     },
     "penalty":{
       "title":"Penalty"
+    },
+    "exchangeRate": {
+      "title": "Exchange Rate",
+      "invoiceAction": "Exchange Rate",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "base": {
+          "label": "Base"
+        },
+        "symbol": {
+          "label": "Symbol"
+        },
+        "rates": {
+          "label": "Rates"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
   }
 }

@@ -57,13 +57,13 @@ tabularOpts.columns = [
     {
         data: "endId", title: "Status",
         render: function (val, type, doc) {
-            if (doc.endId > 0) {
+            if (doc.endId != "0") {
                 return "<p class='label label-success'>End Process</p>";
-            } else if (doc.closingId > 0) {
+            } else if (doc.closingId != "0") {
                 return "<p class='label label-warning'>Currency Closing</p>";
             } else if (doc.refFrom != undefined) {
                 return "<p class='label label-info'>" + doc.refFrom + "</p>";
-            } else if (doc.fixAssetExpenseId > 0) {
+            } else if (doc.fixAssetExpenseId != "0") {
                 return "<p class='label label-danger'>Depreciation</p>";
             } else {
                 return "<p class='label label-default'>Normal</p>";

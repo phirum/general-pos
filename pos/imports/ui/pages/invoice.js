@@ -187,13 +187,49 @@ newTmpl.onCreated(function () {
     this.isEnoughStock = new ReactiveVar();
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
+    this.itemList = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    Meteor.call('getItemList', (err, result) => {
+        this.itemList.set(result);
     });
 });
 // New
 newTmpl.events({
-    'change [name="stockLocationId"]'(event, instance){
+    'change #item-id'(){
+        debugger;
+        let testData;
+        let server = "http://localhost:3000/";
+        $.get(server + "publications/items/",
+            function (data) {
+                console.log(data);
+                testData = data;
+            });
+        console.log(testData);
+
+        /*callMethod("/publications/items", {}, function (data) {
+         console.log(data);
+         });*/
+        /*// Calling a method
+         $.ajax({
+         method: "post",
+         url: "/methods/add-all-arguments",
+         data: JSON.stringify([1, 2, 3]),
+         contentType: "application/json",
+         success: function (data) {
+         console.log(data); // 6
+         }
+         });
+
+         // Getting data from a publication
+         $.get("/publications/widgets", function (data) {
+         console.log(data.widgets.length); // 11
+         });*/
+
+    },
+    'change [name="stockLocationId"]'(event, instance)
+    {
         debugger;
         let stockLocationId = $(event.currentTarget).val();
 
@@ -207,14 +243,20 @@ newTmpl.events({
             });
         }
 
-    },
-    'click .add-new-customer'(event, instance) {
+    }
+    ,
+    'click .add-new-customer'(event, instance)
+    {
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
-    },
-    'click .go-to-receive-payment'(event, instance) {
+    }
+    ,
+    'click .go-to-receive-payment'(event, instance)
+    {
         alertify.invoice().close();
-    },
-    'change [name=customerId]'(event, instance) {
+    }
+    ,
+    'change [name=customerId]'(event, instance)
+    {
         if (event.currentTarget.value != '') {
             Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
@@ -224,8 +266,10 @@ newTmpl.events({
         }
         Session.set('totalOrder', undefined);
 
-    },
-    'change .enable-sale-order'(event, instance) {
+    }
+    ,
+    'change .enable-sale-order'(event, instance)
+    {
         itemsCollection.remove({});
         let customerId = $('[name="customerId"]').val();
         if ($(event.currentTarget).prop('checked')) {
@@ -244,18 +288,23 @@ newTmpl.events({
             FlowRouter.query.unset();
             $('.sale-order').removeClass('toggle-list');
         }
-    },
-    'click .toggle-list'(event, instance) {
+    }
+    ,
+    'click .toggle-list'(event, instance)
+    {
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
-    },
-    'change [name="termId"]'(event, instance) {
+    }
+    ,
+    'change [name="termId"]'(event, instance)
+    {
         let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             customerInfo._term.netDueIn = result.netDueIn;
             Session.set('customerInfo', customerInfo);
         });
     }
-});
+})
+;
 newTmpl.helpers({
     stockLocation() {
         try {
@@ -380,6 +429,13 @@ newTmpl.helpers({
             }
         } catch (e) {
         }
+    },
+    itemList(){
+        let instance = Template.instance();
+        if (instance.itemList.get() && instance.repOptions.get()) {
+            return instance.itemList.get();
+        }
+        return [];
     }
 });
 
@@ -883,3 +939,19 @@ AutoForm.addHooks([
     'Pos_invoiceNew',
     'Pos_invoiceUpdate'
 ], hooksObject);
+
+
+var server = "http://localhost:3000/";
+let callMethod = function (methodName, data, callback) {
+    $.ajax(server + methodName, {
+        method: "post",
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        success: function (data) {
+            callback(null, data);
+        },
+        error: function (data) {
+            callback(data.responseJSON);
+        }
+    });
+};

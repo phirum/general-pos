@@ -277,12 +277,15 @@ export const SelectOpts = {
 
         var list = [];
         list.push({label: "(Select One)", value: ""});
-        var currencyBase = Setting.findOne().baseCurrency;
-        Currency.find({_id: {$not: currencyBase}})
-            .forEach(function (obj) {
-                list.push({label: obj._id, value: obj._id});
-            });
-        return list;
+        var currencyDoc = Setting.findOne();
+        if (currencyDoc) {
+            var currencyBase = currencyDoc.baseCurrency
+            Currency.find({_id: {$not: currencyBase}})
+                .forEach(function (obj) {
+                    list.push({label: obj._id, value: obj._id});
+                });
+            return list;
+        }
     },
     paymentReceiveMethod: function () {
         let list = [];
@@ -369,17 +372,20 @@ export const SelectOptsReport = {
     exchange: function () {
         Meteor.subscribe('core.setting');
         var list = [];
-        var baseCurrency = Setting.findOne().baseCurrency;
-        list.push({label: "(Select One)", value: ""});
-        Exchange.find({base: baseCurrency}, {sort: {exDate: -1}})
-            .forEach(function (obj) {
-                list.push({
-                    label: moment(obj.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(obj.rates),
-                    value: obj._id
+        var currencyDoc = Setting.findOne();
+        if (currencyDoc) {
+            var baseCurrency = currencyDoc.baseCurrency;
+            list.push({label: "(Select One)", value: ""});
+            Exchange.find({base: baseCurrency}, {sort: {exDate: -1}})
+                .forEach(function (obj) {
+                    list.push({
+                        label: moment(obj.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(obj.rates),
+                        value: obj._id
+                    });
                 });
-            });
 
-        return list;
+            return list;
+        }
     }, exchangeNBC: function () {
         Meteor.subscribe('acc.exchangeNBC');
 
@@ -459,6 +465,39 @@ export const SelectOptsReport = {
 
         }
         return list;
+    },
+    transactionType: function () {
+        let list = [];
+        list.push({label: "(Select All)", value: "All"},
+            {label: "Invoice", value: "Invoice"},
+            {label: "Invoice SaleOrder", value: "Invoice-SaleOrder"},
+            {label: "Company Exchange RingPull", value: "CompanyExchangeRingPull"},
+            {label: "Invoice Gratis", value: "Invoice-Gratis"},
+            {label: "Enter Bill", value: "EnterBill"},
+            {label: "Exchange Gratis", value: "ExchangeGratis"},
+            {label: "Exchange RingPull", value: "ExchangeRingPull"},
+            {label: "Invoice Free", value: "invoice-free"},
+            {label: "Lending Stock", value: "LendingStock"},
+            {label: "Sale Order", value: "SaleOrder"},
+            {label: "Pay Bill", value: "PayBill"},
+            {label: "Prepaid Order", value: "PrepaidOrder"},
+            {label: "Prepaid Order-RI", value: "PrepaidOrder-RI"},
+            {label: "Lending Stock-RI", value: "LendingStock-RI"},
+            {label: "Gratis RI", value: "Gratis-RI"},
+            {label: "RingPull RI", value: "RingPull-RI"},
+            {label: "Exchange Gratis-RI", value: "ExchangeGratis-RI"},
+            {label: "Receive Payment", value: "ReceivePayment"},
+            {label: "Location Transfer From", value: "LocationTransferFrom"},
+            {label: "Location Transfer To", value: "LocationTransferTo"},
+            {label: "RingPull Transfer From", value: "RingPullTransferFrom"},
+            {label: "RingPull Transfer To", value: "RingPullTransferTo"},
+            {label: "Money Transfer From", value: "MoneyTransferFrom"},
+            {label: "Money Transfer To", value: "MoneyTransferTo"}
+        );
+
+        return list;
+
+
     }
 };
 

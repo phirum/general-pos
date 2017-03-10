@@ -25,7 +25,7 @@ FixAssetExpense.before.insert(function (userId, doc) {
     try {
         var depType = ConfigDep.findOne();
         var selectorList = {};
-        selectorList.date = {$lte: moment(doc.date).add(-1, 'months').toDate()};
+            selectorList.date = {$lte: moment(doc.date).add(-1, 'months').endOf('months').toDate()};
         selectorList.isDep = false;
         selectorList.branchId = doc.branchId;
         var depList = DepExpList.find(selectorList).fetch();

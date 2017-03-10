@@ -51,6 +51,16 @@ export const CashReport = new SimpleSchema({
                 return SelectOptsReport.exchange();
             }
         }
-
+    },
+    transactionType: {
+        type: String,
+        label: "Transaction Type",
+        autoform: {
+            type:"select2",
+            defaultValue: "All",
+            options: function () {
+                return SelectOptsReport.transactionType();
+            }
+        }
     }
 });

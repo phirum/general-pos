@@ -19,9 +19,9 @@ Meteor.startup(function () {
             chartAccountCompare: 'Retain Earning',
         });
 
-        MapClosing.insert({
-            chartAccountCompare: 'Cost Of Goods Sold',
-        });
+        // MapClosing.insert({
+        //     chartAccountCompare: 'Cost Of Goods Sold',
+        // });
 
 
 

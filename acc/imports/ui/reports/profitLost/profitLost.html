@@ -1,29 +1,52 @@
 <template name="acc_ProfitLostReport">
+
     <div class="box-body">
         {{#autoForm schema=schema id="acc_ProfitLostReport" action="ProfitLostReportGen" target="_blank"}}
             <div class="animated fadeIn">
-                <div class="row">
-                    <div class="col-md-6">
-                        {{> afQuickField name='branchId'}}
-                    </div>
-                    <div class="col-md-6">
-                        {{> afQuickField name='currencyId'}}
-                    </div>
+                <div class="box box-primary direct-chat direct-chat-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" style="font-family: 'Khmer OS Battambang'">ចុចទីនេះដើម្បីបង្ហាញ ឬ លាក់
+                            <span
+                                    class="font-head-panel-en">Form</span></h3>
 
-                    <div class="col-md-6">
-                        {{> afQuickField name='date'}}
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
 
-                    <div class="col-md-6">
-                        {{> afQuickField name='exchangeDate'}}
+                        <div class="row " style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                            <div class="col-md-6">
+                                {{> afQuickField name='branchId'}}
+                            </div>
+                            <div class="col-md-6">
+                                {{> afQuickField name='currencyId'}}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{> afQuickField name='date'}}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{> afQuickField name='exchangeDate'}}
+                            </div>
+
+                        </div>
+                        {{> afQuickField name='showNonActive' class="js-switch"}}
+
                     </div>
-
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        {{> formFooterWithButtonPrintFullscreenReport}}
+                    </div>
+                    <!-- /.box-footer-->
                 </div>
-                {{> afQuickField name='showNonActive' class="js-switch"}}
-                <button type="submit" class="btn btn-primary">{{fa "file-text"}} Generate</button>
-                <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
             </div>
         {{/autoForm}}
+        {{> acc_ProfitLostReportPrintData}}
+        {{> acc_ProfitLostForAllPrintData}}
     </div>
 </template>
 
@@ -101,7 +124,7 @@
                         <td></td>
                     </tr>
                     {{#each resultIncome}}
-                        <tr class="profitRow">
+                        <tr class="profitRow  report-pointer">
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
                             </td>
@@ -138,27 +161,42 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><b> Cost Of Good Sold Expense</b></td>
+                        <td><b> Cost Of Good Sold</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
+                    {{#each resultCOGS}}
+                        <tr class="profitRow  report-pointer">
+                            <td>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
+                            </td>
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                        </tr>
+
+
+                    {{/each}}
+
+
+
                     <tr>
-                        <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{cogs.accountDoc.code}}}:{{cogs.accountDoc.name}}</td>
-                        <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
-                        <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
-                        <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
-                        <td align="right">
-                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}
-                        </td>
-                        <td align="right">
-                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="left"><b>Total Cost Of Good Sold Expense</b></td>
+                        <td align="left"><b>Total Cost Of Good Sold</b></td>
                         <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
                         <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
                         <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
@@ -190,7 +228,7 @@
                         <td></td>
                     </tr>
                     {{#each resultExpense}}
-                        <tr class="profitRow">
+                        <tr class="profitRow  report-pointer">
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                             </td>
@@ -321,7 +359,7 @@
                         <td></td>
                     </tr>
                     {{#each resultIncome}}
-                        <tr class="profitRow">
+                        <tr class="profitRow  report-pointer">
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
                             </td>
@@ -349,21 +387,32 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><b>Cost Of Good Sold Expense</b></td>
+                        <td><b>Cost Of Good Sold</b></td>
                         <td></td>
                         <td></td>
                     </tr>
+
+                    {{#each resultCOGS}}
+                        <tr class="profitRow  report-pointer">
+                            <td>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
+                            </td>
+
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+
+                            {{#if currency}}
+                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+
+
+                        </tr>
+
+
+                    {{/each}}
                     <tr>
-                        <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{cogs.accountDoc.code}}}:{{cogs.accountDoc.name}}</td>
-                        <td align="right">
-                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}
-                        </td>
-                        <td align="right">
-                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="left"><b>Total Cost Of Good Sold Expense</b></td>
+                        <td align="left"><b>Total Cost Of Good Sold</b></td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
                         </td>
@@ -386,7 +435,7 @@
                         <td></td>
                     </tr>
                     {{#each resultExpense}}
-                        <tr class="profitRow">
+                        <tr class="profitRow  report-pointer">
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                             </td>
@@ -432,6 +481,446 @@
         {{/ReportContent}}
     {{else}}
         {{> loading}}
+    {{/if}}
+
+</template>
+
+<!--Run-->
+<template name="acc_ProfitLostReportPrintData">
+    {{#if rptInit}}
+        <!--#print-data-->
+        <div id="print-data">
+            <div class="sub-div display-on-print-div">
+
+                {{#if rptData}}
+                    {{#with rptData}}
+
+                        <!--Title-->
+                        {{#with title}}
+                            <div class="rpt-title">
+                                <div class="rpt-title-3x rpt-kh-muol">{{khName}}</div>
+                                <div class="rpt-title-2x">{{enName}}</div>
+                                <div class="rpt-title-2x"><u>Profit&Lost Report</u></div>
+                                <div class="rpt-title-2x">{{enAddress}}</div>
+                            </div>
+                        {{/with}}
+
+                        <!--Header-->
+                        {{#with header}}
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Branch:</strong> {{getBranch branchId}}</li>
+                                    </ul>
+                                </div>
+
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Date:</strong> {{date}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Exchange:</strong> {{exchangeData}}</li>
+                                    </ul>
+                                </div>
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Currency:</strong> {{currencyId}}</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        {{/with}}
+
+                        <!--Content-->
+                        <table class="sub-table table table-striped  table-hover diplay-on-print-table" border="1px">
+                            <thead class="sub-header diplay-on-print-head">
+                            <tr>
+
+                                <th>Account Name</th>
+                                <th>Current Month</th>
+                                <th>Year To Date</th>
+                            </tr>
+                            </thead>
+                            <tbody class="sub-header diplay-on-print-body">
+                            <tr>
+                                <td><b>Income</b></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {{#each resultIncome}}
+                                <tr class="transactionDetail report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
+                                    </td>
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+
+
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Income</b></td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal
+                                            grandTotalIncomeYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Cost Of Good Sold</b></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {{#each resultCOGS}}
+                                <tr class="transactionDetail report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
+                                    </td>
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+
+
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Cost Of Good Sold</b></td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left"><b>Gross Profit</b></td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal
+                                            grandTotalGrossProfitYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Expense</b></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {{#each resultExpense}}
+                                <tr class="transactionDetail report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
+                                    </td>
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Expense</b></td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal
+                                            grandTotalExpenseYearToDate}}</b>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align="left"><b>Profit and Lose</b></td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <!--Footer-->
+                    {{/with}}
+                    <!--Sign-->
+                    {{> ReportSignFooter}}
+                {{else}}
+                    <div class="text-center">
+                        {{> iconLoading size="fa-5x"}}
+                    </div>
+                {{/if}}
+
+            </div>
+        </div>
+    {{/if}}
+    <!--/#print-data-->
+</template>
+<template name="acc_ProfitLostForAllPrintData">
+
+    {{#if rptInit}}
+        <!--#print-data-->
+        <div id="print-data">
+            <div class="sub-div display-on-print-div">
+
+                {{#if rptData}}
+                    {{#with rptData}}
+
+                        <!--Title-->
+                        {{#with title}}
+                            <div class="rpt-title">
+                                <div class="rpt-title-3x rpt-kh-muol">{{khName}}</div>
+                                <div class="rpt-title-2x">{{enName}}</div>
+                                <div class="rpt-title-2x"><u>Profit&Lost Report</u></div>
+                                <div class="rpt-title-2x">{{enAddress}}</div>
+                            </div>
+                        {{/with}}
+
+                        <!--Header-->
+                        {{#with header}}
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Branch:</strong> {{getBranch branchId}}</li>
+                                    </ul>
+                                </div>
+
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Date:</strong> {{date}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Exchange:</strong> {{exchangeData}}</li>
+                                    </ul>
+                                </div>
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Currency:</strong> {{currencyId}}</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        {{/with}}
+
+                        <!--Content-->
+                        <table class="sub-table table table-striped  table-hover diplay-on-print-table" border="1px">
+                            <thead class="sub-header diplay-on-print-head">
+                            <tr>
+
+                                <th>Account Name</th>
+                                <th>Riel</th>
+                                <th>Dollar</th>
+                                <th>Bath</th>
+                                <th>Current Month</th>
+                                <th>Year To Date</th>
+                            </tr>
+                            </thead>
+                            <tbody class="sub-header diplay-on-print-body">
+                            <tr>
+                                <td><b>Income</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {{#each resultIncome}}
+                                <tr class="transactionDetail  report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
+                                    </td>
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Income</b></td>
+                                <td>R{{formatMoneyNormal grandTotalIncomeR}}</td>
+                                <td>${{formatMoneyNormal grandTotalIncomeUSD}}</td>
+                                <td>B{{formatMoneyNormal grandTotalIncomeB}}</td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b> Cost Of Good Sold</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            {{#each resultCOGS}}
+                                <tr class="transactionDetail  report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
+                                    </td>
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Cost Of Good Sold</b></td>
+                                <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
+                                <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
+                                <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left"><b>Gross Profit</b></td>
+                                <td>R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
+                                <td>${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
+                                <td>B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b> Expense</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {{#each resultExpense}}
+                                <tr class="transactionDetail  report-pointer">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
+                                    </td>
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                    {{#if currency}}
+                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                </tr>
+
+
+                            {{/each}}
+                            <tr>
+                                <td align="left"><b>Total Expense</b></td>
+                                <td>R{{formatMoneyNormal grandTotalExpenseR}}</td>
+                                <td>${{formatMoneyNormal grandTotalExpenseUSD}}</td>
+                                <td>B{{formatMoneyNormal grandTotalExpenseB}}</td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
+                                </td>
+                                <td align="right">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpenseYearToDate}}</b>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align="left"><b>Profit and Lose</b></td>
+                                <td>R{{formatMoneyNormal profitR}}</td>
+                                <td>${{formatMoneyNormal profitUSD}}</td>
+                                <td>B{{formatMoneyNormal profitB}}</td>
+                                <td align="right" style="text-decoration: overline">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
+                                </td>
+                                <td align="right" style="text-decoration: overline">
+                                    <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <!--Footer-->
+                    {{/with}}
+                    <!--Sign-->
+                    {{> ReportSignFooter}}
+                {{else}}
+                    <div class="text-center">
+                        {{> iconLoading size="fa-5x"}}
+                    </div>
+                {{/if}}
+
+            </div>
+        </div>
     {{/if}}
 
 </template>

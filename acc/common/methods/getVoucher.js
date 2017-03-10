@@ -9,8 +9,11 @@ import {moment} from  'meteor/momentjs:moment';
 import {Journal} from '../../imports/api/collections/journal';
 
 Meteor.methods({
-    acc_getVoucherId: function (currencyId, startDate, branchId) {
-        return Journal.findOne({currencyId: currencyId, journalDate: {$gte: startDate}, branchId: branchId}, {
+    acc_getVoucherId: function (currencyId, startDate, branchId, currentUser) {
+        return Journal.findOne({
+            currencyId: currencyId, journalDate: {$gte: startDate}, branchId: branchId,
+            createdBy: currentUser
+        }, {
             sort: {
                 journalDate: -1,
                 voucherId: -1

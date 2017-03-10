@@ -62,7 +62,6 @@ reportTpl.onCreated(function () {
     createNewAlertify('acc_cashReport');
     this.autorun(() => {
 
-        debugger;
         // Check form data
         if (formDataState.get()) {
             rptInitState.set(true);
@@ -87,7 +86,9 @@ reportTpl.onCreated(function () {
 
 tmplPrintData.helpers({
     rptInit(){
-        return rptInitState.get();
+        if (rptInitState.get() == true) {
+            return rptInitState.get();
+        }
     },
     rptData: function () {
         return rptDataState.get();
@@ -110,6 +111,7 @@ reportTpl.events({
         result.date= $('[name="date"]').val();
         result.currencyId= $('[name="currencyId"]').val();
         result.exchangeDate= $('[name="exchangeDate"]').val();
+        result.transactionType= $('[name="transactionType"]').val();
 
         if(result.exchangeDate==""){
             alertify.warning("Exchange is Required!!!");
@@ -122,101 +124,19 @@ reportTpl.events({
         Session.set('accountTypeIdSession', $(e.currentTarget).val());
     },
     'click .fullScreen'(event, instance){
-        // $('.sub-div').addClass('rpt-9 rpt-landscape-a4');
-        // $('.sub-table').addClass('rpt-9 rpt rpt-content');
-        // $('.sub-body').addClass('rpt rpt-content-body');
-        // $('.sub-header').addClass('rpt rpt-content-header');
-
-        $('.sub-div').removeClass('rpt-9 rpt-landscape-a4');
-        $('.sub-table').removeClass('rpt-9 rpt rpt-content');
-        $('.sub-body').removeClass('rpt-content-body');
-        $('.sub-header').removeClass('rpt-content-header');
-
-        $('.sub-div').addClass('rpt rpt-3x');
-        $('.sub-table').addClass('table table-hover');
-        $('.sub-body').addClass('rpt rpt-3x ');
-        $('.sub-header').addClass('rpt rpt-3x');
-
         alertify.acc_cashReport(fa('', ''), renderTemplate(tmplPrintData)).maximize();
     },
     'click .btn-print'(event, instance){
-        let opts = {
-            // debug: true,               // show the iframe for debugging
-            // importCSS: true,            // import page CSS
-            // importStyle: true,         // import style tags
-            // printContainer: true,       // grab outer container as well as the contents of the selector
-            // loadCSS: "path/to/my.css",  // path to additional css file - us an array [] for multiple
-            // pageTitle: "",              // add title to print page
-            // removeInline: false,        // remove all inline styles from print elements
-            // printDelay: 333,            // variable print delay; depending on complexity a higher value may be necessary
-            // header: null,               // prefix to html
-            // formValues: true            // preserve input/form values
-        };
-
-        $('.sub-div').removeClass('rpt rpt-3x');
-        $('.sub-table').removeClass('table table-hover');
-        $('.sub-body').removeClass('rpt rpt-3x ');
-        $('.sub-header').removeClass('rpt rpt-3x');
-
-        $('.sub-div').addClass('rpt rpt-9 rpt-portrait-a4');
-        $('.sub-table').addClass('rpt-9 rpt rpt-content-mix');
-        $('.sub-body').addClass('rpt-content-body');
-        $('.sub-header').addClass('rpt-content-header');
-
-
-        Meteor.setTimeout(function () {
-            $('#print-data').printThis();
-
-            Meteor.setTimeout(function () {
-                $('.sub-div').removeClass('rpt rpt-9 rpt-portrait-a4');
-                $('.sub-table').removeClass('rpt-9 rpt rpt-content-mix');
-                $('.sub-body').removeClass('rpt-content-body');
-                $('.sub-header').removeClass('rpt-content-header');
-
-
-                $('.sub-div').addClass('rpt rpt-3x');
-                $('.sub-table').addClass('table table-hover');
-                $('.sub-body').addClass('rpt rpt-3x');
-                $('.sub-header').addClass('rpt rpt-3x');
-            }, 2000);
-        }, 200)
-    },
-    'click .panel-heading'(e, t){
-        let $this = $('.clickable');
-        if (!$this.hasClass('panel-collapsed')) {
-            $this.parents('.panel').find('.panel-body').slideUp();
-            $this.addClass('panel-collapsed');
-            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
-        } else {
-            $this.parents('.panel').find('.panel-body').slideDown();
-            $this.removeClass('panel-collapsed');
-            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
-        }
+        $('#print-data').printThis();
     }
 });
 
-tmplPrintData.onDestroyed(function () {
-    // $('.sub-div').removeClass('rpt-9 rpt-landscape-a4');
-    // $('.sub-table').removeClass('rpt-9 rpt rpt-content');
-    // $('.sub-body').removeClass('rpt rpt-content-body');
-    // $('.sub-header').removeClass('rpt rpt-content-header');
-
-    $('.sub-div').removeClass('rpt-9 rpt-landscape-a4');
-    $('.sub-table').removeClass('rpt-9 rpt rpt-content');
-    $('.sub-body').removeClass('rpt-content-body');
-    $('.sub-header').removeClass('rpt-content-header');
-
-
-    $('.sub-div').addClass('rpt rpt-3x');
-    $('.sub-table').addClass('table table-hover');
-    $('.sub-body').addClass('rpt rpt-3x');
-    $('.sub-header').addClass('rpt rpt-3x');
-
-});
 
 
 reportTpl.onDestroyed(function () {
     formDataState.set(null);
+    rptDataState.set(null);
+    rptInitState.set(false);
 });
 
 

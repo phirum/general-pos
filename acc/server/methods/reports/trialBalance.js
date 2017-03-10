@@ -44,7 +44,7 @@ Meteor.methods({
       //Get Last Date Closing
       if (self.date != null) {
         selectorGetLastDate.closeDate = {
-          $lt: moment(self.date, "DD/MM/YYYY").toDate()
+          $lt: moment(self.date, "DD/MM/YYYY").startOf('days').toDate()
         };
       }
       if (self.currencyId != "All") {
@@ -62,7 +62,7 @@ Meteor.methods({
 
       //Parameter for Balance Last End Of Process
       if (lastDate != null) {
-        selectorGetLastBalance.closeDate = lastDate.closeDate;
+        selectorGetLastBalance.closeDate = {$gte: moment(lastDate.closeDate,"DD/MM/YYYY").startOf('days').toDate(), $lte: moment(lastDate.closeDate,"DD/MM/YYYY").endOf('days').toDate()};
       }
       if (self.currencyId != "All") {
         selectorGetLastBalance.currencyId = self.currencyId;
@@ -74,12 +74,12 @@ Meteor.methods({
       if (lastDate != null) {
         selector.journalDate = {
           $gte: moment(moment(lastDate.closeDate).format("DD/MM/YYYY"), "DD/MM/YYYY").add(1, 'days').toDate(),
-          $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+          $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate()
         };
 
       } else {
         selector.journalDate = {
-          $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+          $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate()
         };
       }
       if (self.currencyId != "All") {

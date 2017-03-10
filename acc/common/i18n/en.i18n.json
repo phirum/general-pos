@@ -34,7 +34,8 @@
       "cashFlowReport": "Cash Flow",
       "mapUserAndAccount": "Map User and Account",
       "cashReport": "Cash",
-      "profitLostComparationReport": "Profit Lost Comparation"
+      "profitLostComparationReport": "Profit Lost Comparation",
+      "transactionDetailReport": "Transaction Detail"
     },
     "home": {
       "title": "Home",
@@ -171,8 +172,8 @@
     "balanceSheetReport": {
       "title": "Balance Sheet",
       "income": "Income",
-      "Expense": "Expense",
-      "Account": "Account",
+      "expense": "Expense",
+      "account": "Account",
       "currentAsset":"Current Asset",
       "otherCurrentAsset":"Other Current Asset",
       "totalOtherCurrentAsset":"Total Other Current Asset",
@@ -188,6 +189,9 @@
       "totalOtherCurrentLiability": "Total Other Current Liability",
       "totalCurrentLiability": "Total Current Liability"
 
+    },
+    "transactionDetailReport": {
+      "title": "Transaction Detail"
     },
     "profitLostReport": {
       "title": "Profit Lost"

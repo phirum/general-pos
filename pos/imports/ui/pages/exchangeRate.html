@@ -1,0 +1,135 @@
+<!--Index-->
+<template name="Pos_exchangeRate">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--Action-->
+<template name="Pos_exchangeRateAction">
+    {{#columnAction align="right"}}
+        <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+    {{/columnAction}}
+</template>
+<!--Insert-->
+<template name="Pos_exchangeRateNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_exchangeRateNew" type="insert"}}
+            <div class="row">
+                <div class="col-md-4">
+                    {{> afQuickField name='base' value=baseCurrency._id readonly=true}}
+                    {{> afQuickField name='symbol' value=baseCurrency.symbol readonly=true}}
+                    {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
+                </div>
+                <div class="col-md-8">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Currency</th>
+                            <th>Rate</th>
+                            <th>Symbol</th>
+                        </tr>
+                        </thead>
+                        <tbody class="rates">
+                        {{#each otherCurrencies}}
+                            <tr>
+                                <td class="currency">{{_id}}</td>
+                                <td><input type="number" class="rate form-control"></td>
+                                <td class="symbol">{{symbol}}</td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Update-->
+<template name="Pos_exchangeRateEdit">
+    <div class="box-body">
+        {{#if Template.subscriptionsReady}}
+            {{#autoForm collection=collection id="Pos_exchangeRateEdit" doc=data type="update"}}
+                <div class="row">
+                    <div class="col-md-4">
+                        {{> afQuickField name='base' value=baseCurrency._id readonly=true}}
+                        {{> afQuickField name='symbol' value=baseCurrency.symbol readonly=true}}
+                        {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
+                    </div>
+                    <div class="col-md-8">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Currency</th>
+                                <th>Rate</th>
+                                <th>Symbol</th>
+                            </tr>
+                            </thead>
+                            <tbody class="rates">
+                            {{#each data.rates}}
+                                <tr>
+                                    <td class="currency">{{currency}}</td>
+                                    <td><input type="number" class="rate form-control" value={{rate}}></td>
+                                    <td class="symbol">{{symbol}}</td>
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                {{> formFooterWithButton}}
+            {{/autoForm}}
+        {{else}}
+            {{> loading}}
+        {{/if}}
+    </div>
+</template>
+
+<!--Show-->
+<template name="Pos_exchangeRateShow">
+    {{#if Template.subscriptionsReady}}
+        {{#with data}}
+            <dl class="dl-horizontal">
+                <dt>{{_ (i18nLabel "base")}} :</dt>
+                <dd>{{base}}</dd>
+                <dt>{{_ (i18nLabel "symbol")}} :</dt>
+                <dd>{{symbol}}</dd>
+            </dl>
+            <p class="text-center">{{_ (i18nLabel "rates")}} :</p>
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Currency</th>
+                    <th>Rate</th>
+                    <th>Symbol</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each rates}}
+                    <tr>
+                        <td>{{currency}}</td>
+                        <td>{{rate}}</td>
+                        <td>{{symbol}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        {{/with}}
+    {{else}}
+        {{> loading}}
+    {{/if}}
+</template>
+

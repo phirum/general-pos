@@ -12,8 +12,8 @@ Meteor.methods({
     getJournal: function (selector) {
         return Journal.findOne(selector);
     },
-    getJournalForLedger: function (voucherId, id) {
-        var data = Journal.findOne({voucherId: voucherId, _id: id});
+    getJournalForLedger: function (id) {
+        var data = Journal.findOne({_id: id});
         return data;
     }
 

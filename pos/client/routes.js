@@ -697,3 +697,37 @@ PosRoutes.route('/target-item', {
     }
 
 });
+
+// Exchange Rate
+import '../imports/ui/pages/exchangeRate.js';
+PosRoutes.route('/exchangeRate', {
+    name: 'pos.exchangeRate',
+    title: __('pos.exchangeRate.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_exchangeRate');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.exchangeRate.title'),
+        icon: 'users',
+        parent: 'pos.home'
+    }
+});
+
+// Invoice
+import '../imports/ui/pages/invoice.js';
+PosRoutes.route('/invoice/new', {
+    name: 'pos.invoiceNew',
+    title: __('pos.invoice.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_invoiceNew');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.invoice.new'),
+        icon: 'plus',
+        parent: 'pos.invoice'
+    }
+});

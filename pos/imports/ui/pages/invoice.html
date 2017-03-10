@@ -26,7 +26,7 @@
 <template name="Pos_invoiceNew">
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
-            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+            <div class="row">
                 <div class="col-md-3 ">
                     <div class="input-group">
                         <label for="email" class="input-group">Customer:<span style="color: red;">*</span></label>
@@ -35,45 +35,15 @@
                         {{>customerDropDown}}
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <br>
-                    <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
-                                                                                        class="sale-order btn btn-default">Sale
-                       Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
-                </div>
-
-                <div class="col-md-6">
-                    <p class="pull-right ">
-                    <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
-                    {{#if totalOrder.customerId}}
-                        <a class="btn btn-default text-center go-to-receive-payment"
-                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
-                            Receive Payment
-                        </a>
-                    {{/if}}
-                    </p>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        {{#with customerInfo}}
-                            <ul class="list-inline">
-                                {{{fields}}}
-                            </ul>
-                        {{/with}}
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
+                <!-- <div class="col-md-3">
+                     <br>
+                     <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
+                                                                                         class="sale-order btn btn-default">Sale
+                        Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                 </div>-->
                 <div class="col-md-2">
                     {{> afQuickField name="voucherId"}}
                 </div>
-                {{#if isTerm}}
-                    <div class="col-md-2">
-                        {{> afQuickField name="termId" options=termOption value=termId}}
-                    </div>
-                {{/if}}
                 <div class="col-md-2">
                     {{> afQuickField name="invoiceDate"}}
                 </div>
@@ -84,14 +54,66 @@
                     {{> afQuickField name="stockLocationId" value=stockLocation resetOnSuccess=false}}
                     {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    {{> afQuickField name="des"}}
+                </div>
                 <div class="col-md-2">
                     {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                 </div>
-
+                {{#if isTerm}}
+                    <div class="col-md-2">
+                        {{> afQuickField name="termId" options=termOption value=termId}}
+                    </div>
+                {{/if}}
             </div>
-            <div class="col-md-12 well">
-                <!--Item Temporary-->
-                {{> Pos_invoiceItems itemsCollection=itemsCollection}}
+            <div class="row well">
+                <div class="col-md-12 ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="item-barcode" placeholder="Barcode">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control" id="item-id">
+                                {{#each itemList}}
+                                    <option value="{{_id}}">{{name}} ({{_unit.name}})</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="item-qty" placeholder="Qty">
+                        </div>
+
+                    </div>
+                    <!--Item Temporary-->
+                    <!--{{> Pos_invoiceItems itemsCollection=itemsCollection}}-->
+                    <br>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th><b>Item</b></th>
+                            <th><b>Unit</b></th>
+                            <th><b>Price</b></th>
+                            <th><b>Qty</b></th>
+                            <th><b>Dis</b></th>
+                            <th><b>Amount</b></th>
+                            <th><b>Action</b></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Iphone 9</td>
+                            <td>unit</td>
+                            <td>5</td>
+                            <td>5.6$</td>
+                            <td>0</td>
+                            <td>28$</td>
+                            <td>28$</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="row">
                 <div class="col-sm-12 pull-right">
@@ -104,30 +126,6 @@
                             <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
                         </button>
                     {{/formFooter}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6" id="main">
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" id="headingTwo">
-                                <h4 class="panel-title">
-                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Memo
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="headingTwo">
-                                <div class="panel-body">
-                                    <!--<div class="col-md-3">-->
-                                    {{> afQuickField name="des"}}
-                                    <!--</div>-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         {{/autoForm}}
@@ -168,7 +166,7 @@
                     {{/if}}
                     </p>
                 </div>
-                 <div class="row">
+                <div class="row">
                     <div class="col-md-12">
                         {{#with customerInfo}}
                             <ul class="list-inline">
@@ -284,13 +282,13 @@
         </div>
         <div class="container" id="to-print">
             {{#with company}}
-                    <div class="col-xs-12">
-                        <h3 class="text-center">{{khName}}</h3>
-                        <h4 class="text-center">{{enName}}</h4>
-                        <h5 class="text-center">{{khAddress}}</h5>
-                        <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
-                        <br>
-                    </div>
+                <div class="col-xs-12">
+                    <h3 class="text-center">{{khName}}</h3>
+                    <h4 class="text-center">{{enName}}</h4>
+                    <h5 class="text-center">{{khAddress}}</h5>
+                    <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                    <br>
+                </div>
             {{/with}}
             <div class="row">
                 <div class="col-xs-12">
