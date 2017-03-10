@@ -156,7 +156,9 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
             Meteor.call('getEndOfProcess', selector, branchId,
                 selectorGetLastBalance, lastDate, doc.closeDate, doc._id, function (err, result) {
-                    console.log(result);
+                    if(err){
+                        console.log(err.message);
+                    }
                 });
         }
 
@@ -175,11 +177,9 @@ DateEndOfProcess.after.insert(function (userId, doc) {
         selectorNetIncome.exchangeDate = exchangeData._id;
         selectorNetIncome.date = "01/" + moment(doc.closeDate, "DD/MM/YYYY").format("MM/YYYY") + " - " + moment(doc.closeDate, "DD/MM/YYYY").format("DD/MM/YYYY");
 
-
         var data = Meteor.call("acc_profitLostForAll", selectorNetIncome);
 
         var selector = {};
-
         selector.date = doc.closeDate;
         selector.riel = math.round(data.profitR, 2);
         selector.baht = math.round(data.profitB, 2);
@@ -193,10 +193,11 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
         // month is december must convert Net Income to Retain Earning
         if (moment(doc.closeDate).format("MM") == 12) {
-            var netIncomeThisYear = NetInCome.find({year: year});
+            var netIncomeThisYear = NetInCome.find({year: year}).fetch();
             var riel = 0;
             var dollar = 0;
             var baht = 0;
+
             netIncomeThisYear.forEach(function (obj) {
                 riel += obj.riel;
                 dollar += obj.dollar;
@@ -280,6 +281,7 @@ DateEndOfProcess.after.insert(function (userId, doc) {
     } catch (err) {
         DateEndOfProcess.remove({_id: doc._id});
         Journal.remove({endId: doc._id});
+        NetInCome.remove({endId: doc._id});
         Closing.update({month: doc.month, year: doc.year}, {$set: {endId: ""}});
 
     }
@@ -290,7 +292,7 @@ CloseChartAccount.before.insert(function (userId, doc) {
 
     var date = moment(doc.closeDate, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
-    doc._id = idGenerator.genWithPrefix(CloseChartAccount, prefix, 6);
+    doc._id = idGenerator.genWithPrefix(CloseChartAccount, prefix, 9);
 
 });
 

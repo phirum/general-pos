@@ -75,7 +75,11 @@
                             <input type="text" class="form-control" id="item-barcode" placeholder="Barcode">
                         </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="item-id">
+                            <select class="form-control" id="item-id">
+                                {{#each itemList}}
+                                    <option value="{{_id}}">{{name}} ({{_unit.name}})</option>
+                                {{/each}}
+                            </select>
                         </div>
                         <div class="col-md-4">
                             <input type="text" class="form-control" id="item-qty" placeholder="Qty">

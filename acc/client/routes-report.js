@@ -141,11 +141,7 @@ AccRoutes.route('/currencyClosingReport', {
         ), this.register(
             'accCloseChartAccount',
             Meteor.subscribe('acc.closing')
-        ),
-            this.register(
-                'cpanel_exchange',
-                Meteor.subscribe('core.exchange')
-            );
+        );
     },
     action: function (params, queryParams) {
         Layout.main('acc_currencyClosingReport');
@@ -277,9 +273,6 @@ import '../imports/ui/reports/ledger/ledger';
 AccRoutes.route('/ledgerReport', {
     name: 'acc.ledgerReport',
     title: __('acc.ledgerReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
-    },
     action: function (params, queryParams) {
         Layout.main('acc_ledgerReport');
     },
@@ -293,12 +286,6 @@ AccRoutes.route('/ledgerReport', {
 
 AccRoutes.route('/ledgerReportGen', {
     name: 'acc.ledgerReportGen',
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'acc_Journal',
-            Meteor.subscribe('acc_Journal')
-        );
-    },
     action: function (params, queryParams) {
         Layout.report('acc_ledgerReportGen');
     }
@@ -310,10 +297,6 @@ import '../imports/ui/reports/cash/cash.js';
 AccRoutes.route('/cashReport', {
     name: 'acc.cashReport',
     title: __('acc.cashReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
-        this.register('acc.mapUserAndAccount', Meteor.subscribe('acc.mapUserAndAccount'));
-    },
     action: function (params, queryParams) {
         Layout.main('acc_cashReport');
     },
@@ -327,12 +310,6 @@ AccRoutes.route('/cashReport', {
 
 AccRoutes.route('/cashReportGen', {
     name: 'acc.cashReportGen',
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'acc_Journal',
-            Meteor.subscribe('acc_Journal')
-        );
-    },
     action: function (params, queryParams) {
         Layout.report('acc_cashReportGen');
     }
@@ -343,12 +320,6 @@ import '../imports/ui/reports/profitLost/profitLost';
 AccRoutes.route('/ProfitLostReport', {
     name: 'acc.ProfitLostReport',
     title: __('acc.profitLostReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'cpanel_exchange',
-            Meteor.subscribe('cpanel_exchange')
-        );
-    },
     action: function (params, queryParams) {
         Layout.main('acc_ProfitLostReport');
     },
@@ -376,16 +347,6 @@ import '../imports/ui/reports/trialBalance/trialBalance';
 AccRoutes.route('/trialBalanceReport', {
     name: 'acc.trialBalanceReport',
     title: __('acc.trialBalanceReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'cpanel_exchange',
-            Meteor.subscribe('cpanel_exchange')
-        );
-        this.register(
-            'acc.mapUserAndAccount',
-            Meteor.subscribe('acc.mapUserAndAccount')
-        );
-    },
     action: function (params, queryParams) {
         Layout.main('acc_trialBalanceReport');
     },
@@ -409,12 +370,6 @@ import '../imports/ui/reports/cashFlow/cashFlow';
 AccRoutes.route('/cashFlowReport', {
     name: 'acc.cashFlowReport',
     title: __('acc.cashFlowReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'cpanel_exchange',
-            Meteor.subscribe('cpanel_exchange')
-        );
-    },
     action: function (params, queryParams) {
         Layout.main('acc_cashFlowReport');
     },
@@ -439,12 +394,6 @@ import '../imports/ui/reports/profitLostComparation/profitLostComparation';
 AccRoutes.route('/profitLostComparationReport', {
     name: 'acc.profitLostComparationReport',
     title: __('acc.profitLostComparationReport.title'),
-    subscriptions: function (params, queryParams) {
-        this.register(
-            'cpanel_exchange',
-            Meteor.subscribe('cpanel_exchange')
-        );
-    },
     action: function (params, queryParams) {
         Layout.main('acc_ProfitLostReportComparation');
     },
@@ -460,5 +409,29 @@ AccRoutes.route('/profitLostComparationReportGen', {
     name: 'acc.profitLostComparationReportGen',
     action: function (params, queryParams) {
         Layout.report('acc_ProfitLostComparationReportGen');
+    }
+});
+
+
+//Transaction Detail
+import '../imports/ui/reports/transactionDetail/transactionDetail.js';
+AccRoutes.route('/transactionDetailReport', {
+    name: 'acc.transactionDetailReport',
+    title: __('acc.transactionDetailReport.title'),
+    action: function (params, queryParams) {
+        Layout.main('acc_transactionDetailReport');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Transaction Detail Report',
+        parent: 'acc.home'
+    }
+});
+
+AccRoutes.route('/transactionDetailReportGen', {
+    name: 'acc.transactionDetailReportGen',
+    action: function (params, queryParams) {
+        Layout.report('acc_transactionDetailReportGen');
     }
 });

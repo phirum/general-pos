@@ -187,8 +187,12 @@ newTmpl.onCreated(function () {
     this.isEnoughStock = new ReactiveVar();
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
+    this.itemList = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    Meteor.call('getItemList', (err, result) => {
+        this.itemList.set(result);
     });
 });
 // New
@@ -425,6 +429,13 @@ newTmpl.helpers({
             }
         } catch (e) {
         }
+    },
+    itemList(){
+        let instance = Template.instance();
+        if (instance.itemList.get() && instance.repOptions.get()) {
+            return instance.itemList.get();
+        }
+        return [];
     }
 });
 

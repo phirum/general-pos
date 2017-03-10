@@ -62,13 +62,13 @@ Meteor.methods({
 
         if (showNonActive == 'true' || showNonActive == true) {
             var accountParent = ChartAccount.find({
-                accountTypeId: {$nin: ['40', '41', '50', '51']},
+                accountTypeId: {$nin: ['40', '41', '50', '51','60']},
                 level: {$gt: 0}
             }).fetch().map(function (obj) {
                 return obj.parentId;
             });
             ChartAccount.find({
-                accountTypeId: {$nin: ['40', '41', '50', '51']},
+                accountTypeId: {$nin: ['40', '41', '50', '51','60']},
                 _id: {$nin: accountParent}
             }).fetch().forEach(function (obj) {
                 arr.push({

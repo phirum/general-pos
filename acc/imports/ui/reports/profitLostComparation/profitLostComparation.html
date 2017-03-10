@@ -2,30 +2,51 @@
     <div class="box-body">
         {{#autoForm schema=schema id="acc_ProfitLostReportComparation" action="ProfitLostComparationReportGen" target="_blank"}}
             <div class="animated fadeIn">
-                <div class="row">
-                    <div class="col-md-6">
-                        {{> afQuickField name='branchId'}}
-                    </div>
-                    <div class="col-md-6">
-                        {{> afQuickField name='currencyId'}}
-                    </div>
+                <div class="box box-primary direct-chat direct-chat-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title" style="font-family: 'Khmer OS Battambang'">ចុចទីនេះដើម្បីបង្ហាញ ឬ លាក់
+                            <span
+                                    class="font-head-panel-en">Form</span></h3>
 
-                    <div class="col-md-6">
-                        {{> afQuickField name='date'}}
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
 
-                    <div class="col-md-6">
-                        {{> afQuickField name='exchangeDate'}}
+                        <div class="row " style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                            <div class="col-md-6">
+                                {{> afQuickField name='branchId'}}
+                            </div>
+                            <div class="col-md-6">
+                                {{> afQuickField name='currencyId'}}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{> afQuickField name='date'}}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{> afQuickField name='exchangeDate'}}
+                            </div>
+
+                        </div>
+                        {{> afQuickField name='showNonActive' class="js-switch"}}
+
                     </div>
-
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        {{> formFooterWithButtonPrintFullscreenReport}}
+                    </div>
+                    <!-- /.box-footer-->
                 </div>
-
-                {{> afQuickField name='showNonActive' class="js-switch"}}
-                <button type="submit" class="btn btn-primary">{{fa "file-text"}} Generate</button>
-                <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
             </div>
         {{/autoForm}}
+        {{> acc_ProfitLostComparationReportPrintData}}
     </div>
+
 </template>
 
 
@@ -92,4 +113,76 @@
         {{> loading}}
     {{/if}}
 
+</template>
+
+
+<!--Run-->
+<template name="acc_ProfitLostComparationReportPrintData">
+    <!--#print-data-->
+    <div id="print-data">
+        <div class="sub-div display-on-print-div">
+            {{#if rptInit}}
+                {{#if rptData}}
+                    {{#with rptData}}
+
+                        <!--Title-->
+                        {{#with title}}
+
+                            <div class="rpt-title">
+                                <div class="rpt-title-3x rpt-kh-muol">{{khName}}</div>
+                                <div class="rpt-title-2x">{{enName}}</div>
+                                <div class="rpt-title-2x"><u>Profit&Lost Report</u></div>
+                                <div class="rpt-title-2x">{{enAddress}}</div>
+                            </div>
+
+                        {{/with}}
+
+                        <!--Header-->
+                        {{#with header}}
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Branch:</strong> {{getBranch branchId}}</li>
+                                    </ul>
+                                </div>
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Date:</strong> {{date}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div style="width: 100%">
+                                <div style="width: 50%; float: left">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Exchange:</strong> {{exchangeData}}</li>
+                                    </ul>
+                                </div>
+                                <div style="width: 50%; float: right">
+                                    <ul class="list-unstyled">
+                                        <li class="pull-right"><strong>Currency:</strong> {{currencyId}}</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        {{/with}}
+
+                        <!--Content-->
+                        {{{content}}}
+                        <!--Footer-->
+
+
+                    {{/with}}
+                    <!--Sign-->
+                    {{> ReportSignFooter}}
+
+
+                {{else}}
+                    <div class="text-center">
+                        {{> iconLoading size="fa-5x"}}
+                    </div>
+                {{/if}}
+            {{/if}}
+        </div>
+    </div>
+    <!--/#print-data-->
 </template>

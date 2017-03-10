@@ -37,9 +37,9 @@ Meteor.methods({
             dataMain.title = Company.findOne();
 
             /****** Header *****/
-            let exchangeData=Exchange.findOne({_id: params.exchangeDate});
+            let exchangeData = Exchange.findOne({_id: params.exchangeDate});
 
-            params.exchangeData=moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+            params.exchangeData = moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
 
             dataMain.header = params;
 
@@ -55,7 +55,7 @@ Meteor.methods({
             //Get Last Date Closing
             if (self.date != null) {
                 selectorGetLastDate.closeDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").toDate()
+                    $lt: moment(self.date, "DD/MM/YYYY").startOf("days").toDate()
                 };
             }
             if (self.currencyId != "All") {
@@ -73,7 +73,10 @@ Meteor.methods({
 
             //Parameter for Balance Last End Of Process
             if (lastDate != null) {
-                selectorGetLastBalance.closeDate = lastDate.closeDate;
+                selectorGetLastBalance.closeDate = {
+                    $gte: moment(lastDate.closeDate, "DD/MM/YYYY").startOf('days').toDate(),
+                    $lte: moment(lastDate.closeDate, "DD/MM/YYYY").endOf('days').toDate()
+                };
             }
             if (self.currencyId != "All") {
                 selectorGetLastBalance.currencyId = self.currencyId;
@@ -85,12 +88,12 @@ Meteor.methods({
             //Parameter for balance sheet
             if (lastDate != null) {
                 selector.journalDate = {
-                    $gte: moment(moment(lastDate.closeDate).format("DD/MM/YYYY"), "DD/MM/YYYY").add(1, 'days').toDate(),
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+                    $gte: moment(moment(lastDate.closeDate).format("DD/MM/YYYY"), "DD/MM/YYYY").add(1, 'days').startOf('days').toDate(),
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf("days").toDate()
                 };
             } else {
                 selector.journalDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate()
                 };
             }
             if (self.currencyId != "All") {
@@ -153,7 +156,7 @@ Meteor.methods({
             var selectorProfit = {};
             if (!_.isEmpty(self.date)) {
                 selectorProfit.journalDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate(),
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate(),
                     $gte: startDate
                 };
             }
@@ -166,7 +169,7 @@ Meteor.methods({
 
             selectorProfit['transaction.accountDoc.accountTypeId'] = {
                 $gte: "40",
-                $lte: "59"
+                $lte: "60"
             };
 
             var contentProfit = {};
@@ -198,6 +201,7 @@ Meteor.methods({
                         amountThb = val.value;
                     }
                     key[val.account] = {
+                        account: val.account,
                         result: val.result,
                         name: val.name,
                         currency: baseCurrency,
@@ -208,7 +212,7 @@ Meteor.methods({
                     };
                     if (val.accountType >= 40 && val.accountType <= 49) {
                         resultIncome.push(key[val.account]);
-                    } else if (val.accountType >= 50 && val.accountType <= 59) {
+                    } else if (val.accountType >= 50 && val.accountType <= 60) {
                         resultExpense.push(key[val.account]);
                     }
 
@@ -230,9 +234,10 @@ Meteor.methods({
                         grandTotalIncomeRiel += val.value;
                     } else if (val.currency == "THB") {
                         grandTotalIncomeBath += val.value;
+                        Accounting
                     }
 
-                } else if (val.accountType >= 50 && val.accountType <= 59) {
+                } else if (val.accountType >= 50 && val.accountType <= 60) {
                     grandTotalExpense += val.result;
                     if (val.currency == "USD") {
                         grandTotalExpenseUSD += val.value;
@@ -282,6 +287,7 @@ Meteor.methods({
                         amountThb = val.value;
                     }
                     key[val.account] = {
+
                         result: val.result,
                         name: val.name,
                         account: val.account,
@@ -329,6 +335,7 @@ Meteor.methods({
                 m = 0;
 
 
+            let space = 0;
             result.sort(compare);
             result.forEach(function (o) {
 
@@ -343,11 +350,14 @@ Meteor.methods({
                     dataOld = ChartAccount.findOne({
                         _id: temporary
                     });
-                    if (temporary !== o.parent & isPush == false) {
+
+                    space = 15;
+                    if (temporary !== o.parent && isPush == false) {
                         if (dataOld != null) {
                             variable.push({
                                 name: dataOld.name,
-                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
                                 'Total : ' + dataOld.code,
                                 amount: subTotal,
                                 amountUsd: subTotalUSD,
@@ -358,6 +368,7 @@ Meteor.methods({
                         }
                     }
 
+
                     // Push Header when have Sub Account
 
                     if (o.level > 0) {
@@ -366,7 +377,8 @@ Meteor.methods({
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal,
                                     amountUsd: subTotalUSD,
@@ -382,7 +394,8 @@ Meteor.methods({
                             });
                             otherCurrentAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -410,14 +423,18 @@ Meteor.methods({
 
                     otherCurrentAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
                         amountRiel: o.amountRiel,
                         amountThb: o.amountThb
+                    });
+                    dataOld = ChartAccount.findOne({
+                        _id: temporary
                     });
 
 
@@ -434,24 +451,8 @@ Meteor.methods({
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-                                });
-                                isPush = true;
-
-                            }
-                        }
-                    }
-                    i = 1;
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal,
                                     amountUsd: subTotalUSD,
@@ -459,7 +460,46 @@ Meteor.methods({
                                     amountThb: subTotalTHB
                                 });
                                 isPush = true;
+
                             }
+                        }
+                    }
+                    i = 1;
+
+                    space = 15;
+
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: subTotal,
+                                amountUsd: subTotalUSD,
+                                amountRiel: subTotalRiel,
+                                amountThb: subTotalTHB
+                            });
+                            isPush = true;
+                        }
+                    }
+                    // Push Header when have Sub Account
+                    if (o.level > 0) {
+                        if (temporary !== o.parent) {
+
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: subTotal,
+                             amountUsd: subTotalUSD,
+                             amountRiel: subTotalRiel,
+                             amountThb: subTotalTHB
+                             });
+                             isPush = true;
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -467,7 +507,8 @@ Meteor.methods({
                             });
                             fixAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -500,9 +541,10 @@ Meteor.methods({
 
                     fixAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
@@ -524,9 +566,13 @@ Meteor.methods({
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
-                                    amount: subTotal
+                                    amount: subTotal,
+                                    amountUsd: subTotalUSD,
+                                    amountRiel: subTotalRiel,
+                                    amountThb: subTotalTHB
 
                                 });
                                 isPush = true;
@@ -535,29 +581,49 @@ Meteor.methods({
                         }
                     }
                     j = 1;
+
+                    space = 15;
+
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: subTotal,
+                                amountUsd: subTotalUSD,
+                                amountRiel: subTotalRiel,
+                                amountThb: subTotalTHB
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal,
-                                    amountUsd: subTotalUSD,
-                                    amountRiel: subTotalRiel,
-                                    amountThb: subTotalTHB
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: subTotal,
+                             amountUsd: subTotalUSD,
+                             amountRiel: subTotalRiel,
+                             amountThb: subTotalTHB
+                             });
+                             isPush = true;
+                             }*/
 
                             data = ChartAccount.findOne({
                                 _id: o.parent
                             });
                             otherFixAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -588,9 +654,10 @@ Meteor.methods({
 
                     otherFixAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
@@ -608,38 +675,59 @@ Meteor.methods({
                         if (dataOld != null) {
                             variable.push({
                                 name: dataOld.name,
-                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
                                 'Total : ' + dataOld.code,
-                                amount: subTotal
+                                amount: subTotal,
+                                amountUsd: subTotalUSD,
+                                amountRiel: subTotalRiel,
+                                amountThb: subTotalTHB
                             });
                             isPush = true;
                         }
                     }
                     k = 1;
                     x = -1;
+
+                    space = 22;
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal,
+                                amountUsd: x * subTotalUSD,
+                                amountRiel: x * subTotalRiel,
+                                amountThb: x * subTotalTHB
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal,
-                                    amountUsd: subTotalUSD,
-                                    amountRiel: subTotalRiel,
-                                    amountThb: subTotalTHB
-                                });
-                                isPush = true;
-                            }
-
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal,
+                             amountUsd: subTotalUSD,
+                             amountRiel: subTotalRiel,
+                             amountThb: subTotalTHB
+                             });
+                             isPush = true;
+                             }*/
                             data = ChartAccount.findOne({
                                 _id: o.parent
                             });
                             otherCurrentLiability.push({
                                 name: data.name,
-                                code: SpaceChar.space(22 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -671,9 +759,10 @@ Meteor.methods({
 
                     otherCurrentLiability.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(22 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -692,9 +781,13 @@ Meteor.methods({
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
-                                    amount: x * subTotal
+                                    amount: x * subTotal,
+                                    amountUsd: x * subTotalUSD,
+                                    amountRiel: x * subTotalRiel,
+                                    amountThb: x * subTotalTHB
                                 });
                                 isPush = true;
 
@@ -703,22 +796,39 @@ Meteor.methods({
                     }
                     l = 1;
                     x = -1;
+                    space = 22;
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal,
+                                amountUsd: x * subTotalUSD,
+                                amountRiel: x * subTotalRiel,
+                                amountThb: x * subTotalTHB
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal,
-                                    amountUsd: subTotalUSD,
-                                    amountRiel: subTotalRiel,
-                                    amountThb: subTotalTHB
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal,
+                             amountUsd: subTotalUSD,
+                             amountRiel: subTotalRiel,
+                             amountThb: subTotalTHB
+                             });
+                             isPush = true;
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -726,7 +836,8 @@ Meteor.methods({
                             });
                             longTermLiability.push({
                                 name: data.name,
-                                code: SpaceChar.space(22 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -756,9 +867,10 @@ Meteor.methods({
 
                     longTermLiability.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(22 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -777,9 +889,13 @@ Meteor.methods({
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
-                                    amount: x * subTotal
+                                    amount: x * subTotal,
+                                    amountUsd: x * subTotalUSD,
+                                    amountRiel: x * subTotalRiel,
+                                    amountThb: x * subTotalTHB
                                 });
                                 isPush = true;
                             }
@@ -787,29 +903,49 @@ Meteor.methods({
                     }
                     m = 1;
                     x = -1;
+
+                    space = 15;
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal,
+                                amountUsd: x * subTotalUSD,
+                                amountRiel: x * subTotalRiel,
+                                amountThb: x * subTotalTHB
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal,
-                                    amountUsd: subTotalUSD,
-                                    amountRiel: subTotalRiel,
-                                    amountThb: subTotalTHB
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal,
+                             amountUsd: subTotalUSD,
+                             amountRiel: subTotalRiel,
+                             amountThb: subTotalTHB
+                             });
+                             isPush = true;
+                             }*/
+
 
                             data = ChartAccount.findOne({
                                 _id: o.parent
                             });
                             equity.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title",
                                 amountUsd: "title",
@@ -840,9 +976,10 @@ Meteor.methods({
 
                     equity.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -864,12 +1001,13 @@ Meteor.methods({
                 if (dataOld != null) {
                     variable.push({
                         name: dataOld.name,
+                        account: dataOld.account,
                         code: SpaceChar.space(len + (6 * dataOld.level)) +
                         'Total : ' + dataOld.code,
                         amount: x * subTotal,
-                        amountUsd: subTotalUSD,
-                        amountRiel: subTotalRiel,
-                        amountThb: subTotalTHB
+                        amountUsd: x * subTotalUSD,
+                        amountRiel: x * subTotalRiel,
+                        amountThb: x * subTotalTHB
                     });
                     isPush = true;
                 }
@@ -1008,9 +1146,9 @@ Meteor.methods({
             dataMain.title = Company.findOne();
 
             /****** Header *****/
-            let exchangeData=Exchange.findOne({_id: params.exchangeDate});
+            let exchangeData = Exchange.findOne({_id: params.exchangeDate});
 
-            params.exchangeData=moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+            params.exchangeData = moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
 
             dataMain.header = params;
 
@@ -1025,7 +1163,7 @@ Meteor.methods({
             //Get Last Date Closing
             if (self.date != null) {
                 selectorGetLastDate.closeDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").toDate()
+                    $lt: moment(self.date, "DD/MM/YYYY").startOf('days').toDate()
                 };
             }
             if (self.currencyId != "All") {
@@ -1043,7 +1181,10 @@ Meteor.methods({
 
             //Parameter for Balance Last End Of Process
             if (lastDate != null) {
-                selectorGetLastBalance.closeDate = lastDate.closeDate;
+                selectorGetLastBalance.closeDate = {
+                    $gte: moment(lastDate.closeDate, "DD/MM/YYYY").startOf('days').toDate(),
+                    $lte: moment(lastDate.closeDate, "DD/MM/YYYY").endOf('days').toDate()
+                };
             }
             if (self.currencyId != "All") {
                 selectorGetLastBalance.currencyId = self.currencyId;
@@ -1056,11 +1197,11 @@ Meteor.methods({
             if (lastDate != null) {
                 selector.journalDate = {
                     $gte: moment(moment(lastDate.closeDate).format("DD/MM/YYYY"), "DD/MM/YYYY").add(1, 'days').toDate(),
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate()
                 };
             } else {
                 selector.journalDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate()
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate()
                 };
             }
             if (self.currencyId != "All") {
@@ -1102,7 +1243,7 @@ Meteor.methods({
             var selectorProfit = {};
             if (!_.isEmpty(self.date)) {
                 selectorProfit.journalDate = {
-                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').toDate(),
+                    $lt: moment(self.date, "DD/MM/YYYY").add(1, 'days').startOf('days').toDate(),
                     $gte: startDate
                 };
             }
@@ -1115,7 +1256,7 @@ Meteor.methods({
 
             selectorProfit['transaction.accountDoc.accountTypeId'] = {
                 $gte: "40",
-                $lte: "59"
+                $lte: "60"
             };
 
             var contentProfit = {};
@@ -1139,6 +1280,7 @@ Meteor.methods({
                         amountThb = val.result;
                     }
                     key[val.account] = {
+                        account: val.account,
                         result: val.result,
                         name: val.name,
                         currency: baseCurrency,
@@ -1149,7 +1291,7 @@ Meteor.methods({
                     };
                     if (val.accountType >= 40 && val.accountType <= 49) {
                         resultIncome.push(key[val.account]);
-                    } else if (val.accountType >= 50 && val.accountType <= 59) {
+                    } else if (val.accountType >= 50 && val.accountType <= 60) {
                         resultExpense.push(key[val.account]);
                     }
 
@@ -1165,7 +1307,7 @@ Meteor.methods({
                 }
                 if (val.accountType >= 40 && val.accountType <= 49) {
                     grandTotalIncome += val.result;
-                } else if (val.accountType >= 50 && val.accountType <= 59) {
+                } else if (val.accountType >= 50 && val.accountType <= 60) {
                     grandTotalExpense += val.result;
                 }
 
@@ -1237,7 +1379,7 @@ Meteor.methods({
                 l = 0,
                 m = 0;
 
-
+            let space = 0;
             result.sort(compare);
             result.forEach(function (o) {
 
@@ -1249,11 +1391,13 @@ Meteor.methods({
                     dataOld = ChartAccount.findOne({
                         _id: temporary
                     });
+                    space=15;
                     if (temporary !== o.parent && isPush == false) {
                         if (dataOld != null) {
                             variable.push({
                                 name: dataOld.name,
-                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
                                 'Total : ' + dataOld.code,
                                 amount: subTotal
                             });
@@ -1265,12 +1409,13 @@ Meteor.methods({
                     // Push Header when have Sub Account
 
                     if (o.level > 0) {
-                        if (temporary !== o.parent ) {
+                        if (temporary !== o.parent) {
 
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal
                                 });
@@ -1282,7 +1427,8 @@ Meteor.methods({
                             });
                             otherCurrentAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1300,14 +1446,19 @@ Meteor.methods({
 
                     otherCurrentAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
                         amountRiel: o.amountRiel,
                         amountThb: o.amountThb
+                    });
+
+                    dataOld = ChartAccount.findOne({
+                        _id: temporary
                     });
 
 
@@ -1318,7 +1469,8 @@ Meteor.methods({
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal
                                 });
@@ -1328,20 +1480,35 @@ Meteor.methods({
                         }
                     }
                     i = 1;
+                    space=15;
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: subTotal
+                            });
+                            isPush = true;
+
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-                                });
-                                isPush = true;
+                            /*if (dataOld != null) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: subTotal
+                             });
+                             isPush = true;
 
-                            }
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -1349,7 +1516,8 @@ Meteor.methods({
                             });
                             fixAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1371,9 +1539,10 @@ Meteor.methods({
 
                     fixAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
@@ -1389,7 +1558,8 @@ Meteor.methods({
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal
 
@@ -1400,20 +1570,37 @@ Meteor.methods({
                         }
                     }
                     j = 1;
+
+                    space=15;
+
+                    if (temporary !== o.parent) {
+
+
+                        if (dataOld != null) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: subTotal
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
 
-                            if (dataOld != null) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: subTotal
+                             });
+                             isPush = true;
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -1421,7 +1608,8 @@ Meteor.methods({
                             });
                             otherFixAsset.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1444,9 +1632,10 @@ Meteor.methods({
 
                     otherFixAsset.push({
                         name: o.name,
+                        account: o.account,
                         amount: o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: o.amountUsd,
@@ -1460,7 +1649,8 @@ Meteor.methods({
                         if (dataOld != null) {
                             variable.push({
                                 name: dataOld.name,
-                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
                                 'Total : ' + dataOld.code,
                                 amount: subTotal
                             });
@@ -1469,20 +1659,35 @@ Meteor.methods({
                     }
                     k = 1;
                     x = -1;
+                    space=22;
+                    if (temporary !== o.parent) {
+
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal
+                             });
+                             isPush = true;
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -1490,7 +1695,8 @@ Meteor.methods({
                             });
                             otherCurrentLiability.push({
                                 name: data.name,
-                                code: SpaceChar.space(22 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1513,9 +1719,10 @@ Meteor.methods({
 
                     otherCurrentLiability.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(22 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -1530,7 +1737,8 @@ Meteor.methods({
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: x * subTotal
                                 });
@@ -1541,20 +1749,36 @@ Meteor.methods({
                     }
                     l = 1;
                     x = -1;
+
+                    space=22;
+                    if (temporary !== o.parent) {
+
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal
+                             });
+                             isPush = true;
+                             }*/
 
 
                             data = ChartAccount.findOne({
@@ -1562,7 +1786,8 @@ Meteor.methods({
                             });
                             longTermLiability.push({
                                 name: data.name,
-                                code: SpaceChar.space(22 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1585,9 +1810,10 @@ Meteor.methods({
 
                     longTermLiability.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(22 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -1603,7 +1829,8 @@ Meteor.methods({
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
-                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: x * subTotal
                                 });
@@ -1613,26 +1840,41 @@ Meteor.methods({
                     }
                     m = 1;
                     x = -1;
+                    space=15;
+                    if (temporary !== o.parent) {
+
+                        if (dataOld != null && isPush == false) {
+                            variable.push({
+                                name: dataOld.name,
+                                account: dataOld.account,
+                                code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                'Total : ' + dataOld.code,
+                                amount: x * subTotal
+                            });
+                            isPush = true;
+                        }
+                    }
                     // Push Header when have Sub Account
                     if (o.level > 0) {
                         if (temporary !== o.parent) {
 
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: x * subTotal
-                                });
-                                isPush = true;
-                            }
+                            /*if (dataOld != null && isPush == false) {
+                             variable.push({
+                             name: dataOld.name,
+                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                             'Total : ' + dataOld.code,
+                             amount: x * subTotal
+                             });
+                             isPush = true;
+                             }*/
 
                             data = ChartAccount.findOne({
                                 _id: o.parent
                             });
                             equity.push({
                                 name: data.name,
-                                code: SpaceChar.space(15 + (6 * data.level)) +
+                                account: data.account,
+                                code: SpaceChar.space(space + (6 * data.level)) +
                                 data.code,
                                 amount: "title"
                             });
@@ -1654,9 +1896,10 @@ Meteor.methods({
 
                     equity.push({
                         name: o.name,
+                        account: o.account,
                         amount: x * o.result,
                         currency: baseCurrency,
-                        code: SpaceChar.space(15 + (6 * o.level)) + o.code,
+                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
                         level: o.level,
                         parent: o.parent,
                         amountUsd: x * o.amountUsd,
@@ -1678,6 +1921,7 @@ Meteor.methods({
                 if (dataOld != null) {
                     variable.push({
                         name: dataOld.name,
+                        account: dataOld.account,
                         code: SpaceChar.space(len + (6 * dataOld.level)) +
                         'Total : ' + dataOld.code,
                         amount: x * subTotal

@@ -62,5 +62,17 @@
 }
 
 .report-pointer {
-    cursor: pointer;
+    cursor: pointer !important;
+}
+
+.form-footer-acc {
+    background-color: #fff;
+    /*padding: 19px 0px 3px;*/
+    border-radius: 0 0 6px 6px;
+
+    margin-left: 0px;
+    margin-right: 0px;
+    /*min-height: 43px;*/
+
+    text-align: right;
 }

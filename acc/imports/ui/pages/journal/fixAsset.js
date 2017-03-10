@@ -77,9 +77,8 @@ fixAssetTpl.helpers({
         var account = stateAsset.get('account');
         var value = stateAsset.get('value');
         var life = stateAsset.get('life');
-        var estSalvage = stateAsset.get('estSalvage');
 
-        if (value != "" && life != "" && account != "" && estSalvage != "") {
+        if (value != "" && life != "" && account != "") {
             stateAsset.set('cssClassForAddMoreFixedAsset', '');
         } else {
             stateAsset.set('cssClassForAddMoreFixedAsset', 'disabled');
@@ -116,7 +115,7 @@ fixAssetTpl.events({
         });
 
 
-        $('#account').select2('val', '');
+        $('[name="account"]').val("").trigger('change');
         $('#code').val('');
         $('#value').val(0);
         $('#life').val(0);
@@ -160,8 +159,8 @@ fixAssetTpl.events({
         stateAsset.set('percent', $(e.currentTarget).val());
     },
     'click .js-update-item': function (e, t) {
-        var self = this;
-        var doc = fixAssetDepCollection.findOne(self._id);
+        let self = this;
+        let doc = fixAssetDepCollection.findOne(self._id);
         alertify.fixAsset(fa("pencil", "Fix Asset"), renderTemplate(updateTpl, doc));
     }
 });

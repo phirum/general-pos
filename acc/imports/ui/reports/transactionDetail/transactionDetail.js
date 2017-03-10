@@ -6,11 +6,9 @@ import {AutoForm} from 'meteor/aldeed:autoform';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import 'meteor/theara:autoprint';
 import {DateTimePicker} from 'meteor/tsega:bootstrap3-datetimepicker';
-import {alertify} from 'meteor/ovcharik:alertifyjs';
 
 
 // Component
-
 import '../../../../../core/imports/ui/layouts/report/content.html';
 import '../../../../../core/imports/ui/layouts/report/sign-footer.html';
 import '../../../../../core/client/components/loading.js';
@@ -23,31 +21,30 @@ import {renderTemplate} from '../../../../../core/client/libs/render-template.js
 import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
 import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
 import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
+
 // Method
-// import '../../../../common/methods/reports/journal';
-
-
 import '../../libs/getBranch';
 import '../../libs/format';
+
+//Collection
+import {Currency} from '../../../api/collections/currency';
+import {ChartAccount} from '../../../api/collections/chartAccount';
+
 // Schema
-import {JournalReport} from '../../../../imports/api/collections/reports/journalReport';
+import {TransactionDetailReport} from '../../../../imports/api/collections/reports/transactionDetail';
 
 // Page
-import './journal.html';
-import '../../pages/journal/journal.html'
-
+import './transactionDetail.html';
+import '../../pages/journal/journal.js';
 
 // Declare template
-var reportTpl = Template.acc_journalReport,
-    generateTpl = Template.acc_journalReportGen,
-    updateTpl = Template.acc_journalUpdate,
-    tmplPrintData = Template.acc_journalReportPrintData;
 
-reportTpl.helpers({
-    schema() {
-        return JournalReport;
-    }
-})
+var reportTpl = Template.acc_transactionDetailReport,
+    generateTpl = Template.acc_transactionDetailReportGen,
+    updateTpl = Template.acc_journalUpdate,
+    tmplPrintData = Template.acc_transactionDetailReportPrintData;
+
+
 
 
 //===================================Run
@@ -61,10 +58,32 @@ let rptInitState = new ReactiveVar(false);
 let rptDataState = new ReactiveVar(null);
 
 
-reportTpl.onCreated(function () {
-    createNewAlertify('acc_journalReport');
-    this.autorun(() => {
 
+reportTpl.helpers({
+    schema() {
+        return TransactionDetailReport;
+    },
+    param(){
+        let param = FlowRouter.current().query;
+
+        Session.set('accountTypeIdSession', param.accountType);
+        if (!(param.accountType instanceof Array)) {
+
+            Session.set('accountTypeIdSession', param.accountType.split(','));
+            param.accountType =param.accountType.split(',');
+
+        } else {
+            Session.set('accountTypeIdSession', param.accountType);
+        }
+
+        formDataState.set(param);
+        return param;
+    }
+})
+
+reportTpl.onCreated(function () {
+    createNewAlertify(['acc_transactionDetail', 'journal']);
+    this.autorun(() => {
         // Check form data
         if (formDataState.get()) {
             rptInitState.set(true);
@@ -72,27 +91,8 @@ reportTpl.onCreated(function () {
 
             let params = formDataState.get();
 
-            Meteor.call('acc_journalReport', params, function (err, result) {
+            Meteor.call('acc_transactionDetailReport', params, function (err, result) {
                 if (result) {
-                    let arrResult = [];
-                    let contentDocs = result.content;
-                    contentDocs.forEach(function (contentDoc) {
-                        contentDoc.firstTransaction = [];
-                        contentDoc.secondTransaction = [];
-                        let transactions = contentDoc.transaction;
-                        if (transactions != undefined) {
-                            for (let i = 0; i < transactions.length; i++) {
-                                if (i == 0) {
-                                    contentDoc.firstTransaction.push(transactions[i]);
-                                } else {
-                                    contentDoc.secondTransaction.push(transactions[i]);
-                                }
-                            }
-                            arrResult.push(contentDoc);
-                        }
-                    });
-                    result.content = arrResult;
-
                     rptDataState.set(result);
                 } else {
                     console.log(err.message);
@@ -117,6 +117,52 @@ tmplPrintData.helpers({
     }
 });
 
+tmplPrintData.events({
+    'dblclick .journalRow': function (e, t) {
+
+        var self = this;
+
+        var selectorGetLastDate = {};
+        var branchId = Session.get("currentBranch");
+        selectorGetLastDate.branchId = branchId;
+
+        var selector = {};
+        selector._id = self._id;
+
+
+        Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
+            Meteor.call('getJournal', selector, function (err, data) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
+                    if (data.voucherId.length > 10) {
+                        data.voucherId = data.voucherId.substr(8, 6);
+                    }
+                    Session.set('dobSelect', data.journalDate);
+                    Session.set('currencyId', data.currencyId);
+
+                    if (data.transactionAsset != undefined) {
+                        if (data.transactionAsset.length > 0) {
+                            stateFixAsset.set('isFixAsset', true);
+                            $('.js-switch').trigger("click");
+                        }
+                    }
+
+                    if (lastDate != null) {
+                        if (lastDate.closeDate < data.journalDate) {
+                            alertify.journal(fa("plus", "Journal"), renderTemplate(updateTpl, data)).maximize();
+                        } else {
+                            alertify.error("Can not update, you already end of process!!!");
+                        }
+                    } else {
+                        alertify.journal(fa("plus", "Journal"), renderTemplate(updateTpl, data)).maximize();
+                    }
+                } else {
+                    alertify.warning("Can't Update!!!");
+                }
+            });
+        });
+    }
+});
+
 
 reportTpl.events({
     'click .run ': function (e, t) {
@@ -124,10 +170,11 @@ reportTpl.events({
         result.branchId = $('[name="branchId"]').val();
         result.date = $('[name="date"]').val();
         result.currencyId = $('[name="currencyId"]').val();
+        result.exchangeDate = $('[name="exchangeDate"]').val();
         result.accountType = $('[name="accountType"]').val();
         result.chartAccount = $('[name="chartAccount"]').val();
 
-        if (result.accountType == "") {
+        if (result.accountType == "" || result.exchangeDate == "") {
             alertify.warning("Required!!!");
             return false;
         }
@@ -135,17 +182,17 @@ reportTpl.events({
         formDataState.set(result);
     },
     'change [name="accountType"]': function (e) {
+        debugger;
         Session.set('accountTypeIdSession', $(e.currentTarget).val());
     },
     'click .fullScreen'(event, instance){
-
-
-        alertify.acc_journalReport(fa('', ''), renderTemplate(tmplPrintData)).maximize();
+        alertify.acc_transactionDetail(fa('', ''), renderTemplate(tmplPrintData)).maximize();
     },
     'click .btn-print'(event, instance){
 
-
         $('#print-data').printThis();
+
+
     }
 });
 
@@ -160,7 +207,7 @@ reportTpl.onDestroyed(function () {
 // hook
 let hooksObject = {
     onSubmit: function (insertDoc, updateDoc, currentDoc) {
-        debugger;
+
         this.event.preventDefault();
         formDataState.set(null);
 
@@ -188,63 +235,8 @@ let hooksObject = {
 };
 
 
-//Event
-tmplPrintData.events({
-    'dblclick .journalRow': function (e, t) {
-
-        var self = this;
-
-        var selectorGetLastDate = {};
-        var branchId = Session.get("currentBranch");
-        selectorGetLastDate.branchId = branchId;
-
-        var selector = {};
-        selector._id = self._id;
-
-        createNewAlertify('journal');
-
-
-        Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
-            Meteor.call('getJournal', selector, function (err, data) {
-                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
-
-                    if (data.voucherId.length > 10) {
-                        data.voucherId = data.voucherId.substr(8, 6);
-                    }
-                    Session.set('dobSelect', data.journalDate);
-                    Session.set('currencyId', data.currencyId);
-
-                    if (data.transactionAsset != undefined) {
-                        if (data.transactionAsset.length > 0) {
-                            stateFixAsset.set('isFixAsset', true);
-                            $('.js-switch').trigger("click");
-                        }
-                    }
-
-                    if (lastDate != null) {
-                        if (lastDate.closeDate < data.journalDate) {
-                            alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
-                        } else {
-                            alertify.error("Can not update, you already end of process!!!");
-                        }
-                    } else {
-                        alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
-                    }
-                } else {
-                    alertify.warning("Can't Update!!!");
-                }
-            });
-        });
-    }
-});
-
 // ===============================Generate
 
-reportTpl.events({
-    'change [name="accountType"]': function (e) {
-        Session.set('accountTypeIdSession', $(e.currentTarget).val());
-    }
-});
 
 generateTpl.onCreated(function () {
     createNewAlertify(['journal']);
@@ -266,6 +258,7 @@ generateTpl.events({
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
             Meteor.call('getJournal', selector, function (err, data) {
                 if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
+
 
                     if (data.voucherId.length > 10) {
                         data.voucherId = data.voucherId.substr(8, 6);
@@ -299,6 +292,7 @@ generateTpl.events({
 
 
 generateTpl.helpers({
+
     options: function () {
         // font size = null (default), bg
         // paper = a4, a5, mini
@@ -315,33 +309,12 @@ generateTpl.helpers({
         var q = FlowRouter.current().queryParams;
 
         Fetcher.setDefault('data', false);
-        Fetcher.retrieve('data', 'acc_journalReport', q);
+        Fetcher.retrieve('data', 'acc_transactionDetailReport', q);
 
-        let doc = Fetcher.get('data');
+        return Fetcher.get('data');
+        /* var callId = JSON.stringify(q);
 
-        if (doc.content) {
-            let contentDocs = doc.content;
-
-            let arrResult = [];
-            contentDocs.forEach(function (contentDoc) {
-                contentDoc.firstTransaction = [];
-                contentDoc.secondTransaction = [];
-                let transactions = contentDoc.transaction;
-                for (let i = 0; i < transactions.length; i++) {
-                    if (i == 0) {
-                        contentDoc.firstTransaction.push(transactions[i]);
-                    } else {
-                        contentDoc.secondTransaction.push(transactions[i]);
-                    }
-                }
-                arrResult.push(contentDoc);
-            });
-            doc.content = arrResult;
-        }
-        return doc;
-
-        /*var callId = JSON.stringify(q);
-         var call = Meteor.callAsync(callId, 'acc_journalReport', q);
+         var call = Meteor.callAsync(callId, 'acc_ledgerReport', q);
 
          if (!call.ready()) {
          return false;
@@ -349,16 +322,3 @@ generateTpl.helpers({
          return call.result();*/
     }
 });
-
-
-var formatNumberToSeperate = function (val) {
-    val = val.toString();
-    var parts = (val.replace(/,/g, "")).toString().split(".");
-    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] == "" || parts[1] != null ? "." + parts[1] : "");
-}, formatToNumber = function (val) {
-    var regex = /^\d+(\.\d{1,2})?$/i;
-    if (!regex.test(val)) {
-        val = val.replace(/,/g, "");
-    }
-    return parseFloat(val);
-};

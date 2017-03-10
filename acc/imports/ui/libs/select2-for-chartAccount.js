@@ -47,11 +47,12 @@ let modelMatcher = function (params, data) {
      return data;
      }*/
 
+    let codeEmptySpace = originalSplit[0].replace(/\s+/g, '');
     let regTerm = new RegExp("^" + term);
 
     // Check if the text contains the term
 
-    if (originalSplit[1] && (originalSplit[1].indexOf(term) > -1 || originalSplit[0].match(regTerm) !== null)) {
+    if (originalSplit[1] && (originalSplit[1].indexOf(term) > -1 || codeEmptySpace.match(regTerm) !== null)) {
         return data;
     }
 

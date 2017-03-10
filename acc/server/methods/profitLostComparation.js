@@ -16,7 +16,7 @@ Meteor.methods({
     getProfitLostComparation: function (selector, showNonActive, baseCurrency, month, year, exchangeId) {
 
 
-        selector['transaction.accountDoc.accountTypeId'] = {$in: ['40', '41','50', '51']};
+        selector['transaction.accountDoc.accountTypeId'] = {$in: ['40', '41','50', '51','60']};
 
         let exchange = Exchange.findOne({_id: exchangeId});
         let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$transaction.drcr', baseCurrency});
@@ -78,13 +78,13 @@ Meteor.methods({
 
         if (showNonActive == 'true' || showNonActive == true) {
             var accountParent = ChartAccount.find({
-                accountTypeId: {$in: ['40', '41','50', '51']},
+                accountTypeId: {$in: ['40', '41','50', '51','60']},
                 level: {$gt: 0}
             }).fetch().map(function (obj) {
                 return obj.parentId;
             });
             ChartAccount.find({
-                accountTypeId: {$in: ['40', '41','50', '51']},
+                accountTypeId: {$in: ['40', '41','50', '51','60']},
                 _id: {$nin: accountParent}
             }).fetch().forEach(function (obj) {
                 if (obj) {

@@ -33,8 +33,8 @@ Meteor.methods({
                 };
 
                 var date = s.words(params.date, ' - ');
-                var fDate = moment(date[0], 'DD/MM/YYYY').toDate();
-                var tDate = moment(date[1], 'DD/MM/YYYY').add(1, 'days').toDate();
+                var fDate = moment(date[0], 'DD/MM/YYYY').startOf('days').toDate();
+                var tDate = moment(date[1], 'DD/MM/YYYY').add(1, 'days').startOf('days').toDate();
 
                 /****** Title *****/
                 data.title = Company.findOne();
@@ -388,6 +388,13 @@ Meteor.methods({
                     selectorEquivalBaseOld.currencyId = self.currencyId;
                     selectorEquivalBaseOld['transaction.accountDoc.code'] =
                         accountDocDetail.code;
+                    selectorEquivalBaseOld.branchId = self.branchId;
+
+                    if (!_.isEmpty(self.date)) {
+                        selectorEquivalBaseOld.journalDate = {
+                            $lt: tDate
+                        };
+                    }
 
                     var equivalBaseOld = Meteor.call("getBalanceSheet",
                         selectorEquivalBaseOld, baseCurrencyClosing, exchangeDate, null,
@@ -404,6 +411,14 @@ Meteor.methods({
                     selectorEquivalOld.currencyId = baseCurrencyClosing;
                     selectorEquivalOld['transaction.accountDoc.code'] =
                         accountDocDetail.code;
+                    selectorEquivalOld.branchId = self.branchId;
+
+                    if (!_.isEmpty(self.date)) {
+                        selectorEquivalOld.journalDate = {
+                            $lt: tDate
+                        };
+                    }
+
                     var equivalOld = Meteor.call("getBalanceSheet",
                         selectorEquivalOld, baseCurrencyClosing, exchangeDate, null,
                         null);

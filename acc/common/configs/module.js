@@ -9,7 +9,16 @@ Module.Acc = {
         'data-insert',
         'data-update',
         'data-remove',
-        'reporter'
+        'reporter-balanceSheet',
+        'reporter-cash',
+        'reporter-journal',
+        'reporter-ledger',
+        'reporter-profitLost',
+        'reporter-profitLostComparation',
+        'reporter-transactionDetail',
+        'reporter-trialBalance',
+        'reporter-fixAssetDep'
+
     ],
     dump: {
         setting: [

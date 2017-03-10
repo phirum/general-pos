@@ -154,6 +154,7 @@ AutoForm.hooks({
             this.done();
         },
         onSuccess: function (formType, result) {
+
             alertify.journalDetailPaymentReceive().close();
             alertify.success("Success");
         },
