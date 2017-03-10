@@ -4,7 +4,7 @@ import {RingPullInventories} from '../collections/ringPullInventory.js'
 import {GratisInventories} from '../collections/gratisInventory'
 
 export  default class StockFunction {
-    static averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
+    static averageInventoryInsert(branchId, item, stockLocationId, type, refId,inventoryDate) {
         let lastPurchasePrice = 0;
         let remainQuantity = 0;
         let prefix = stockLocationId + '-';
@@ -31,6 +31,7 @@ export  default class StockFunction {
             nextInventory.type = type;
             nextInventory.coefficient = 1;
             nextInventory.refId = refId;
+            nextInventory.inventoryDate=inventoryDate;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             console.log(nextInventory);
@@ -54,6 +55,7 @@ export  default class StockFunction {
             inventoryObj.type = type;
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
+            inventoryObj.inventoryDate=inventoryDate;
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             AverageInventories.insert(inventoryObj);
@@ -64,7 +66,7 @@ export  default class StockFunction {
         Item.direct.update(item.itemId, setModifier);
     }
 
-    static averageInventoryInsertForBill(branchId, item, stockLocationId, type, refId) {
+    static averageInventoryInsertForBill(branchId, item, stockLocationId, type, refId,inventoryDate) {
         let id = '';
         //let lastPurchasePrice = 0;
         let remainQuantity = 0;
@@ -93,6 +95,7 @@ export  default class StockFunction {
             nextInventory.refId = refId;
             nextInventory.lastAmount = lastAmount;
             nextInventory.averagePrice = averagePrice;
+            nextInventory.inventoryDate=inventoryDate;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(nextInventory);
@@ -116,17 +119,18 @@ export  default class StockFunction {
             inventoryObj.type = type;
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
+            inventoryObj.inventoryDate=inventoryDate;
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(inventoryObj);
         }
-        var setModifier = {$set: {purchasePrice: item.price}};
+        let setModifier = {$set: {purchasePrice: item.price}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
         Item.direct.update(item.itemId, setModifier);
         return id;
     }
 
-    static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId) {
+    static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId,inventoryDate) {
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -155,7 +159,8 @@ export  default class StockFunction {
                 averagePrice: averagePrice,
                 coefficient: -1,
                 type: type,
-                refId: refId
+                refId: refId,
+                inventoryDate:inventoryDate
             };
             id = AverageInventories.insert(newInventory);
         }
@@ -165,7 +170,7 @@ export  default class StockFunction {
         return id;
     }
 
-    static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId) {
+    static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId,inventoryDate) {
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -194,7 +199,8 @@ export  default class StockFunction {
                 averagePrice: averagePrice,
                 coefficient: -1,
                 type: type,
-                refId: refId
+                refId: refId,
+                inventoryDate:inventoryDate
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};

@@ -52,6 +52,9 @@ AverageInventories.schema = new SimpleSchema({
     refId: {
         type: String
     },
+    inventoryDate:{
+        type:Date
+    }
 });
 
 Meteor.startup(function () {

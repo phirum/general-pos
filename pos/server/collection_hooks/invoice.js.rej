@@ -1,0 +1,15 @@
+--- pos/server/collection_hooks/invoice.js
++++ pos/server/collection_hooks/invoice.js
+@@ -25,9 +25,9 @@ Invoices.before.insert(function (userId, doc) {
+         doc.status = 'closed';
+         doc.invoiceType = 'saleOrder'
+     } else if (doc.termId) {
+-        if(doc.total == 0){
+-            doc.status='closed';
+-        }else{
++        if (doc.total == 0) {
++            doc.status = 'closed';
++        } else {
+             doc.status = 'active';
+         }
+         doc.invoiceType = 'term'

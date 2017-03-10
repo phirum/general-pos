@@ -55,7 +55,13 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         });
         let inventoryIdList = [];
         doc.items.forEach(function (item) {
-            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRingPull', doc._id);
+            let id = StockFunction.minusAverageInventoryInsert(
+                doc.branchId, item,
+                doc.stockLocationId,
+                'exchangeRingPull',
+                doc._id,
+                doc.exchangeRingPullDate
+            );
             inventoryIdList.push(id);
         });
         doc.total = total;
@@ -112,7 +118,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
     Meteor.defer(()=> {
         let preDoc = this.previous;
         Meteor._sleepForMs(200);
-        returnToInventory(preDoc, 'exchangeRingPull-return');
+        returnToInventory(preDoc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
         //Account Integration
         let total = 0;
         doc.items.forEach(function (item) {
@@ -169,7 +175,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return');
+        returnToInventory(doc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -198,7 +204,14 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
     let prefix = exchangeRingPull.stockLocationId + "-";
     let newItems = [];
     exchangeRingPull.items.forEach(function (item) {
-        StockFunction.minusAverageInventoryInsert(exchangeRingPull.branchId, item, exchangeRingPull.stockLocationId, 'exchangeRingPull', exchangeRingPull._id);
+        StockFunction.minusAverageInventoryInsert(
+            exchangeRingPull.branchId,
+            item,
+            exchangeRingPull.stockLocationId,
+            'exchangeRingPull',
+            exchangeRingPull._id,
+            exchangeRingPull.exchangeRingPullDate
+        );
         //---insert to Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,
@@ -224,7 +237,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
 
 }
 //update inventory
-function returnToInventory(exchangeRingPull, type) {
+function returnToInventory(exchangeRingPull, type,inventoryDate) {
     //---Open Inventory type block "Average Inventory"---
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
@@ -233,7 +246,8 @@ function returnToInventory(exchangeRingPull, type) {
             item,
             exchangeRingPull.stockLocationId,
             type,
-            exchangeRingPull._id
+            exchangeRingPull._id,
+            inventoryDate
         );
         //---Reduce from Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({

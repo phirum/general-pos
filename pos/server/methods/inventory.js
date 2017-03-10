@@ -134,14 +134,16 @@ Meteor.methods({
                         item,
                         locationTransfer.fromStockLocationId,
                         'transfer-from',
-                        locationTransferId
+                        locationTransferId,
+                        locationTransfer.locationTransferDate
                     );
                     StockFunction.averageInventoryInsert(
                         locationTransfer.toBranchId,
                         item,
                         locationTransfer.toStockLocationId,
                         'transfer-to',
-                        locationTransferId
+                        locationTransferId,
+                        locationTransfer.locationTransferDate
                     );
                 } else {
                     throw new Meteor.Error('Not Found Inventory. @locationTransfer-manage-stock. refId:' + locationTransferId);

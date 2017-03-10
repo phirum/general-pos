@@ -78,7 +78,7 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
     let preDoc = this.previous;
     Meteor.defer(()=> {
         Meteor._sleepForMs(200);
-        returnToInventoryAndLendingStock(preDoc);
+        returnToInventoryAndLendingStock(preDoc,doc.lendingStockDate);
         lendingStockManageStock(doc);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
@@ -120,7 +120,7 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
 LendingStocks.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventoryAndLendingStock(doc);
+        returnToInventoryAndLendingStock(doc,doc.lendingStockDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -206,13 +206,20 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         AverageInventories.insert(nextInventory);
     }
 
-    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
+    let setModifier = {$set: {purchasePrice: lastPurchasePrice}};
     setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
     Item.direct.update(item.itemId, setModifier);
 }
 function lendingStockManageStock(lendingStock) {
     lendingStock.items.forEach(function (item) {
-        StockFunction.minusAverageInventoryInsert(lendingStock.branchId, item, lendingStock.stockLocationId, 'lendingStock', lendingStock._id);
+        StockFunction.minusAverageInventoryInsert(
+            lendingStock.branchId,
+            item,
+            lendingStock.stockLocationId,
+            'lendingStock',
+            lendingStock._id,
+            lendingStock.lendingStockDate
+        );
         //Manage Lending Stock
         /*let lendingInventory = LendingInventories.findOne({
          itemId: item.itemId,
@@ -238,7 +245,7 @@ function lendingStockManageStock(lendingStock) {
          */
     });
 }
-function returnToInventoryAndLendingStock(lendingStock) {
+function returnToInventoryAndLendingStock(lendingStock,lendingStockDate) {
     let lendingPrefix = lendingStock.branchId + '-';
     // let lendingStock = Invoices.findOne(lendingStockId);
     lendingStock.items.forEach(function (item) {
@@ -248,7 +255,8 @@ function returnToInventoryAndLendingStock(lendingStock) {
             item,
             lendingStock.stockLocationId,
             'lendingStock-return',
-            lendingStock._id
+            lendingStock._id,
+            lendingStockDate
         );
         //--- End Inventory type block "Average Inventory"---
 
