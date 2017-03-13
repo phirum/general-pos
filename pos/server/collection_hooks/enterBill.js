@@ -15,6 +15,11 @@ import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 EnterBills.before.insert(function (userId, doc) {
+    let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (doc.enterBillDate <= inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     if (doc.termId) {
         doc.status = 'partial';
         doc.billType = 'term';
@@ -92,6 +97,20 @@ EnterBills.after.insert(function (userId, doc) {
 
 
 EnterBills.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (modifier.$set.enterBillDate < inventoryDateOld) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
+    modifier = modifier == null ? {} : modifier;
+    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+    if (modifier.$set.enterBillDate < inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);

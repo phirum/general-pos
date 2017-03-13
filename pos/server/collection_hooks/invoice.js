@@ -17,6 +17,12 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
+    let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (doc.invoiceDate <= inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -39,6 +45,21 @@ Invoices.before.insert(function (userId, doc) {
 });
 
 Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (modifier.$set.invoiceDate < inventoryDateOld) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
+    modifier = modifier == null ? {} : modifier;
+    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+    if (modifier.$set.invoiceDate < inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
