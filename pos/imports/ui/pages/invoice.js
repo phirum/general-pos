@@ -27,7 +27,6 @@ import '../../../../core/client/components/form-footer.js';
 import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
-import {deletedItem} from './invoice-items';
 import {customerInvoiceCollection, nullCollection} from '../../api/collections/tmpCollection';
 let currentItemsCollection = new Mongo.Collection(null);
 // Tabular
@@ -75,7 +74,6 @@ indexTmpl.onCreated(function () {
     createNewAlertify('listSaleOrder', {size: 'lg'});
     createNewAlertify('customer');
 });
-
 indexTmpl.helpers({
     tabularTable() {
         return InvoiceTabular;
@@ -92,23 +90,6 @@ indexTmpl.events({
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update'(event, instance) {
-        // if (this.saleId || (this.invoiceType == 'term' && this.status != 'closed')) {
-        //     excuteEditForm(this);
-        // }
-        // else if (this.invoiceType == 'term' && this.status == 'closed') {
-        //     // swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
-        //     excuteEditForm(this);
-        //
-        // }
-        // else if (this.paymentGroupId) {
-        //     Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
-        //         if (result.paid) {
-        //             swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
-        //         } else {
-        //             excuteEditForm(this);
-        //         }
-        //     });
-        // }
         let data = this;
         Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
             if (error) {
@@ -182,7 +163,8 @@ indexTmpl.events({
         window.open(path, '_blank');
     }
 });
-//on rendered
+
+// New
 newTmpl.onCreated(function () {
     this.isEnoughStock = new ReactiveVar();
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
@@ -195,41 +177,113 @@ newTmpl.onCreated(function () {
         this.itemList.set(result);
     });
 });
-// New
 newTmpl.events({
-    'change #item-id'(){
-        debugger;
-        let testData;
-        let server = "http://localhost:3000/";
-        $.get(server + "publications/items/",
-            function (data) {
-                console.log(data);
-                testData = data;
-            });
-        console.log(testData);
+    'change #item-id'(event, instance){
+        let itemId = $(event.currentTarget).val();
+        console.log(itemId);
+        if (itemId == "") {
+            alertify.warning('Please choose item.');
+            return;
+        }
+        let qty = $('#item-qty').val();
+        qty = qty == '' ? 1 : parseInt(qty);
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        if (stockLocationId == "") {
+            alertify.warning("Please choose stock location.");
+            return;
+        }
+        Meteor.call('addScheme', {itemId}, function (err, result) {
+            if (!_.isEmpty(result[0])) {
+                result.forEach(function (item) {
+                    Meteor.call('findItem', item.itemId, function (error, itemResult) {
+                        let itemOfCollectionNull = itemsCollection.find({
+                            itemId: item.itemId
+                        });
+                        let checkQty = 0;
+                        if (itemOfCollectionNull.count() > 0) {
+                            let addedQty = 0;
+                            itemOfCollectionNull.forEach(function (itemNull) {
+                                addedQty += itemNull.qty;
+                            });
+                            checkQty = (item.quantity * qty) + addedQty;
+                        } else {
+                            checkQty = item.quantity * qty;
+                        }
+                        let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                        if (checkQty <= inventoryQty) {
+                            itemsCollection.insert({
+                                itemId: item.itemId,
+                                unit: itemResult.unitDoc.name,
+                                qty: item.quantity * qty,
+                                price: item.price,
+                                amount: (item.price * item.quantity) * qty,
+                                name: itemResult.name,
+                                discount: 0,
+                            });
+                        }
+                        else {
+                            alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                        }
+                        // }
+                    });
+                });
+            } else {
+                Meteor.call('findItem', itemId, function (error, itemResult) {
+                    let itemOfCollectionNull = itemsCollection.find({
+                        itemId: itemId
+                    });
+                    let checkQty = 0;
+                    if (itemOfCollectionNull.count() > 0) {
+                        let addedQty = 0;
+                        itemOfCollectionNull.forEach(function (itemNull) {
+                            addedQty += itemNull.qty;
+                        });
+                        checkQty = qty + addedQty;
+                    } else {
+                        checkQty = qty;
+                    }
+                    let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                    let amount = 0;
+                    if (checkQty <= inventoryQty) {
+                        let exist = itemsCollection.findOne({
+                            itemId: itemId
+                        });
+                        if (exist) {
+                            qty += parseInt(exist.qty);
+                            amount = math.round(qty * itemResult.price, 2);
 
-        /*callMethod("/publications/items", {}, function (data) {
-         console.log(data);
-         });*/
-        /*// Calling a method
-         $.ajax({
-         method: "post",
-         url: "/methods/add-all-arguments",
-         data: JSON.stringify([1, 2, 3]),
-         contentType: "application/json",
-         success: function (data) {
-         console.log(data); // 6
-         }
-         });
+                            itemsCollection.update({
+                                _id: exist._id
+                            }, {
+                                $set: {
+                                    qty: qty,
+                                    price: itemResult.price,
+                                    amount: amount
+                                }
+                            });
+                        }
+                        else {
+                            amount = math.round(qty * itemResult.price, 2);
+                            itemsCollection.insert({
+                                itemId: itemId,
+                                unit: itemResult.unitDoc.name,
+                                qty: qty,
+                                price: itemResult.price,
+                                amount: amount,
+                                name: itemResult.name,
+                                discount: 0
+                            });
+                        }
+                    }
+                    else {
+                        alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                    }
 
-         // Getting data from a publication
-         $.get("/publications/widgets", function (data) {
-         console.log(data.widgets.length); // 11
-         });*/
-
+                });
+            }
+        });
     },
-    'change [name="stockLocationId"]'(event, instance)
-    {
+    'change [name="stockLocationId"]'(event, instance){
         debugger;
         let stockLocationId = $(event.currentTarget).val();
 
@@ -243,20 +297,14 @@ newTmpl.events({
             });
         }
 
-    }
-    ,
-    'click .add-new-customer'(event, instance)
-    {
+    },
+    'click .add-new-customer'(event, instance){
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
-    }
-    ,
-    'click .go-to-receive-payment'(event, instance)
-    {
+    },
+    'click .go-to-receive-payment'(event, instance){
         alertify.invoice().close();
-    }
-    ,
-    'change [name=customerId]'(event, instance)
-    {
+    },
+    'change [name=customerId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
@@ -266,10 +314,8 @@ newTmpl.events({
         }
         Session.set('totalOrder', undefined);
 
-    }
-    ,
-    'change .enable-sale-order'(event, instance)
-    {
+    },
+    'change .enable-sale-order'(event, instance){
         itemsCollection.remove({});
         let customerId = $('[name="customerId"]').val();
         if ($(event.currentTarget).prop('checked')) {
@@ -288,23 +334,60 @@ newTmpl.events({
             FlowRouter.query.unset();
             $('.sale-order').removeClass('toggle-list');
         }
-    }
-    ,
-    'click .toggle-list'(event, instance)
-    {
+    },
+    'click .toggle-list'(event, instance){
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
-    }
-    ,
-    'change [name="termId"]'(event, instance)
-    {
+    },
+    'change [name="termId"]'(event, instance){
         let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             customerInfo._term.netDueIn = result.netDueIn;
             Session.set('customerInfo', customerInfo);
         });
-    }
-})
-;
+    },
+    'click .item-remove'(event, instance){
+        itemsCollection.remove(this._id);
+    },
+    'click .item-imei'(event, instance){
+        let itemId = Session.set('itemIdForImei', this._id);
+        $('#input-imei').val('');
+        $('#imei').modal('show');
+    },
+    'keyup #input-imei'(event, instance){
+        if (event.which == 13) {
+            debugger;
+            let branchId = Session.get('currentBranch');
+            let imeis = [];
+            let imei = $(event.currentTarget).val().trim();
+            if (imei == "") {
+                return;
+            }
+            let itemId = Session.get('itemIdForImei');
+            let item = itemsCollection.findOne(itemId);
+            if (item && item.imei) {
+                if(item.imei.indexOf(imei)>-1){
+                    alertify.warning('IMEI already added.');
+                    return;
+                }
+                imeis = item.imei;
+                imeis.push(imei);
+            } else {
+                imeis.push(imei);
+            }
+            itemsCollection.update(itemId, {$set: {imei: imeis}});
+        }
+    },
+    'click .btn-remove-imei': function (e) {
+        let itemId = Session.get('itemIdForImei');
+        //let thisBtn = $(e.currentTarget);
+        // let imei = thisBtn.parents('tr').find('.td-imei').text().trim();
+        let imei = this.code;
+        let item = itemsCollection.findOne(itemId);
+        let obj = {};
+        obj.imei = subtractArray(item.imei, [imei]);
+        itemsCollection.update(itemId,{$set:obj});
+    },
+});
 newTmpl.helpers({
     stockLocation() {
         try {
@@ -386,9 +469,7 @@ newTmpl.helpers({
             };
         } catch (e) {
         }
-        ;
     },
-
     collection() {
         return Invoices;
     },
@@ -436,9 +517,22 @@ newTmpl.helpers({
             return instance.itemList.get();
         }
         return [];
+    },
+    items(){
+        return itemsCollection.find().fetch();
+    },
+    imeis(){
+        let imeis = [];
+        let itemId = Session.get('itemIdForImei');
+        let item = itemsCollection.findOne(itemId);
+        if (item && item.imei) {
+            for (let i = 0; i < item.imei.length; i++) {
+                imeis.push({order: i + 1, code: item.imei[i]});
+            }
+        }
+        return imeis;
     }
 });
-
 newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
@@ -450,7 +544,6 @@ newTmpl.onDestroyed(function () {
     Session.set('creditLimitAmount', undefined);
     deletedItem.remove({});
 });
-
 // Edit
 editTmpl.onCreated(function () {
     Session.set('getCustomerId', this.data.customerId);
@@ -465,8 +558,6 @@ editTmpl.onCreated(function () {
         this.isSaleOrder.set(true);
     }
 });
-
-
 editTmpl.events({
     'change [name="stockLocationId"]'(event, instance){
         debugger;
@@ -521,6 +612,123 @@ editTmpl.events({
             } catch (e) {
             }
         });
+    },
+    'change #item-id'(event, instance){
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
+        if (invoice) {
+            let soldQty = 0;
+            //-----------------------
+            let docItems = [];
+            invoice.items.reduce(function (res, value) {
+                if (!res[value.itemId]) {
+                    res[value.itemId] = {
+                        price: value.price,
+                        amount: value.amount,
+                        qty: 0,
+                        itemId: value.itemId
+                    };
+                    docItems.push(res[value.itemId])
+                } else {
+                    res[value.itemId].amount += value.amount;
+                }
+                res[value.itemId].qty += value.qty;
+                return res;
+            }, {});
+            //-----------------------
+            if (stockLocationId == invoice.stockLocationId) {
+                let oldItem = docItems.find(x => x.itemId == itemId);
+                soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            }
+            Meteor.call('addScheme', {itemId}, function (err, result) {
+                if (!_.isEmpty(result[0])) {
+                    result.forEach(function (item) {
+                        // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                        // if(schemeItem) {
+                        //     let amount = item.price * item.quantity;
+                        //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                        // }else{
+                        Meteor.call('findItem', item.itemId, function (error, itemResult) {
+                            let itemOfCollectionNull = itemsCollection.find({
+                                itemId: item.itemId
+                            });
+                            let checkQty = 0;
+                            if (itemOfCollectionNull.count() > 0) {
+                                let addedQty = 0;
+                                itemOfCollectionNull.forEach(function (itemNull) {
+                                    addedQty += itemNull.qty;
+                                });
+                                checkQty = (item.quantity * qty) + addedQty;
+                            } else {
+                                checkQty = item.quantity * qty;
+                            }
+                            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                            inventoryQty += soldQty;
+                            if (checkQty <= inventoryQty) {
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    qty: item.quantity * qty,
+                                    price: item.price,
+                                    amount: (item.price * item.quantity) * qty,
+                                    name: item.itemName
+                                });
+                            }
+                            else {
+                                alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                            }
+                        });
+                        // }
+                    });
+                }
+                else {
+                    Meteor.call('findItem', itemId, function (error, itemResult) {
+                        let itemOfCollectionNull = itemsCollection.find({
+                            itemId: itemId
+                        });
+                        let checkQty = 0;
+                        if (itemOfCollectionNull.count() > 0) {
+                            let addedQty = 0;
+                            itemOfCollectionNull.forEach(function (itemNull) {
+                                addedQty += itemNull.qty;
+                            });
+                            checkQty = qty + addedQty;
+                        } else {
+                            checkQty = qty;
+                        }
+                        let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                        inventoryQty += soldQty;
+                        if (checkQty <= inventoryQty) {
+                            let exist = itemsCollection.findOne({
+                                itemId: itemId
+                            });
+                            if (exist) {
+                                qty += parseInt(exist.qty);
+                                amount = math.round(qty * price, 2);
+                                itemsCollection.update({
+                                    _id: exist._id
+                                }, {
+                                    $set: {
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount
+                                    }
+                                });
+                            } else {
+                                itemsCollection.insert({
+                                    itemId: itemId,
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount,
+                                    name: instance.name
+                                });
+                            }
+                        }
+                        else {
+                            alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                        }
+                    });
+                }
+            });
+        }
     }
 });
 editTmpl.helpers({
@@ -674,7 +882,6 @@ editTmpl.helpers({
         }
     }
 });
-
 editTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
@@ -685,7 +892,6 @@ editTmpl.onDestroyed(function () {
     Session.set('totalOrder', undefined);
     deletedItem.remove({});
 });
-
 // Show
 showTmpl.onCreated(function () {
     this.invoice = new ReactiveVar();
@@ -698,7 +904,6 @@ showTmpl.onCreated(function () {
         );
     });
 });
-
 showTmpl.helpers({
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
@@ -848,8 +1053,6 @@ listSaleOrder.events({
 
     }
 });
-
-
 //insert sale order item to itemsCollection
 let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
     Meteor.call('getItem', self.itemId, (err, result) => {
@@ -941,7 +1144,7 @@ AutoForm.addHooks([
 ], hooksObject);
 
 
-var server = "http://localhost:3000/";
+let server = "http://localhost:3000/";
 let callMethod = function (methodName, data, callback) {
     $.ajax(server + methodName, {
         method: "post",
@@ -955,3 +1158,20 @@ let callMethod = function (methodName, data, callback) {
         }
     });
 };
+
+function subtractArray(src, filt) {
+    var temp = {}, i, result = [];
+    // load contents of filt into an object
+    // for faster lookup
+    for (i = 0; i < filt.length; i++) {
+        temp[filt[i]] = true;
+    }
+
+    // go through each item in src
+    for (i = 0; i < src.length; i++) {
+        if (!(src[i] in temp)) {
+            result.push(src[i]);
+        }
+    }
+    return (result);
+}

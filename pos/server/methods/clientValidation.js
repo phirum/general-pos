@@ -3,7 +3,31 @@ import {RingPullInventories} from '../../imports/api/collections/ringPullInvento
 
 Meteor.methods({
     findItem(itemId){
-        return Item.findOne(itemId);
+        return Item.aggregate([
+            {$match:{_id:itemId}},
+            {
+                $lookup: {
+                    from: "units",
+                    localField: "unitId",
+                    foreignField: "_id",
+                    as: "unitDoc"
+                },
+
+            }, {
+                $unwind: {path: "$unitDoc", preserveNullAndEmptyArrays: true}
+            }
+            , {
+                $lookup: {
+                    from: "pos_categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "categoryDoc"
+                },
+
+            }, {
+                $unwind: {path: "$categoryDoc", preserveNullAndEmptyArrays: true}
+            }
+        ])[0];
     },
     checkStockByLocation(stockLocationId, items){
         let result = {isEnoughStock: true, message: ''};
