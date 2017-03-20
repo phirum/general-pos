@@ -10,7 +10,6 @@ import 'meteor/theara:jsonview';
 import {TAPi18n} from 'meteor/tap:i18n';
 import 'meteor/tap:i18n-ui';
 
-
 // Lib
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
 import {renderTemplate} from '../../../../core/client/libs/render-template.js';
@@ -34,7 +33,6 @@ import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 import {CheckStockByLocation} from '../../../common/methods/checkStockLocation.js'
 // Page
 import './invoice.html';
-import './invoice-items.js';
 import './info-tab.html';
 import './customer.html';
 //methods
@@ -166,6 +164,7 @@ indexTmpl.events({
 
 // New
 newTmpl.onCreated(function () {
+    this.totalDiscount = new ReactiveVar();
     this.isEnoughStock = new ReactiveVar();
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
@@ -282,6 +281,7 @@ newTmpl.events({
                 });
             }
         });
+        $('#item-id').val('');
     },
     'change [name="stockLocationId"]'(event, instance){
         debugger;
@@ -365,7 +365,7 @@ newTmpl.events({
             let itemId = Session.get('itemIdForImei');
             let item = itemsCollection.findOne(itemId);
             if (item && item.imei) {
-                if(item.imei.indexOf(imei)>-1){
+                if (item.imei.indexOf(imei) > -1) {
                     alertify.warning('IMEI already added.');
                     return;
                 }
@@ -377,7 +377,7 @@ newTmpl.events({
             itemsCollection.update(itemId, {$set: {imei: imeis}});
         }
     },
-    'click .btn-remove-imei': function (e) {
+    'click .btn-remove-imei'(event) {
         let itemId = Session.get('itemIdForImei');
         //let thisBtn = $(e.currentTarget);
         // let imei = thisBtn.parents('tr').find('.td-imei').text().trim();
@@ -385,8 +385,18 @@ newTmpl.events({
         let item = itemsCollection.findOne(itemId);
         let obj = {};
         obj.imei = subtractArray(item.imei, [imei]);
-        itemsCollection.update(itemId,{$set:obj});
+        itemsCollection.update(itemId, {$set: obj});
     },
+    'change [name="isWholesale"]'(event) {
+        let isWholesale = $('[name="isWholesale"]').is(':checked');
+        Meteor.call('getItems',function(er,result){
+
+        });
+    },
+    'change [name="discount"]'(event, instance){
+        let discount = event.currentTarget.value;
+        instance.totalDiscount.set(discount);
+    }
 });
 newTmpl.helpers({
     stockLocation() {
@@ -531,6 +541,30 @@ newTmpl.helpers({
             }
         }
         return imeis;
+    },
+    subTotal: function () {
+        let subTotal = 0;
+        let getItems = itemsCollection.find({});
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        return subTotal;
+    },
+    total: function () {
+        let subTotal = 0;
+        let instance = Template.instance();
+        let discount = instance.totalDiscount.get();
+        discount = discount ? discount : 0;
+        let getItems = itemsCollection.find({});
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        return subTotal * (1 - discount / 100);
+    },
+    totalDiscount: function () {
+        let instance = Template.instance();
+        let discount = instance.totalDiscount.get();
+        return discount ? discount : 0;
     }
 });
 newTmpl.onDestroyed(function () {

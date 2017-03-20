@@ -27,62 +27,74 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
             <div class="row">
-                <div class="col-md-3 ">
-                    <div class="input-group">
-                        <label for="email" class="input-group">Customer:<span style="color: red;">*</span></label>
-                        {{> afFieldInput name="customerId" }}
-                        <br>
-                        {{>customerDropDown}}
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-4 ">
+                            <div class="input-group">
+                                <label for="email" class="input-group">Customer:<span
+                                        style="color: red;">*</span></label>
+                                {{> afFieldInput name="customerId" }}
+                                <br>
+                                {{>customerDropDown}}
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-3">
+                             <br>
+                             <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
+                                                                                                 class="sale-order btn btn-default">Sale
+                                Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                         </div>-->
+                        <div class="col-md-4">
+                            {{> afQuickField name="voucherId"}}
+                        </div>
+                        <div class="col-md-4">
+                            {{> afQuickField name="invoiceDate"}}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            {{> afQuickField name="stockLocationId" value=stockLocation resetOnSuccess=false}}
+                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                        </div>
+                        <div class="col-md-3">
+                            {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+                        </div>
+                        <div class="col-md-3">
+                            {{> afQuickField name="dueDate" value=dueDate}}
+                        </div>
+                        {{#if isTerm}}
+                            <div class="col-md-3">
+                                {{> afQuickField name="termId" options=termOption value=termId}}
+                            </div>
+                        {{/if}}
                     </div>
                 </div>
-                <!-- <div class="col-md-3">
-                     <br>
-                     <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
-                                                                                         class="sale-order btn btn-default">Sale
-                        Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
-                 </div>-->
                 <div class="col-md-2">
-                    {{> afQuickField name="voucherId"}}
+                    {{> afQuickField name="des" rows="5"}}
                 </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="invoiceDate"}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="dueDate" value=dueDate}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="stockLocationId" value=stockLocation resetOnSuccess=false}}
-                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    {{> afQuickField name="des"}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
-                </div>
-                {{#if isTerm}}
-                    <div class="col-md-2">
-                        {{> afQuickField name="termId" options=termOption value=termId}}
-                    </div>
-                {{/if}}
             </div>
             <div class="row well">
                 <div class="col-md-12 ">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" class="form-control" id="item-barcode" placeholder="Barcode">
                         </div>
                         <div class="col-md-4">
                             <select class="form-control" id="item-id">
+                                <option value="">(Select Item)</option>
                                 {{#each itemList}}
                                     <option value="{{_id}}">{{name}} ({{_unit.name}})</option>
                                 {{/each}}
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" class="form-control" id="item-qty" placeholder="Qty">
+                        </div>
+                        <div class="col-md-2">
+                            {{> afQuickField name="isWholesale" label=false}}
                         </div>
 
                     </div>
@@ -104,24 +116,35 @@
                         </thead>
                         <tbody>
                         {{#each items}}
-                        <tr>
-                            <td>{{itemId}}</td>
-                            <td>{{name}}</td>
-                            <td>({{unit}})</td>
-                            <td><input type="number" value={{price}} class="item-price"> </td>
-                            <td><input type="number" value={{qty}} class="item-qty"></td>
-                            <td><input type="number" value={{discount}} class="item-discount"></td>
-                            <td>{{amount}}</td>
-                            <td>
-                                <div class="btn-group btn-group-xs" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-warning item-imei">IMEI</button>
-                                    <button type="button" class="btn btn-danger item-remove"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>{{itemId}}</td>
+                                <td>{{name}}</td>
+                                <td>({{unit}})</td>
+                                <td><input type="number" value={{price}} class="item-price"></td>
+                                <td><input type="number" value={{qty}} class="item-qty"></td>
+                                <td><input type="number" value={{discount}} class="item-discount"></td>
+                                <td>{{amount}}</td>
+                                <td>
+                                    <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-warning item-imei">IMEI</button>
+                                        <button type="button" class="btn btn-danger item-remove"><i class="fa fa-trash"
+                                                                                                    aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         {{/each}}
                         </tbody>
                     </table>
+                    <div class="col-md-4">
+                        {{> afQuickField name="subTotal" value=subTotal readonly=true}}
+                    </div>
+                    <div class="col-md-4">
+                        {{> afQuickField name="discount" value=totalDiscount}}
+                    </div>
+                    <div class="col-md-4">
+                        {{> afQuickField name="total" value=total readyonly=true}}
+                    </div>
                 </div>
             </div>
             <div class="row">

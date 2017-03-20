@@ -51,6 +51,10 @@ Invoices.schema = new SimpleSchema({
         type: String,
         optional: true
     },
+    isWholesale: {
+        type: Boolean,
+        label: "Wholesale"
+    },
     invoiceDate: {
         type: Date,
         defaultValue: moment().toDate(),
@@ -127,7 +131,7 @@ Invoices.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return Meteor.user()._id;
             }
         }
@@ -154,6 +158,26 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
+    discount: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
+    subTotal: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     stockLocationId: {
         type: String,
         autoform: {
@@ -165,8 +189,8 @@ Invoices.schema = new SimpleSchema({
                     if (Meteor.isClient) {
                         let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
                         let stockLocations = [];
-                        if(currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
-                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations ;
+                        if (currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
+                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations;
                         }
                         let currentBranch = Session.get('currentBranch');
                         return {
@@ -198,7 +222,7 @@ Invoices.schema = new SimpleSchema({
     closedAt: {
         type: Date,
         optional: true
-    }
+    },
 });
 
 Meteor.startup(function () {

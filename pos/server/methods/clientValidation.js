@@ -2,6 +2,33 @@ import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 
 Meteor.methods({
+    findItems(ids){
+        return Item.aggregate([
+            {$match:{_id:{$in:ids}}},
+            {
+                $lookup: {
+                    from: "units",
+                    localField: "unitId",
+                    foreignField: "_id",
+                    as: "unitDoc"
+                },
+
+            }, {
+                $unwind: {path: "$unitDoc", preserveNullAndEmptyArrays: true}
+            }
+            , {
+                $lookup: {
+                    from: "pos_categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "categoryDoc"
+                },
+
+            }, {
+                $unwind: {path: "$categoryDoc", preserveNullAndEmptyArrays: true}
+            }
+        ]);
+    },
     findItem(itemId){
         return Item.aggregate([
             {$match:{_id:itemId}},
