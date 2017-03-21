@@ -388,9 +388,22 @@ newTmpl.events({
         itemsCollection.update(itemId, {$set: obj});
     },
     'change [name="isWholesale"]'(event) {
+        debugger;
         let isWholesale = $('[name="isWholesale"]').is(':checked');
-        Meteor.call('getItems',function(er,result){
-
+        let itemList = itemsCollection.find({}).fetch();
+        let ids = itemList.map(function (id) {
+            return id.itemId;
+        });
+        Meteor.call('findItems', ids, function (er, itemsResult) {
+            if (itemsResult) {
+                itemList.forEach(function (item) {
+                    let itemResult = itemsResult.find(x => x._id == item.itemId);
+                    let price = isWholesale ? itemResult.wholesalePrice : itemResult.price;
+                    let amount = price * item.qty;
+                    amount = math.round(amount * (1 - item.discount / 100),2);
+                    itemsCollection.update(item._id, {$set: {price: price, amount: amount}});
+                })
+            }
         });
     },
     'change [name="discount"]'(event, instance){

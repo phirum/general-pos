@@ -87,6 +87,10 @@ let accountMapping = new SimpleSchema({
     }
 });
 Item.schema = new SimpleSchema({
+    wholesalePrice:{
+        type:Number,
+        decimal:true
+    },
     name: {
         type: String,
         unique: true,
