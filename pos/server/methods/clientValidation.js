@@ -29,9 +29,10 @@ Meteor.methods({
             }
         ]);
     },
-    findItem(itemId){
+    findItem(code,type){
+        let selector = type=="id" ? {_id: code} : {barcode: code};
         return Item.aggregate([
-            {$match:{_id:itemId}},
+            {$match:selector},
             {
                 $lookup: {
                     from: "units",

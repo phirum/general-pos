@@ -151,32 +151,42 @@ Invoices.schema = new SimpleSchema({
     total: {
         type: Number,
         decimal: true,
-        autoform: {
+        /*autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
             }
-        }
+        }*/
+    },
+    paid: {
+        type: Number,
+        decimal: true,
+        /*autoform: {
+         type: 'inputmask',
+         inputmaskOptions: function () {
+         return inputmaskOptions.currency();
+         }
+         }*/
     },
     discount: {
         type: Number,
         decimal: true,
-        autoform: {
+       /* autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
             }
-        }
+        }*/
     },
     subTotal: {
         type: Number,
         decimal: true,
-        autoform: {
+       /* autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
             }
-        }
+        }*/
     },
     stockLocationId: {
         type: String,

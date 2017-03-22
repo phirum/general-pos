@@ -24,15 +24,15 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_itemNew" type="insert"}}
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{> afQuickField name='name'}}
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{> afQuickField name='unitId' label="+Base Unit"}}
                 </div>
-
+                <div class="col-md-4">{{> afQuickField name='itemType' label="Item Type"}}</div>
             </div>
-         <!--   <div class="row">
+            <!--   <div class="row">
                 <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"><span
                         class="label label-primary"> Add Selling-Unit </span></label></div>
             </div>
@@ -42,13 +42,15 @@
                 </div>
             </div>-->
             <div class="row">
-                <div class="col-md-3">{{> afQuickField name='categoryId' label="Category" options=categoryList}}
+                <div class="col-md-4">{{> afQuickField name='categoryId' label="Category" options=categoryList}}
                 </div>
-                <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
-                <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
-                <!--<div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>-->
+                <div class="col-md-4">{{> afQuickField name='price'}}
+                </div>
+                <div class="col-md-4">{{> afQuickField name='wholesalePrice'}}
+                </div>
+                   <!--<div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>-->
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"><span
                         class="label label-primary"> Add Scheme </span></label></div>
             </div>
@@ -56,18 +58,17 @@
                 <div class="col-md-12 scheme hidden">
                     {{>schemeItem}}
                 </div>
-            </div>
+            </div>-->
             <div class="row price-div">
-                <div class="col-md-3">{{> afQuickField name='price'}}
-                </div>
-                <div class="col-md-3">{{> afQuickField name='purchasePrice'}}
-                </div>
+
+                <div class="col-md-4">{{> afQuickField name='barcode' label="Barcode"}}</div>
+                <div class="col-md-8">{{> afQuickField name='photo'}}</div>
+                <!--  <div class="col-md-3">{{> afQuickField name='purchasePrice'}}
+                </div>-->
 
             </div>
-            <div class="row">
-                <div class="col-md-6">{{> afQuickField name='photo'}}</div>
-            </div>
-            <div class="row">
+
+            <!-- <div class="row">
                 <div class="col-md-3">
                     <div class="input-group">
                         <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
@@ -81,7 +82,7 @@
             </div>
             <div class="row">
                 <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
-            </div>
+            </div>-->
             {{> formFooterWithButton}}
         {{/autoForm}}
     </div>
@@ -92,15 +93,16 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_itemEdit" doc=this type="update"}}
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{> afQuickField name='name'}}
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{> afQuickField name='unitId' label="+Base Unit"}}
                 </div>
+                <div class="col-md-4">{{> afQuickField name='itemType' label="Item Type"}}</div>
 
             </div>
-            <div class="row">
+            <!--   <div class="row">
                 {{#if checkSellingUnit}}
                     <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"
                                                                         checked><span
@@ -115,14 +117,20 @@
                 <div class="col-md-12 selling-unit {{toggleSellingUnit}}">
                     {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
                 </div>
-            </div>
+            </div>-->
             <div class="row">
-                <div class="col-md-3">{{> afQuickField name='categoryId' label="Category" options=categoryList}}</div>
-                <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
-                <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+                <div class="col-md-4">
+                    {{> afQuickField name='categoryId' label="Category" options=categoryList}}
+                </div>
+                 <div class="col-md-4">
+                    {{> afQuickField name='price'}}
+                </div>
+                <div class="col-md-4">
+                    {{> afQuickField name='wholesalePrice'}}
+                </div>
+                <!--<div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>-->
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 {{#if checkScheme}}
                     <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"
                                                                         checked><span
@@ -136,20 +144,15 @@
                 <div class="col-md-12 scheme {{toggleScheme}}">
                     {{> schemeItem}}
                 </div>
-            </div>
+            </div>-->
             <div class="row">
-                <div class="col-md-3">
-                    {{> afQuickField name='price'}}
-                </div>
-                <div class="col-md-3">
-                    {{> afQuickField name='purchasePrice'}}
-                </div>
+                <div class="col-md-4">{{> afQuickField name='barcode' label="Barcode"}}</div>
+
+                <div class="col-md-8">{{> afQuickField name='photo'}}</div>
 
             </div>
-            <div class="row">
-                <div class="col-md-6">{{> afQuickField name='photo'}}</div>
-            </div>
-            <div class="row">
+
+            <!--   <div class="row">
                 <div class="col-md-3">
                     <div class="input-group">
                         <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
@@ -163,7 +166,7 @@
             </div>
             <div class="row">
                 <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
-            </div>
+            </div>-->
             {{> formFooterWithButton}}
 
         {{/autoForm}}
@@ -213,7 +216,8 @@
                         {{> UI.dynamic template=../atts.subtemplate}}
 
                         <div class="col-sm-1">
-                            {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                            {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount
+                                  maxCount=../atts.maxCount}}
                                 <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
@@ -222,7 +226,8 @@
                     </div>
                 {{/afEachArrayItem}}
 
-                {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount
+                      maxCount=this.atts.maxCount}}
                     <div class="row">
                         <div class="col-sm-11"></div>
                         <!--Add more-->

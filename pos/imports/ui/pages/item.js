@@ -376,6 +376,7 @@ let hooksObject = {
             if (getScheme.length > 0) {
                 doc.scheme = getScheme;
             }
+            doc.purchasePrice = doc.wholesalePrice;
             return doc;
         },
         update(doc){
