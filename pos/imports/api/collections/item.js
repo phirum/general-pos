@@ -253,6 +253,11 @@ Item.schema = new SimpleSchema({
         type:Object,
         optional:true,
         blackbox:true
+    },
+    imei:{
+        type:Object,
+        optional:true,
+        blackbox:true
     }
 });
 

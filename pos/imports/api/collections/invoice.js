@@ -43,6 +43,10 @@ Invoices.itemsSchema = new SimpleSchema({
         label: "IMEI",
         optional: true
     },
+    discount: {
+        type: Number,
+        decimal: true
+    }
 });
 
 // Invoices schema
@@ -152,15 +156,16 @@ Invoices.schema = new SimpleSchema({
         type: Number,
         decimal: true,
         /*autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }*/
+         type: 'inputmask',
+         inputmaskOptions: function () {
+         return inputmaskOptions.currency();
+         }
+         }*/
     },
     paid: {
         type: Number,
         decimal: true,
+        optional: true,
         /*autoform: {
          type: 'inputmask',
          inputmaskOptions: function () {
@@ -171,22 +176,22 @@ Invoices.schema = new SimpleSchema({
     discount: {
         type: Number,
         decimal: true,
-       /* autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }*/
+        /* autoform: {
+         type: 'inputmask',
+         inputmaskOptions: function () {
+         return inputmaskOptions.currency();
+         }
+         }*/
     },
     subTotal: {
         type: Number,
         decimal: true,
-       /* autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }*/
+        /* autoform: {
+         type: 'inputmask',
+         inputmaskOptions: function () {
+         return inputmaskOptions.currency();
+         }
+         }*/
     },
     stockLocationId: {
         type: String,

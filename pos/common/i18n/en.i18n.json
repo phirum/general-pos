@@ -487,6 +487,7 @@
       }
     },
     "custom": {
+      "payAndPrint":"Pay & Print",
       "saveAndPrint": "Save & Print",
       "pay": "Pay"
     },

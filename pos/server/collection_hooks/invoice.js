@@ -736,6 +736,7 @@ function invoiceManageStock(invoice) {
                 lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
                 averagePrice = lastAmount / remainQty;
             }
+            let imeis=subtractImeiArray(inventory.imei,item.imei);
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: invoice.branchId,
@@ -750,11 +751,13 @@ function invoiceManageStock(invoice) {
                 coefficient: -1,
                 type: refType,
                 refId: invoice._id,
-                inventoryDate: invoice.invoiceDate
+                inventoryDate: invoice.invoiceDate,
+                imei:imeis
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + invoice.stockLocationId] = remainQty;
+            setModifier.$set['imei.' + invoice.stockLocationId] = imeis;
             Item.direct.update(item.itemId, setModifier);
 
         } else {
@@ -926,4 +929,20 @@ function reduceGratisInventory(item, branchId, stockLocationId) {
         gratisInventoryObj.qty = -item.qty;
         GratisInventories.insert(gratisInventoryObj)
     }
+}
+function subtractImeiArray(src, filt) {
+    let temp = {}, i, result = [];
+    // load contents of filt into an object
+    // for faster lookup
+    for (i = 0; i < filt.length; i++) {
+        temp[filt[i]] = true;
+    }
+
+    // go through each item in src
+    for (i = 0; i < src.length; i++) {
+        if (!(src[i] in temp)) {
+            result.push(src[i]);
+        }
+    }
+    return (result);
 }

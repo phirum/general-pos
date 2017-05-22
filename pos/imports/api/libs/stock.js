@@ -5,6 +5,7 @@ import {GratisInventories} from '../collections/gratisInventory'
 
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let lastPurchasePrice = 0;
         let remainQuantity = 0;
         let prefix = stockLocationId + '-';
@@ -13,7 +14,9 @@ export  default class StockFunction {
             itemId: item.itemId,
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
+        let imeis=[];
         if (inventory) {
+            imeis=inventory.imei.concat(item.imei);
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -32,12 +35,14 @@ export  default class StockFunction {
             nextInventory.coefficient = 1;
             nextInventory.refId = refId;
             nextInventory.inventoryDate = inventoryDate;
+            nextInventory.imei = imeis;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             console.log(nextInventory);
             AverageInventories.insert(nextInventory);
         }
         else {
+            imeis=item.imei;
             let totalQty = item.qty;
             let lastAmount = item.qty * item.price;
             let averagePrice = lastAmount / totalQty;
@@ -56,6 +61,7 @@ export  default class StockFunction {
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
             inventoryObj.inventoryDate = inventoryDate;
+            inventoryObj.imei= imeis;
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             AverageInventories.insert(inventoryObj);
@@ -63,10 +69,12 @@ export  default class StockFunction {
         //var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
         let setModifier = {$set: {}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+        setModifier.$set['imei.' + stockLocationId] = imeis;
         Item.direct.update(item.itemId, setModifier);
     }
 
     static averageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         //let lastPurchasePrice = 0;
         let remainQuantity = 0;
@@ -76,8 +84,9 @@ export  default class StockFunction {
             itemId: item.itemId,
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
-
+        let imeis=[];
         if (inventory) {
+            imeis=inventory.imei.concat(item.imei);
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -96,12 +105,14 @@ export  default class StockFunction {
             nextInventory.lastAmount = lastAmount;
             nextInventory.averagePrice = averagePrice;
             nextInventory.inventoryDate = inventoryDate;
+            nextInventory.imei = imeis;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(nextInventory);
         }
         else {
             //let thisItem = Item.findOne(item.itemId);
+            imeis=item.imei;
             let totalQty = item.qty;
             let lastAmount = item.qty * item.price;
             let averagePrice = lastAmount / totalQty;
@@ -120,17 +131,20 @@ export  default class StockFunction {
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
             inventoryObj.inventoryDate = inventoryDate;
+            inventoryObj.imei = imeis;
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(inventoryObj);
         }
         let setModifier = {$set: {purchasePrice: item.price}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+        setModifier.$set['imei.' + stockLocationId] = imeis;
         Item.direct.update(item.itemId, setModifier);
         return id;
     }
 
     static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -139,6 +153,7 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
+            let imeis=subtractImeiArray(inventory.imei,item.imei);
             let totalQty = inventory.remainQty - item.qty;
             let lastAmount = 0;
             let averagePrice = 0;
@@ -160,9 +175,14 @@ export  default class StockFunction {
                 coefficient: -1,
                 type: type,
                 refId: refId,
-                inventoryDate: inventoryDate
+                inventoryDate: inventoryDate,
+                imei: imeis,
             };
             id = AverageInventories.insert(newInventory);
+            let setModifier = {$set: {}};
+            setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
+            setModifier.$set['imei.' + stockLocationId] = imeis;
+            Item.direct.update(item.itemId, setModifier);
         }
         else {
             throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
@@ -171,6 +191,7 @@ export  default class StockFunction {
     }
 
     static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -186,6 +207,7 @@ export  default class StockFunction {
                 lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
                 averagePrice = lastAmount / remainQty;
             }
+            let imeis=subtractImeiArray(inventory.imei,item.imei);
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,
@@ -200,11 +222,13 @@ export  default class StockFunction {
                 coefficient: -1,
                 type: type,
                 refId: refId,
-                inventoryDate: inventoryDate
+                inventoryDate: inventoryDate,
+                imei:imeis
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
+            setModifier.$set['imei.' + stockLocationId] = imeis;
             Item.direct.update(item.itemId, setModifier);
         }
         else {
@@ -438,7 +462,7 @@ export  default class StockFunction {
                 }
             } else {
                 result.isEnoughStock = false;
-                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + 0;
                 return false;
             }
         });
@@ -462,7 +486,7 @@ export  default class StockFunction {
                 }
             } else {
                 result.isEnoughStock = false;
-                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + 0;
                 return false;
             }
         });
@@ -481,4 +505,20 @@ export  default class StockFunction {
         }
     }
 
+}
+function subtractImeiArray(src, filt) {
+    let temp = {}, i, result = [];
+    // load contents of filt into an object
+    // for faster lookup
+    for (i = 0; i < filt.length; i++) {
+        temp[filt[i]] = true;
+    }
+
+    // go through each item in src
+    for (i = 0; i < src.length; i++) {
+        if (!(src[i] in temp)) {
+            result.push(src[i]);
+        }
+    }
+    return (result);
 }

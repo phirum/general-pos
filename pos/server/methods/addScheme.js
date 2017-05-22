@@ -2,7 +2,7 @@ import {Meteor} from 'meteor/meteor';
 import {Item} from '../../imports/api/collections/item';
 Meteor.methods({
     addScheme(code, type){
-        let selector = type=="id" ? {_id: code} : {barcode: code};
+        let selector = type == "id" ? {_id: code} : {barcode: code};
         let item = Item.aggregate([{
             $match: selector
         }, {
@@ -35,7 +35,11 @@ Meteor.methods({
                 }
             }
         }]);
-        return item[0].scheme;
+        if (item && item.length > 0 && item[0].scheme) {
+            return item[0].scheme;
+        }else{
+            return [];
+        }
     },
     /*addSchemeOnlyQty({itemId}){
      let item = Item.aggregate([{
