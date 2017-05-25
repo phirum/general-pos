@@ -1,0 +1,220 @@
+<template name="pos_printA4">
+
+    {{#if data}}
+        {{#with data}}
+            <div align="center" class="container"
+                 style="font-family: 'Khmer OS Battambang'; font-size: 12px; width:710px; margin: 0 auto;">
+                <!--btn-small btn-primary-->
+                <div class="row">
+                    <div class="pull-right">
+                    <span><button class="hidden-print btn printInvoice bg-orange btn-flat margin"><i
+                            class="fa fa-print"></i> បោះពុម្ព</button></span>
+                        <span><a href="/pos/invoice"
+                                 class="hidden-print btn btn-info btn-flat margin">ត្រលប់ក្រោយ</a></span>
+                    </div>
+                </div>
+                <div class="invoice-title">
+                    <br>
+                    {{#with company}}
+                        <!--<h4><b>{{khName}}</b></h4>-->
+                        <div style="height: 100px; padding-left: 40px;">
+                            <!--<div style="width: 50px; float: left;  height: 60px; border: 1px solid #cb2027;">-->
+                                <img width="100px" height="100px" src="/logo/the_nature_cambodia_logo.png" alt="">
+                            <!--</div>-->
+                            <div style="width: 500px; float: right; padding-left: 70px; height: 30px; text-align: left; padding-top: 30px;">
+                                <span style="font-weight: bold;font-size: 18px; ​font-family:'Khmer OS Muol Light'">{{khName}}</span>
+                            </div>
+                        </div>
+                        <span>{{khAddress}} {{telephone}}</span>
+                    {{/with}}
+                    <!--<span style="font-weight: bold;font-size: 16px;​font-family:'Khmer OS Muol Light'">-->
+                    <!--វិក្កយបត្រ</span><br>-->
+                    <div class="col-md-12">
+                        <div style="top: 10px; margin:10px 0px 10px 0px; padding: 0px 0px 0px 0px; border-width: 1px; border-bottom-width:1px;
+   border-bottom-color:black;
+   border-bottom-style: dashed;
+   width: 100%;"></div>
+                        <table width="100%">
+                            <tr>
+                                <td><b>
+                                    Invoice No</b></td>
+                                <td>: {{sale._id}}</td>
+                                <td><b>Date</b></td>
+                                <td>: {{moFormat sale.saleDate 'DD/MM/YYYY HH:mm:ss'}}</td>
+                            </tr>
+                            <tr>
+                                <!--<td><b>តំណាងលក់/Seller</b></td>-->
+                                <!--<td>: {{sale._rep.name}}</td>-->
+
+                            </tr>
+                            <tr>
+                                <td><b>Customer</b></td>
+                                <td>: {{sale._customer.name }}</td>
+                                <td><b>Memo</b></td>
+                                <td>: {{{sale.shipTo}}}</td>
+
+                            </tr>
+                            <!--<tr>-->
+                            <!--<td><b>លេខប័ណ្ណបញ្ចេញឃ្លាំង:</b></td>-->
+                            <!--<td>: {{sale.boid}}</td>-->
+                            <!--<td><b>ប្រភេទវិក្កយបត្រ:</b></td>-->
+                            <!--<td>: {{sale.typeOfInvoice}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                            <!--<td><b>លេខឡាន/Truck Num</b></td>-->
+                            <!--<td>: {{sale.truckDoc.number}}</td>-->
+                            <!--<td><b>ថ្ងៃផុតកំណត់/Due Date</b></td>-->
+                            <!--<td>: {{moFormat sale.dueDate 'DD/MM/YYYY HH:mm:ss'}}</td>-->
+                            <!--</tr>-->
+                            <tr>
+                                <td><b>Tel</b></td>
+                                <td>: {{sale._customer.telephone}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </table>
+                        <div style="height: 7px;"></div>
+                        <span style="font-weight: bold;font-size: 18px;">Invoice</span>
+                        <table border="1" width="100%"
+                               style="font-size: 12px; border-collapse:collapse; font-family: 'Khmer OS Battambang';">
+                            <tr align="center"
+                                style="-webkit-print-color-adjust: exact; background-color: lightgrey !important; font-weight: bold; height: 20px;">
+                                <td>N<sup>o</sup>​</td>
+                                <td> Product Name</td>
+                                <td> Qty</td>
+                                {{#if invoiceTypeSaleOrder sale.invoiceType}}
+                                    <td> បរិមាណនៅសល់</td>
+                                {{/if}}
+                                <td> Price</td>
+                                <td> Dis(%)</td>
+                                <td> Total</td>
+                            </tr>
+                            {{#each item in sale.saleDetails}}
+                                <tr style="height: 20px; padding: 10px;">
+                                    <td align="center">{{no @index}}</td>
+                                    <td align="left" style="padding-left: 5px;">
+                                        {{item.itemName}}
+                                        {{#if existUnitConvert item.unitConvertDoc}}
+                                            &nbsp;&nbsp;{{numFormat item.originalQty '0,0.00'}}{{{item.itemDoc.name}}}
+                                            {{numFormat item.unitConvertDoc.convertAmount
+                                                        '0,0.00'}}{{item.unitConvertDoc._unit.name}}
+                                        {{/if}}
+                                    </td>
+                                    <td align="right" style="padding-right: 5px;">{{numFormat item.qty '0,0'}}</td>
+                                    {{#if invoiceTypeSaleOrder sale.invoiceType}}
+                                        <td align="right">{{lookupRemainQty sale item.itemId
+                                                                            item.itemDoc._unit.name}}</td>
+                                    {{/if}}
+                                    <td align="right" style="padding-right: 5px;">{{numFormat item.price '0,0.00'}}</td>
+                                    <td align="right" style="padding-right: 5px;">{{numFormat item.discount '0,0.00'}}</td>
+                                    <td align="right" style="padding-right: 5px;">{{numFormat item.amount '0,0.00'}}</td>
+                                </tr>
+                            {{/each}}
+                            {{{renderBlankTd sale}}}
+                        </table>
+                        <table width="100%"  style="font-size: 16px;">
+                            <tr align="right" style="height: 25px; font-size: 14px;">
+                                <td width="85%"><b>Sub Total</b>:</td>
+                                <td><b>{{numFormat sale.subTotal '0,0.00'}}</b> $</td>
+                            </tr>
+                            <tr align="right" style=" height: 25px; font-size: 14px;">
+                                <td align="right"><b>Discount(%)</b>:</td>
+                                <td align="right"><b>{{numFormat sale.discount '0,0.00'}}</b></td>
+
+                            </tr>
+                            <tr align="right" style="height: 25px; font-size: 14px;">
+                                <td><b>Grand Total</b>:</td>
+                                <td><b>{{numFormat sale.total '0,0.00'}}</b> $</td>
+                            </tr>
+                            {{#unless invoiceTypeSaleOrder sale.invoiceType}}
+                                {{#if hasPayment sale.paymentObj}}
+                                    {{#with sale.paymentObj}}
+                                        <tr align="right">
+                                            <td><b>Paid</b>:</td>
+                                            <td><b>{{numFormat paidAmount '0,0.00'}}</b> $</td>
+                                        </tr>
+
+                                        <tr align="right">
+                                            <td><b>Balance</b>:</td>
+                                            <td><b>{{numFormat balanceAmount '0,0.00'}}</b> $</td>
+                                        </tr>
+                                    {{/with}}
+                                {{/if}}
+                            {{/unless}}
+                            {{#each sale._exchangeRate.rates}}
+                                <tr align="right" style="height: 25px;">
+                                    <td colspan="5">{{toCurrencyId}}:</td>
+                                    <td colspan="2">{{totalFormatted}}{{symbol}}</td>
+                                </tr>
+                            {{/each}}
+                                <!--{{#unless invoiceTypeSaleOrder sale.invoiceType}}-->
+                                <!--{{#if hasPayment sale.paymentObj}}-->
+                                    <!--{{#with sale.paymentObj}}-->
+                                    <!--<tr style="height: 25px;">-->
+                                    <!--<td><b>Paid </b>:</td>-->
+                                    <!--<td align="right" colspan="2" style="font-weight: bold">
+                                            numFormat-->
+                                    <!--paidAmount-->
+                                    <!--'0,0.00'}}$-->
+                                    <!--</td>-->
+                                    <!--<td colspan="2" align="left"><b>Balance</b>:</td>-->
+                                    <!--<td colspan="2" align="right"><b>numFormat-->
+                                    <!--balanceAmount '0,0.00'}}$</b></td>-->
+                                    <!--</tr>-->
+                                        <!--{{/with}}-->
+                                    <!--{{/if}}-->
+                                <!--{{/unless}}-->
+                        </table>
+                        <div style="height: 7px;"></div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div style="height: 7px;"></div>
+                                <table width="100%" style="font-size: 16px;">
+                                    <tr align="center">
+                                        <td width="33%" style="font-size: 14px;">
+                                            <b>Buyer</b>
+                                        </td>
+                                        <td width="33%" style="font-size: 14px;">
+                                            <b>Delivery man</b>
+                                        </td>
+                                        <td width="33%" style="font-size: 14px;">
+                                            <b>Seller</b>
+                                        </td>
+                                    </tr>
+                                    <tr align="center">
+                                        <td width="30%" style="height: 200px;">
+                                            _______________________
+                                        </td>
+                                        <td width="30%">
+                                            _______________________
+                                        </td>
+                                        <td width="30%">
+                                            _______________________
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!--<div class="row">-->
+                        <!--<div class="col-md-12"-->
+                        <!--style="text-align: center; font-family: 'Khmer OS Battambang'; font-size: 10px;">-->
+                        <!--<span>អរគុណ សូមអញ្ចើញមកម្តងទៀត!</span>-->
+                        <!--<br>-->
+                        <!--<div style="margin-bottom: 1px;">-->
+                        <!--<p style="text-align: center;">Powered by Rabbit Technology</p>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+
+            </div>
+
+        {{/with}}
+        <!--{{autoprint close="true"}}-->
+    {{else}}
+        {{> loading}}
+    {{/if}}
+</template>

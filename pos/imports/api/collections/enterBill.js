@@ -38,7 +38,12 @@ EnterBills.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
-    }
+    },
+    imei: {
+        type: [String],
+        label: "IMEI",
+        optional: true
+    },
 });
 
 // EnterBills schema

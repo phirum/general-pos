@@ -17,6 +17,7 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
+    doc.printId = doc._id;
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (doc.invoiceDate <= inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +

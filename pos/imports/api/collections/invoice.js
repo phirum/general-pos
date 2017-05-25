@@ -51,6 +51,10 @@ Invoices.itemsSchema = new SimpleSchema({
 
 // Invoices schema
 Invoices.schema = new SimpleSchema({
+    printId: {
+        type: String,
+        optional: true
+    },
     voucherId: {
         type: String,
         optional: true

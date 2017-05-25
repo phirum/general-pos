@@ -731,3 +731,29 @@ PosRoutes.route('/invoice/new', {
         parent: 'pos.invoice'
     }
 });
+
+import '../imports/ui/pages/print/a4'
+PosRoutes.route('/print-invoice', {
+    name: 'pos.printInvoice',
+    title: 'Print Invoice',
+    action: function (params,queryParams) {
+        BlazeLayout.render('PrintLayout', {printLayout: 'pos_printA4'});
+    }
+});
+
+import '../imports/ui/pages/print/mini'
+PosRoutes.route('/print-mini', {
+    name: 'pos.printMini',
+    title: 'Print Mini',
+    action: function (params,queryParams) {
+        BlazeLayout.render('PrintLayout', {printLayout: 'pos_printMini'});
+    }
+});
+import '../imports/ui/pages/print/a5'
+PosRoutes.route('/print-medium', {
+    name: 'pos.printMedium',
+    title: 'Print Invoice',
+    action: function (params,queryParams) {
+        BlazeLayout.render('PrintLayout', {printLayout: 'pos_printA5'});
+    }
+});

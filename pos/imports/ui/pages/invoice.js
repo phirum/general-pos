@@ -205,7 +205,7 @@ newTmpl.events({
         let price = parseFloat(val == "" ? 0 : val);
         if (!numericReg.test(val) || price <= 0) {
             $(event.currentTarget).val(firstPrice);
-            $(event.currentTarget).focus();
+            $(event.currentTarget).focus().select();
             return;
         }
         let set = {};
@@ -223,7 +223,7 @@ newTmpl.events({
         let currentQty = parseInt($(event.currentTarget).val() == "" ? 0 : $(event.currentTarget).val());
         if (!numericReg.test(val) || currentQty <= 0) {
             $(event.currentTarget).val(firstQuantity);
-            $(event.currentTarget).focus();
+            $(event.currentTarget).focus().select();
             return;
         }
         if (self.imei.length > currentQty) {
@@ -330,7 +330,7 @@ newTmpl.events({
         let discount = parseFloat($(event.currentTarget).val());
         if (!numericReg.test(val) || discount < 0 || discount > 100 || $(event.currentTarget).val() == "") {
             $(event.currentTarget).val(firstDiscount);
-            $(event.currentTarget).focus();
+            $(event.currentTarget).focus().select();
             return;
         }
         let selector = {};
@@ -340,12 +340,18 @@ newTmpl.events({
         $('[name="paid"]').val(0);
     },
 
+    'keydown .item-qty,.item-price,.item-discount'(event, instance){
+        if (event.which == 13) {
+            $(event.currentTarget).trigger('change');
+        }
+    },
     'keydown #item-barcode'(event, instance){
         let charCode = event.which;
         if (event.keyCode == 13) {
             let isWholesale = $('[name="isWholesale"]').is(':checked');
             let barcode = $(event.currentTarget).val();
             if (barcode == "") {
+                $('#item-barcode').val('').focus();
                 alertify.warning('Please input Barcode.');
                 return false;
             }
@@ -353,6 +359,7 @@ newTmpl.events({
             qty = qty == '' ? 1 : parseInt(qty);
             let stockLocationId = $('[name="stockLocationId"]').val();
             if (stockLocationId == "") {
+                $('#item-barcode').val('').focus();
                 alertify.warning("Please choose stock location.");
                 return false;
             }
@@ -386,11 +393,11 @@ newTmpl.events({
                                     discount: 0,
                                     imei: []
                                 });
-                                return false;
+
                             }
                             else {
                                 alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
-                                return false;
+
                             }
                             // }
                         });
@@ -434,7 +441,6 @@ newTmpl.events({
                                             amount: amount
                                         }
                                     });
-                                    return false;
                                 }
                                 else {
                                     amount = math.round(qty * price, 2);
@@ -448,16 +454,15 @@ newTmpl.events({
                                         discount: 0,
                                         imei: []
                                     });
-                                    return false;
+
                                 }
                             }
                             else {
                                 alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
-                                return false;
+
                             }
                         } else {
                             alertify.warning("Can't item by this barcode. '" + barcode + "'");
-                            return false;
                         }
 
                     });
@@ -467,8 +472,6 @@ newTmpl.events({
             $('[name="paid"]').val(0);
             return false;
         }
-
-
     },
     'change #item-id'(event, instance){
         let isWholesale = $('[name="isWholesale"]').is(':checked');
@@ -656,7 +659,7 @@ newTmpl.events({
     },
     'keydown #input-imei'(event, instance){
         if (event.which == 13) {
-            debugger;
+            let stockLocationId = $('[name="stockLocationId"]').val();
             let branchId = Session.get('currentBranch');
             let imeis = [];
             let imei = $(event.currentTarget).val().trim();
@@ -668,9 +671,11 @@ newTmpl.events({
             if (item && item.imei) {
                 if (item.imei.indexOf(imei) > -1) {
                     alertify.warning('IMEI already added.');
+                    $(event.currentTarget).val('').focus();
                     return;
                 } else if (item.imei.length >= item.qty) {
                     alertify.warning("Number of IMEI can't greater than Quantity.");
+                    $(event.currentTarget).val('').focus();
                     return;
                 } else {
                     imeis = item.imei;
@@ -683,7 +688,7 @@ newTmpl.events({
             Meteor.call('findItem', item.itemId, "id", function (error, itemResult) {
                 debugger;
                 if (itemResult) {
-                    if (itemResult.imei && itemResult.imei.indxOf(imei) != -1) {
+                    if (itemResult.imei && itemResult.imei[stockLocationId].indexOf(imei) != -1) {
                         itemsCollection.update(itemId, {$set: {imei: imeis}});
                     }
                     else {
@@ -693,8 +698,7 @@ newTmpl.events({
                     alertify.error(error.message);
                 }
             });
-
-
+            $(event.currentTarget).val('').focus();
         }
     },
     'click .btn-remove-imei'(event) {
@@ -733,6 +737,12 @@ newTmpl.events({
     'click [name="paid"]'(event, instance){
         let total = $('[name="total"]').val();
         $(event.currentTarget).val(total).select();
+    },
+    'click #btn-save-print'(event, instance){
+        FlowRouter.query.set({p: 'true'});
+    },
+    'click #btn-pay-print'(event, instance){
+        FlowRouter.query.set({qp: 'true'});
     }
 });
 newTmpl.helpers({
@@ -2004,6 +2014,7 @@ let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
     });
 };
 function excuteEditForm(doc) {
+    console.log(doc);
     /*swal({
      title: "Pleas Wait",
      text: "Getting Invoices....", showConfirmButton: false
@@ -2039,6 +2050,15 @@ let hooksObject = {
         }
     },
     onSuccess(formType, id) {
+
+
+        let print = FlowRouter.query.get('p');
+        //let qp = FlowRouter.query.get('qp'); //trigger quick payment
+        if (print == 'true') {
+            alertify.invoice().close();
+            FlowRouter.go('/pos/print-invoice?inv=' + id);
+        }
+
         //get invoiceId, total, customerId
         if (formType != 'update') {
             if (!FlowRouter.query.get('customerId')) {
@@ -2053,6 +2073,8 @@ let hooksObject = {
         } else {
             alertify.invoice().close();
         }
+
+
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});

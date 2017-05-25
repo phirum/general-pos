@@ -24,6 +24,8 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
+import {Setting} from '../../../../core/imports/api/collections/setting.js';
+import {Currency} from '../../../../core/imports/api/collections/currency.js';
 import {EnterBills} from '../../api/collections/enterBill.js';
 import {Item} from '../../api/collections/item';
 import {vendorBillCollection} from '../../api/collections/tmpCollection';
@@ -161,13 +163,263 @@ indexTmpl.onDestroyed(function () {
     vendorBillCollection.remove({});
 });
 newTmpl.onCreated(function () {
+    /* this.repOptions = new ReactiveVar();
+     Meteor.call('getRepList', (err, result) => {
+     this.repOptions.set(result);
+     });
+     */
+
+    this.totalDiscount = new ReactiveVar();
+    this.isEnoughStock = new ReactiveVar();
+    Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
+    this.itemList = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    Meteor.call('getItemList', {itemType: 'stock', scheme: {$exists: false}}, (err, result) => {
+        this.itemList.set(result);
     });
 });
 // New
 newTmpl.events({
+    'click .item-imei'(event, instance){
+        let itemId = Session.set('itemIdForImei', this._id);
+        $('#input-imei').val('');
+        $('#imei').modal('show');
+    },
+    'keydown #input-imei'(event, instance){
+        if (event.which == 13) {
+            let stockLocationId = $('[name="stockLocationId"]').val();
+            let branchId = Session.get('currentBranch');
+            let imeis = [];
+            let imei = $(event.currentTarget).val().trim();
+            if (imei == "") {
+                $(event.currentTarget).val('').focus();
+                return;
+            }
+            let itemId = Session.get('itemIdForImei');
+            let item = itemsCollection.findOne(itemId);
+            if (item && item.imei) {
+                if (item.imei.indexOf(imei) > -1) {
+                    alertify.warning('IMEI already added.');
+                    $(event.currentTarget).val('').focus();
+                    return;
+                } else if (item.imei.length >= item.qty) {
+                    alertify.warning("Number of IMEI can't greater than Quantity.");
+                    $(event.currentTarget).val('').focus();
+                    return;
+                } else {
+                    imeis = item.imei;
+                    imeis.push(imei);
+                }
+            } else {
+                imeis.push(imei);
+            }
+
+            Meteor.call('findItem', item.itemId, "id", function (error, itemResult) {
+                debugger;
+                if (itemResult) {
+                    if (itemResult.imei && itemResult.imei[stockLocationId].indexOf(imei) != -1) {
+                        alertify.warning('IMEI is already exist: ' + imei);
+                    }
+                    else {
+                        itemsCollection.update(itemId, {$set: {imei: imeis}});
+                    }
+                } else {
+                    alertify.error(error.message);
+                }
+            });
+            $(event.currentTarget).val('').focus();
+
+        }
+    },
+    'click .btn-remove-imei'(event) {
+        let itemId = Session.get('itemIdForImei');
+        //let thisBtn = $(e.currentTarget);
+        // let imei = thisBtn.parents('tr').find('.td-imei').text().trim();
+        let imei = this.code;
+        let item = itemsCollection.findOne(itemId);
+        let obj = {};
+        obj.imei = subtractArray(item.imei, [imei]);
+        itemsCollection.update(itemId, {$set: obj});
+    },
+    'change .item-price'(event, instance){
+        // let item = itemsCollection.findOne(this._id);
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstPrice = this.price;
+        let price = parseFloat(val == "" ? 0 : val);
+        if (!numericReg.test(val) || price <= 0) {
+            $(event.currentTarget).val(firstPrice);
+            $(event.currentTarget).focus().select();
+            return;
+        }
+        let set = {};
+        set.price = price;
+        set.amount = (price * this.qty) * (1 - this.discount / 100);
+        itemsCollection.update(this._id, {$set: set});
+        $('[name="paid"]').val(0);
+    },
+    'change .item-discount'(event, instance){
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstDiscount = this.discount;
+        let discount = parseFloat($(event.currentTarget).val());
+        if (!numericReg.test(val) || discount < 0 || discount > 100 || $(event.currentTarget).val() == "") {
+            $(event.currentTarget).val(firstDiscount);
+            $(event.currentTarget).focus().select();
+            return;
+        }
+        let selector = {};
+        selector.discount = discount;
+        selector.amount = (this.price * this.qty) * (1 - discount / 100);
+        itemsCollection.update(this._id, {$set: selector});
+        $('[name="paid"]').val(0);
+    },
+    'keydown .item-qty,.item-price,.item-discount'(event, instance){
+        if (event.which == 13) {
+            $(event.currentTarget).trigger('change');
+        }
+    },
+    'change .item-qty'(event, instance){
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstDiscount = this.qty;
+        let qty = parseFloat($(event.currentTarget).val());
+        if (!numericReg.test(val) || $(event.currentTarget).val() == "" || qty <= 0) {
+            $(event.currentTarget).val(firstDiscount);
+            $(event.currentTarget).focus().select();
+            return;
+        }
+        let selector = {};
+        selector.qty = qty;
+        selector.amount = (this.price * qty) * (1 - this.discount / 100);
+        itemsCollection.update(this._id, {$set: selector});
+        $('[name="paid"]').val(0);
+    },
+    'change .item-discount'(event, instance){
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstDiscount = this.discount;
+        let discount = parseFloat($(event.currentTarget).val());
+        if (!numericReg.test(val) || discount < 0 || discount > 100 || $(event.currentTarget).val() == "") {
+            $(event.currentTarget).val(firstDiscount);
+            $(event.currentTarget).focus();
+            return;
+        }
+        let selector = {};
+        selector.discount = discount;
+        selector.amount = (this.price * this.qty) * (1 - discount / 100);
+        itemsCollection.update(this._id, {$set: selector});
+        $('[name="paid"]').val(0);
+    },
+
+    'keydown #item-barcode'(event, instance){
+        let charCode = event.which;
+        if (event.keyCode == 13) {
+
+            debugger;
+            let itemId = $(event.currentTarget).val();
+            if (itemId == "") {
+                sAlert.warning("Please input Barcode");
+                $('#item-barcode').val('').focus();
+                $('[name="paid"]').val(0);
+                return false;
+            }
+
+            let qty = $('#item-qty').val();
+            qty = qty == '' ? 1 : parseInt(qty);
+            // Check exist
+            let exist = itemsCollection.findOne({
+                itemId: itemId
+            });
+            let amount = 0;
+            if (exist) {
+                qty += parseInt(exist.qty);
+                amount = math.round(qty * exist.price, 2);
+                itemsCollection.update({
+                    _id: exist._id
+                }, {
+                    $set: {
+                        qty: qty,
+                        //price: exist.price,
+                        amount: amount
+                    }
+                });
+            } else {
+                Meteor.call('findItem', itemId, "barcode", function (error, itemResult) {
+                    if (itemResult) {
+                        amount = math.round(qty * itemResult.purchasePrice, 2);
+                        itemsCollection.insert({
+                            itemId: itemId,
+                            unit: itemResult.unitDoc.name,
+                            qty: qty,
+                            price: itemResult.purchasePrice,
+                            amount: amount,
+                            name: itemResult.name,
+                            discount: 0,
+                            imei: []
+                        });
+                    } else {
+                        alertify.warning('Can not find Item');
+                    }
+                });
+            }
+            $('#item-barcode').val('').focus();
+            $('[name="paid"]').val(0);
+            return false;
+        }
+    },
+    'change #item-id'(event, instance){
+        debugger;
+        let itemId = $(event.currentTarget).val();
+        if (itemId == "") {
+            sAlert.warning("Please select Item");
+            return;
+        }
+        let qty = $('#item-qty').val();
+        qty = qty == '' ? 1 : parseInt(qty);
+        // Check exist
+        let exist = itemsCollection.findOne({
+            itemId: itemId
+        });
+        let amount = 0;
+        if (exist) {
+            qty += parseInt(exist.qty);
+            amount = math.round(qty * exist.price, 2);
+            itemsCollection.update({
+                _id: exist._id
+            }, {
+                $set: {
+                    qty: qty,
+                    //price: exist.price,
+                    amount: amount
+                }
+            });
+        } else {
+            Meteor.call('findItem', itemId, "id", function (error, itemResult) {
+                if (itemResult) {
+                    amount = math.round(qty * itemResult.purchasePrice, 2);
+                    itemsCollection.insert({
+                        itemId: itemId,
+                        unit: itemResult.unitDoc.name,
+                        qty: qty,
+                        price: itemResult.purchasePrice,
+                        amount: amount,
+                        name: itemResult.name,
+                        discount: 0,
+                        imei: []
+                    });
+                } else {
+                    alertify.warning('Can not find Item');
+                }
+            });
+        }
+        $('#item-id').val('');
+        $('[name="paid"]').val(0);
+
+    },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);
@@ -182,6 +434,27 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    baseCurrency(){
+        debugger;
+        let setting = Setting.findOne();
+        if (setting) {
+            return Currency.findOne(setting.baseCurrency);
+        }
+        return {};
+    },
+    stockLocation() {
+        try {
+            let stockLocationAndAccountMapping = Session.get('currentUserStockAndAccountMappingDoc');
+            if (stockLocationAndAccountMapping) {
+                if (stockLocationAndAccountMapping.stockLocations.length > 0) {
+                    return stockLocationAndAccountMapping.stockLocations[0];
+                }
+            }
+            return false;
+        } catch (e) {
+        }
+
+    },
     totalOrder(){
         let total = 0;
         if (!FlowRouter.query.get('vendorId')) {
@@ -301,6 +574,54 @@ newTmpl.helpers({
             return date;
         } catch (e) {
         }
+    },
+    itemsCollection() {
+        return itemsCollection;
+    },
+    itemList(){
+        let instance = Template.instance();
+        if (instance.itemList.get() && instance.repOptions.get()) {
+            return instance.itemList.get();
+        }
+        return [];
+    },
+    items(){
+        return itemsCollection.find().fetch();
+    },
+    imeis(){
+        let imeis = [];
+        let itemId = Session.get('itemIdForImei');
+        let item = itemsCollection.findOne(itemId);
+        if (item && item.imei) {
+            for (let i = 0; i < item.imei.length; i++) {
+                imeis.push({order: i + 1, code: item.imei[i]});
+            }
+        }
+        return imeis;
+    },
+    subTotal: function () {
+        let subTotal = 0;
+        let getItems = itemsCollection.find({});
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        return math.round(subTotal, 2);
+    },
+    total: function () {
+        let subTotal = 0;
+        let instance = Template.instance();
+        let discount = instance.totalDiscount.get();
+        discount = discount ? discount : 0;
+        let getItems = itemsCollection.find({});
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        return math.round(subTotal * (1 - discount / 100), 2);
+    },
+    totalDiscount: function () {
+        let instance = Template.instance();
+        let discount = instance.totalDiscount.get();
+        return discount ? discount : 0;
     }
 });
 
@@ -322,6 +643,328 @@ editTmpl.onCreated(function () {
     });
 });
 editTmpl.events({
+    'change .item-price'(event, instance){
+        // let item = itemsCollection.findOne(this._id);
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstPrice = this.price;
+        let price = parseFloat(val == "" ? 0 : val);
+        if (!numericReg.test(val) || price <= 0) {
+            $(event.currentTarget).val(firstPrice);
+            $(event.currentTarget).focus();
+            return;
+        }
+        let set = {};
+        set.price = price;
+        set.amount = (price * this.qty) * (1 - this.discount / 100);
+        itemsCollection.update(this._id, {$set: set});
+        $('[name="paid"]').val(0);
+    },
+    'change .item-qty'(event, instance){
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let self = this;
+        let firstQuantity = self.qty;
+        self.imei = self.imei ? self.imei : [];
+        let currentQty = parseInt($(event.currentTarget).val() == "" ? 0 : $(event.currentTarget).val());
+        if (!numericReg.test(val) || currentQty <= 0) {
+            $(event.currentTarget).val(firstQuantity);
+            $(event.currentTarget).focus();
+            return;
+        }
+        if (self.imei.length > currentQty) {
+            alertify.warning("Quantity can't be less than number of IMEI.");
+            $(event.currentTarget).val(firstQuantity);
+            return;
+        }
+        debugger;
+        let thisObj = $(event.currentTarget);
+        let checkQty = 0;
+        let itemOfCollectionNull = itemsCollection.find({
+            itemId: self.itemId
+        });
+        if (itemOfCollectionNull.count() > 0) {
+            let addedQty = 0;
+            itemOfCollectionNull.forEach(function (itemNull) {
+                addedQty += itemNull.qty;
+            });
+            checkQty = addedQty - self.qty + currentQty;
+        } else {
+            checkQty = currentQty;
+        }
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        Meteor.call('findItem', self.itemId, 'id', function (error, itemResult) {
+            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+            if (checkQty <= inventoryQty) {
+                let selector = {};
+                selector.qty = currentQty;
+                selector.amount = (currentQty * self.price) * (1 - self.discount / 100);
+                itemsCollection.update(self._id, {$set: selector});
+            }
+            else {
+                thisObj.val(self.qty);
+                alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+            }
+        });
+        /*
+         let selector = {};
+         if (currentQty != '' || currentQty != 0) {
+         selector.$set = {
+         amount: currentQty * self.price,
+         qty: currentQty
+         }
+         } else {
+         selector.$set = {
+         amount: self.qty * self.price,
+         qty: self.qty
+         };
+         currentQty = self.qty;
+         thisObj.val(self.qty);
+         }
+
+         let invoice = instance.view.parentView.parentView._templateInstance.data;
+         if (invoice) {
+         let soldQty = 0;
+         //-----------------------
+         let docItems = [];
+         invoice.items.reduce(function (res, value) {
+         if (!res[value.itemId]) {
+         res[value.itemId] = {
+         price: value.price,
+         amount: value.amount,
+         qty: 0,
+         itemId: value.itemId
+         };
+         docItems.push(res[value.itemId])
+         } else {
+         res[value.itemId].amount += value.amount;
+         }
+         res[value.itemId].qty += value.qty;
+         return res;
+         }, {});
+         //-----------------------
+         if (stockLocationId == invoice.stockLocationId) {
+         soldQty = docItems.find(x => x.itemId == itemId).qty;
+         }
+         Meteor.call('findItem', itemId, function (error, itemResult) {
+         let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
+         inventoryQty += soldQty;
+         if (checkQty <= inventoryQty) {
+         itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
+         }
+         else {
+         selector.$set = {
+         amount: currentItem.qty * currentItem.price,
+         qty: currentItem.qty
+         };
+         itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
+         thisObj.val(currentItem.qty);
+         alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+         }
+
+         });
+         }
+         else {*/
+
+        /* }*/
+        $('[name="paid"]').val(0);
+    },
+    'change .item-discount'(event, instance){
+        let val = $(event.currentTarget).val();
+        let numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+        let firstDiscount = this.discount;
+        let discount = parseFloat($(event.currentTarget).val());
+        if (!numericReg.test(val) || discount < 0 || discount > 100 || $(event.currentTarget).val() == "") {
+            $(event.currentTarget).val(firstDiscount);
+            $(event.currentTarget).focus();
+            return;
+        }
+        let selector = {};
+        selector.discount = discount;
+        selector.amount = (this.price * this.qty) * (1 - discount / 100);
+        itemsCollection.update(this._id, {$set: selector});
+        $('[name="paid"]').val(0);
+    },
+
+    'keydown #item-barcode'(event, instance){
+        let charCode = event.which;
+        if (event.keyCode == 13) {
+            let isWholesale = $('[name="isWholesale"]').is(':checked');
+            let barcode = $(event.currentTarget).val();
+            if (barcode == "") {
+                alertify.warning('Please input Barcode.');
+                return false;
+            }
+            let qty = $('#item-qty').val();
+            qty = qty == '' ? 1 : parseInt(qty);
+            let stockLocationId = $('[name="stockLocationId"]').val();
+            if (stockLocationId == "") {
+                alertify.warning("Please choose stock location.");
+                return false;
+            }
+            Meteor.call('addScheme', barcode, "barcode", function (err, result) {
+                if (!_.isEmpty(result[0])) {
+                    result.forEach(function (item) {
+                        Meteor.call('findItem', item.itemId, "id", function (error, itemResult) {
+                            let itemOfCollectionNull = itemsCollection.find({
+                                itemId: item.itemId
+                            });
+                            let checkQty = 0;
+                            if (itemOfCollectionNull.count() > 0) {
+                                let addedQty = 0;
+                                itemOfCollectionNull.forEach(function (itemNull) {
+                                    addedQty += itemNull.qty;
+                                });
+                                checkQty = (item.quantity * qty) + addedQty;
+                            } else {
+                                checkQty = item.quantity * qty;
+                            }
+                            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                            if (checkQty <= inventoryQty) {
+                                let price = isWholesale ? item.isWholesale : item.price;
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    unit: itemResult.unitDoc.name,
+                                    qty: item.quantity * qty,
+                                    price: price,
+                                    amount: (price * item.quantity) * qty,
+                                    name: itemResult.name,
+                                    discount: 0,
+                                    imei: []
+                                });
+                                return false;
+                            }
+                            else {
+                                alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                                return false;
+                            }
+                            // }
+                        });
+                    });
+                }
+                else {
+                    Meteor.call('findItem', barcode, "barcode", function (error, itemResult) {
+
+                        if (itemResult) {
+                            debugger;
+                            let price = isWholesale ? itemResult.wholesalePrice : itemResult.price;
+                            let itemOfCollectionNull = itemsCollection.find({
+                                itemId: itemResult._id
+                            });
+                            let checkQty = 0;
+                            if (itemOfCollectionNull.count() > 0) {
+                                let addedQty = 0;
+                                itemOfCollectionNull.forEach(function (itemNull) {
+                                    addedQty += itemNull.qty;
+                                });
+                                checkQty = qty + addedQty;
+                            } else {
+                                checkQty = qty;
+                            }
+                            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                            let amount = 0;
+                            if (checkQty <= inventoryQty) {
+                                let exist = itemsCollection.findOne({
+                                    itemId: itemResult._id
+                                });
+                                if (exist) {
+                                    qty += parseInt(exist.qty);
+                                    amount = qty * price;
+                                    amount = math.round(amount * (1 - exist.discount / 100), 2);
+                                    itemsCollection.update({
+                                        _id: exist._id
+                                    }, {
+                                        $set: {
+                                            qty: qty,
+                                            price: price,
+                                            amount: amount
+                                        }
+                                    });
+                                    return false;
+                                }
+                                else {
+                                    amount = math.round(qty * price, 2);
+                                    itemsCollection.insert({
+                                        itemId: itemResult._id,
+                                        unit: itemResult.unitDoc.name,
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount,
+                                        name: itemResult.name,
+                                        discount: 0,
+                                        imei: []
+                                    });
+                                    return false;
+                                }
+                            }
+                            else {
+                                alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                                return false;
+                            }
+                        } else {
+                            alertify.warning("Can't item by this barcode. '" + barcode + "'");
+                            return false;
+                        }
+
+                    });
+                }
+            });
+            $('#item-barcode').val('').focus();
+            $('[name="paid"]').val(0);
+            return false;
+        }
+
+
+    },
+    'change #item-id'(event, instance){
+        debugger;
+        let itemId = $(event.currentTarget).val();
+        if (itemId == "") {
+            sAlert.warning("Please select Item");
+            return;
+        }
+        let qty = $('#item-qty').val();
+        qty = qty == '' ? 1 : parseInt(qty);
+        // Check exist
+        let exist = itemsCollection.findOne({
+            itemId: itemId
+        });
+        let amount = 0;
+        if (exist) {
+            qty += parseInt(exist.qty);
+            amount = math.round(qty * exist.price, 2);
+            itemsCollection.update({
+                _id: exist._id
+            }, {
+                $set: {
+                    qty: qty,
+                    //price: exist.price,
+                    amount: amount
+                }
+            });
+        } else {
+            Meteor.call('findItem', itemId, "id", function (error, itemResult) {
+                amount = math.round(qty * itemResult.purchasePrice, 2);
+                if (itemResult) {
+                    itemsCollection.insert({
+                        itemId: itemId,
+                        unit: itemResult.unitDoc.name,
+                        qty: qty,
+                        price: itemResult.purchasePrice,
+                        amount: amount,
+                        name: itemResult.name,
+                        discount: 0,
+                        imei: []
+                    });
+                } else {
+                    alertify.warning('Can not find Item');
+                }
+            });
+        }
+        $('#item-id').val('');
+        $('[name="paid"]').val(0);
+
+    },
 
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
@@ -358,7 +1001,7 @@ editTmpl.helpers({
     data () {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
+        _.forEach(data.items, (value) => {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
                 itemsCollection.insert(value);
@@ -503,7 +1146,7 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -513,7 +1156,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -560,4 +1203,20 @@ function excuteEditForm(doc) {
         text: "Getting Invoices....", showConfirmButton: false
     });
     alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, doc)).maximize();
+}
+function subtractArray(src, filt) {
+    let temp = {}, i, result = [];
+    // load contents of filt into an object
+    // for faster lookup
+    for (i = 0; i < filt.length; i++) {
+        temp[filt[i]] = true;
+    }
+
+    // go through each item in src
+    for (i = 0; i < src.length; i++) {
+        if (!(src[i] in temp)) {
+            result.push(src[i]);
+        }
+    }
+    return (result);
 }

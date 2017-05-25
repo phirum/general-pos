@@ -54,6 +54,9 @@ AverageInventories.schema = new SimpleSchema({
     },
     inventoryDate:{
         type:Date
+    },
+    imei:{
+        type:[String]
     }
 });
 
