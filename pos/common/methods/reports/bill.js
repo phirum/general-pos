@@ -36,11 +36,16 @@ export const billReport = new ValidatedMethod({
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
-                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
+                data.title.date = moment(fromDate).format('DD/MM/YYYY') + ' - ' + moment(toDate).format('DD/MM/YYYY');
                 selector.enterBillDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.vendorId && params.vendorId != '') {
                 selector.vendorId = params.vendorId;
+            }
+            if (params.branch) {
+                selector.branchId = params.branch;
+            } else {
+                return data;
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field

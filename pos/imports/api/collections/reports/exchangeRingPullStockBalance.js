@@ -3,6 +3,19 @@ import {AutoForm} from 'meteor/aldeed:autoform';
 import {moment} from 'meteor/momentjs:moment';
 import {SelectOpts} from '../../../../../core/imports/ui/libs/select-opts.js';
 export const exchangeRingPullStockBalanceSchema = new SimpleSchema({
+    asDate: {
+        type: Date,
+        defaultValue: moment().toDate(),
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY',
+
+                }
+            }
+        }
+    },
     branch: {
         type: [String],
         optional: true,

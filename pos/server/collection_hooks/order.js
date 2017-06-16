@@ -15,6 +15,7 @@ Order.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(Order, prefix, 6);
 });
 
+
 Order.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
@@ -92,7 +93,7 @@ Order.after.insert(function (userId, doc) {
             data.type = "SaleOrder";
             data.total = totalSaleOrder + totalCOGS;
             let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
-            let cashChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
             let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
 
@@ -170,7 +171,7 @@ Order.after.update(function (userId, doc) {
             data.total = totalSaleOrder + totalCOGS;
             data.type = "SaleOrder";
             let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
-            let cashChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
             let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
 

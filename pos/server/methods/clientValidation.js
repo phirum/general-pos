@@ -2,60 +2,8 @@ import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 
 Meteor.methods({
-    findItems(ids){
-        return Item.aggregate([
-            {$match:{_id:{$in:ids}}},
-            {
-                $lookup: {
-                    from: "units",
-                    localField: "unitId",
-                    foreignField: "_id",
-                    as: "unitDoc"
-                },
-
-            }, {
-                $unwind: {path: "$unitDoc", preserveNullAndEmptyArrays: true}
-            }
-            , {
-                $lookup: {
-                    from: "pos_categories",
-                    localField: "categoryId",
-                    foreignField: "_id",
-                    as: "categoryDoc"
-                },
-
-            }, {
-                $unwind: {path: "$categoryDoc", preserveNullAndEmptyArrays: true}
-            }
-        ]);
-    },
-    findItem(code,type){
-        let selector = type=="id" ? {_id: code} : {barcode: code};
-        return Item.aggregate([
-            {$match:selector},
-            {
-                $lookup: {
-                    from: "units",
-                    localField: "unitId",
-                    foreignField: "_id",
-                    as: "unitDoc"
-                },
-
-            }, {
-                $unwind: {path: "$unitDoc", preserveNullAndEmptyArrays: true}
-            }
-            , {
-                $lookup: {
-                    from: "pos_categories",
-                    localField: "categoryId",
-                    foreignField: "_id",
-                    as: "categoryDoc"
-                },
-
-            }, {
-                $unwind: {path: "$categoryDoc", preserveNullAndEmptyArrays: true}
-            }
-        ])[0];
+    findItem(itemId){
+        return Item.findOne(itemId);
     },
     checkStockByLocation(stockLocationId, items){
         let result = {isEnoughStock: true, message: ''};

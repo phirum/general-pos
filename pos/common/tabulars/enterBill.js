@@ -28,7 +28,13 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD HH:mm:ss');
         }
     },
-    {data: "total", title: "Total"},
+    {
+        data: "total",
+        title: "Total",
+        render: function (val) {
+            return numeral(val).format('0,0.00');
+        }
+    },
     {data: "des", title: "Description"},
     {
         data: "_vendor.name",
@@ -37,8 +43,8 @@ tabularOpts.columns = [
     {
         data: "billType",
         title: "Type",
-        render: function(val) {
-            if(val == 'group') {
+        render: function (val) {
+            if (val == 'group') {
                 return `<span class="label label-warning">Group</span>`
             }
             return `<span class="label label-primary">Term</span>`
@@ -46,6 +52,7 @@ tabularOpts.columns = [
     },
     // {data: "_staff.username", title: "Staff"},
     {data: "stockLocationId", title: "Stock Location"},
+    {data: "status", title: "Status"},
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",
@@ -54,5 +61,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId', 'vendorId', 'staffId'];
+tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId', 'vendorId', 'staffId','branchId'];
 export const EnterBillTabular = new Tabular.Table(tabularOpts);

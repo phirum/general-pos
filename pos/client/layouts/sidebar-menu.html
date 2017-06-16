@@ -11,6 +11,22 @@
             </a>
         </li>
     {{/if}}
+    {{#if isInRole 'journal' 'Pos'}}
+        <li class="treeview {{isActiveRoute name='acc.journal'}}">
+            <a href="{{pathFor 'acc.journal'}}">
+                <i class="fa fa-plus"></i>
+                <span>{{_ "acc.sidebarMenu.journal"}}</span>
+            </a>
+        </li>
+    {{/if}}
+    {{#if isInRole 'paid-to-order' 'Pos'}}
+        <li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">
+            <a href="{{pathFor 'pos.prepaidOrder'}}">
+                <i class="fa fa-plus"></i>
+                <span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>
+            </a>
+        </li>
+    {{/if}}
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
         <li class="treeview active">
@@ -25,11 +41,11 @@
                         <i class="fa fa-male"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
                     </a>
                 </li>
-                <li class="{{isActiveRoute name='pos.order'}}">
-                    <a href="{{pathFor 'pos.order'}}">
-                        <i class="fa fa-shopping-cart"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
-                    </a>
-                </li>
+                <!--<li class="{{isActiveRoute name='pos.order'}}">-->
+                <!--<a href="{{pathFor 'pos.order'}}">-->
+                <!--<i class="fa fa-shopping-cart"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>-->
+                <!--</a>-->
+                <!--</li>-->
                 <li class="{{isActiveRoute name='pos.invoice'}}">
                     <a href="{{pathFor 'pos.invoice'}}">
                         <i class="fa fa-file-text"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
@@ -249,9 +265,17 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                        {{#if isInRole 'customer-debt-history-report' 'Pos'}}
                             <li>
                                 <a href="{{customerDebtTracking}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Customer Debt History</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerHistory}}">
                                     <i class="fa fa-file-o"></i>
                                     <span>Customer History</span>
                                 </a>
@@ -321,6 +345,28 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
+                        <li>
+                            <a href="{{receiveItemBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Receive Item Balance</span>
+                            </a>
+                        </li>
+                        {{#if isInRole 'ring-pull-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{ringPullSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'ring-pull-detail-report' 'Pos'}}
+                            <li>
+                                <a href="{{pathFor 'pos.ringpullDetailReport'}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Detail</span>
+                                </a>
+                            </li>
+                        {{/if}}
                         {{#if isInRole 'ring-pull-exchange-report' 'Pos'}}
                             <li>
                                 <a href="{{exchangeRingPull}}">
@@ -401,6 +447,14 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
+                    <!--{{#if isInRole 'vendor-balance-summary-report' 'Pos'}}-->
+                        <li>
+                            <a href="{{vendorBalanceSummary}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Vendor Balance Summary</span>
+                            </a>
+                        </li>
+                            <!--{{/if}}-->
                         {{#if isInRole 'enter-bill-summary-report' 'Pos'}}
                             <li>
                                 <a href="{{bill}}">
@@ -457,6 +511,12 @@
                                 </a>
                             </li>
                         {{/if}}
+                        <!--<li>-->
+                        <!--<a href="{{prepaidOrderBalance}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Prepaid Order Balance</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
                     </ul>
                 </li>
                 <li class="treeview">
@@ -504,6 +564,11 @@
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.closing'}}">
+                    <a href="{{pathFor 'pos.closing'}}">
+                        <i class="fa fa-angle-right"></i> <span>Closing</span>
+                    </a>>
+                </li>
                 <li class="{{isActiveRoute name='pos.rep'}}">
                     <a href="{{pathFor 'pos.rep'}}">
                         <i class="fa fa-group"></i> <span>Reps</span>

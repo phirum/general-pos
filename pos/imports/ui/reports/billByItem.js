@@ -101,7 +101,7 @@ invoiceDataTmpl.helpers({
                 data += `<td>${col._vendor.name}</td>`
             } else if (obj.field == 'date' && col.type) {
                 console.log(col[obj.field]);
-                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`;
+                data += `<td>${moment(col[obj.field]).format('DD/MM/YYYY')}</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
@@ -142,9 +142,10 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
             if (doc.vendorId) {

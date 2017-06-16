@@ -175,6 +175,50 @@ CompanyExchangeRingPulls.after.remove(function (userId, doc) {
  remove: increase ring pull inventory(doc)
  */
 
+Meteor.methods({
+    correctAccountCompanyExchangeRingPull(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+        let companyExchangeRingPulls=CompanyExchangeRingPulls.find({});
+        companyExchangeRingPulls.forEach(function (doc) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "CompanyExchangeRingPull";
+                let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+
+                if (vendorDoc) {
+                    data.name = vendorDoc.name;
+                    data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីក្រុមហ៊ុនៈ " + data.name) : data.des;
+                }
+
+                let oweInventoryRingPullChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                transaction.push({
+                    account: oweInventoryRingPullChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total
+                }, {
+                    account: ringPullChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+                data.transaction = transaction;
+                data.journalDate = data.companyExchangeRingPullDate;
+                Meteor.call('insertAccountJournal', data);
+            }
+            //End Account Integration
+        })
+    }
+})
+
 
 
 

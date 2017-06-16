@@ -3,7 +3,8 @@ Tracker.autorun(function () {
     if (query.get('vendorId') && query.get('type')) {
         let sub = Meteor.subscribe(`pos.${query.get('type')}`, {
             vendorId: FlowRouter.query.get('vendorId'),
-            status: 'active'
+            status: 'active',
+            branchId: Session.get('currentBranch')
         });
         if (!sub.ready()) {
             swal({

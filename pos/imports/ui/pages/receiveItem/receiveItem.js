@@ -24,6 +24,7 @@ import '../../../../../core/client/components/column-action.js';
 import '../../../../../core/client/components/form-footer.js';
 
 // Collection
+import {InventoryDates} from '../../../api/collections/inventoryDate.js';
 import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
 import {ExchangeGratis} from '../../../api/collections/exchangeGratis.js';
@@ -118,11 +119,38 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            ReceiveItems,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.receiveItem.title'), itemTitle: data._id}
-        );
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let receiveItemDate = moment(data.receiveItemDate).startOf('days').toDate();
+        if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is less then current Transaction Date!",
+                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                swal.close();
+                destroyAction(
+                    ReceiveItems,
+                    {_id: data._id},
+                    {title: TAPi18n.__('pos.receiveItem.title'), itemTitle: data._id}
+                );
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        }
+        else {
+            destroyAction(
+                ReceiveItems,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.receiveItem.title'), itemTitle: data._id}
+            );
+        }
+
+
     },
     'click .js-display' (event, instance) {
         swal({
@@ -155,6 +183,37 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'click .save-receive-item'(){
+        let branchId = Session.get('currentBranch');
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let receiveItemDate = AutoForm.getFieldValue('receiveItemDate', 'Pos_receiveItemNew');
+        receiveItemDate = moment(receiveItemDate).startOf('days').toDate();
+        if (inventoryDate && (receiveItemDate > inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is greater then current Date!",
+                text: "Do You want to continue to process to " + moment(receiveItemDate).format('DD-MM-YYYY') +
+                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                $('#Pos_receiveItemNew').submit();
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        } else if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
+            displayError("Date cannot be less than current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
+            return false;
+        } else {
+            $('#Pos_receiveItemNew').submit();
+        }
+        return false;
+    },
     'click .toggle-list'(event, instance){
         let receiveType = $('#receive-type').val();
         let vendor = $('[name="vendorId"]').val();
@@ -315,7 +374,7 @@ editTmpl.onCreated(function () {
     });
     let type = FlowRouter.query.get('type');
     let data = this.data;
-    let typeId = _.lowerFirst(data.type)+'Id';
+    let typeId = _.lowerFirst(data.type) + 'Id';
     // Add items to local collection
     _.forEach(data.items, (value) => {
         Meteor.call('getItem', value.itemId, function (err, result) {
@@ -366,6 +425,9 @@ editTmpl.helpers({
     },
     collection(){
         return ReceiveItems;
+    },
+    receiveItemDate(){
+        return this.receiveItemDate;
     },
     data () {
         let data = this;
@@ -506,6 +568,13 @@ showTmpl.helpers({
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
+    },
+    calcTotal(items){
+        let total = 0;
+        items.forEach(function (item) {
+            total += item.amount;
+        });
+        return numeral(total).format('0,0.00');
     }
 });
 showTmpl.events({
@@ -642,6 +711,7 @@ listPrepaidOrder.events({
                         this.name = result.name;
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -685,7 +755,7 @@ listPrepaidOrder.events({
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = this.qty * this.price;
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')

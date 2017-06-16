@@ -226,7 +226,7 @@
                                     <!-- foreach ($order->lineItems as $line) or some such thing here -->
                                     {{#each item in items}}
                                         <tr>
-                                            <td><a href="#">{{item.name}}</a></td>
+                                            <td><a href="#">{{item.itemName}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
                                             <td class="text-right">${{item.price}}</td>
                                             <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>

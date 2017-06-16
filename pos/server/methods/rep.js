@@ -13,7 +13,7 @@ Meteor.methods({
                 repList.push({label: `${rep._id} | ${rep.name}`, value: rep._id});
             });
         }
-        if (terms.count() > 0) {
+        if(terms.count() > 0) {
             terms.forEach(function (term) {
                 termList.push({label: `${term._id} | ${term.name}`, value: term._id});
             });

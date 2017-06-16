@@ -103,19 +103,19 @@
                     {{/each}}
                     <tr>
                         {{{reduceField}}}
-                        <th>ITEM</th>
-                        <th>PRICE</th>
-                        <th>QTY</th>
-                        <th>AMOUNT</th>
+                        <th>&emsp;&emsp;ITEM</th>
+                        <th>&emsp;&emsp;PRICE</th>
+                        <th>&emsp;&emsp;QTY</th>
+                        <th>&emsp;&emsp;AMOUNT</th>
                     </tr>
                     {{#each item in col.items}}
 
                         <tr>
                             {{{reduceField}}}
-                            <td>{{item.itemName}}</td>
-                            <td>{{item.price}}</td>
-                            <td>{{item.qty}}</td>
-                            <td>{{item.amount}}</td>
+                            <td>&emsp;&emsp;{{item.itemName}}</td>
+                            <td>&emsp;&emsp;{{numFormat item.price '0,0.00'}}</td>
+                            <td>&emsp;&emsp;{{numFormat item.qty '0,0'}}</td>
+                            <td>&emsp;&emsp;{{numFormat item.amount '0,0.00'}}</td>
                         </tr>
                     {{/each}}
                     <tr>

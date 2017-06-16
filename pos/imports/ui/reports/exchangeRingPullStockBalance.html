@@ -13,6 +13,9 @@
                         <div class="inbox-head report-header">
                             {{#autoForm schema=schema id='exchangeRingPullStockBalance'}}
                                 <div class="row">
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="asDate" label= 'As Date'}}
+                                    </div>
                                     <div class="col-md-4">
                                         {{> afQuickField name="items" label= 'Item'}}
                                     </div>

@@ -274,7 +274,7 @@ itemsTmpl.events({
                     });
                 }
                 else {
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + qtyResult);
                 }
 
             });
@@ -343,7 +343,7 @@ itemsTmpl.events({
                     });
                 }
                 else {
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + qtyResult);
                 }
 
             });
@@ -425,7 +425,7 @@ itemsTmpl.events({
                     };
                     itemsCollection.update({itemId: itemId}, selector);
                     thisObj.val(currentItem.qty);
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + qtyResult);
                 }
 
             });
@@ -443,7 +443,7 @@ itemsTmpl.events({
                     };
                     itemsCollection.update({itemId: itemId}, selector);
                     thisObj.val(currentItem.qty);
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + qtyResult);
                 }
 
             });

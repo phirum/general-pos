@@ -254,6 +254,9 @@ editTmpl.helpers({
     collection(){
         return CompanyExchangeRingPulls;
     },
+    companyExchangeRingPullDate(){
+        return this.companyExchangeRingPullDate;
+    },
     data () {
         let data = this;
         // Add items to local collection

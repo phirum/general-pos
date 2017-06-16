@@ -95,3 +95,46 @@ PrepaidOrders.after.remove(function (userId,doc) {
     //End Account Integration
 });
 
+Meteor.methods({
+    correctAccountPrepaidOrder(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+
+        let prepaidOrders=PrepaidOrders.find({});
+        prepaidOrders.forEach(function (doc) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "PrepaidOrder";
+                let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+                let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+
+                let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+                if (vendorDoc) {
+                    data.name = vendorDoc.name;
+                    data.des = data.des == "" || data.des == null ? ('កក់ទំនិញពីក្រុមហ៊ុនៈ ' + data.name) : data.des;
+                }
+
+                transaction.push({
+                    account: oweInventoryChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total
+                }, {
+                    account: cashChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+                data.transaction = transaction;
+                data.journalDate = data.prepaidOrderDate;
+                Meteor.call('insertAccountJournal', data);
+            }
+        })
+    }
+});

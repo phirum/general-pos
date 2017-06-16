@@ -73,7 +73,9 @@ AutoForm.hooks({
             if (doc.branch) {
                 params.branch = doc.branch.join(',');
             }
-            params.date = moment().endOf('days').format('YYYY-MM-DD HH:mm:ss');
+            if (doc.asDate) {
+                params.date = doc.asDate;
+            }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());
             return false;

@@ -11,9 +11,9 @@ import {Customers} from '../../imports/api/collections/customer.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.exchangeRingPullDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    if (doc.exchangeRingPullDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
     if(!result.isEnoughStock){
@@ -25,10 +25,10 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 });
 
 ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+  /*  let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
@@ -36,9 +36,9 @@ ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, opt
     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
-    }
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
+    }*/
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -193,7 +193,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return',moment().toDate());
+        returnToInventory(doc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -288,3 +288,63 @@ function returnToInventory(exchangeRingPull, type,inventoryDate) {
     });
     //--- End Inventory type block "Average Inventory"---
 }
+
+Meteor.methods({
+    correctAccountExchangeRingPull(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+
+        let exchangeRingPulls=ExchangeRingPulls.find({});
+        exchangeRingPulls.forEach(function (doc) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "ExchangeRingPull";
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                    data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
+                }
+
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data.total,
+                    cr: 0,
+                    drcr: data.total
+                }, {
+                    account: inventoryChartAccount.account,
+                    dr: 0,
+                    cr: data.total,
+                    drcr: -data.total
+                });
+                data.transaction = transaction;
+                data.journalDate = data.exchangeRingPullDate;
+                Meteor.call('insertAccountJournal', data);
+                /*Meteor.call('insertAccountJournal', data, function (er, re) {
+                 if (er) {
+                 AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                 StockFunction.reduceRingPullInventory(doc);
+                 Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                 ExchangeRingPulls.direct.remove({_id: doc._id});
+                 throw new Meteor.Error(er.message);
+                 } else if (re == null) {
+                 AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                 StockFunction.reduceRingPullInventory(doc);
+                 Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                 ExchangeRingPulls.direct.remove({_id: doc._id});
+                 throw new Meteor.Error("Can't Entry to Account System.");
+                 }
+                 });*/
+            }
+            //End Account Integration
+        });
+    }
+})

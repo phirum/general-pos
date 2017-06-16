@@ -139,7 +139,7 @@
                     {{#each footer.itemsSummary}}
                         <tr>
                             <td>{{itemName}}</td>
-                            <td>{{qty}}</td>
+                            <td>{{numFormat qty '0,0'}}</td>
                             <td>{{numFormat price '0,0.00'}}</td>
                             <td><u>{{numFormat amount '0,0.00'}}</u></td>
                         </tr>

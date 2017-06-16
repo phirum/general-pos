@@ -248,7 +248,11 @@ editTmpl.onDestroyed(function () {
 
 // Show
 
-
+showTmpl.events({
+   'click .print'(){
+       $('#to-print').printThis();
+   }
+});
 showTmpl.helpers({
     i18nLabel(label){
         let key = `pos.locationTransfer.schema.${label}.label`;

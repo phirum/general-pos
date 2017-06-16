@@ -25,6 +25,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {LendingStocks} from '../../api/collections/lendingStock.js';
+import {InventoryDates} from '../../api/collections/inventoryDate.js';
 import {Item} from '../../api/collections/item';
 // Tabular
 import {LendingStockTabular} from '../../../common/tabulars/lendingStock.js';
@@ -131,6 +132,37 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'click .save-lending-stock'(){
+        let branchId = Session.get('currentBranch');
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let lendingStockDate = AutoForm.getFieldValue('lendingStockDate', 'Pos_lendingStockNew');
+        lendingStockDate = moment(lendingStockDate).startOf('days').toDate();
+        if (inventoryDate && (lendingStockDate > inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is greater then current Date!",
+                text: "Do You want to continue to process to " + moment(lendingStockDate).format('DD-MM-YYYY') +
+                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                $('#Pos_lendingStockNew').submit();
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        } else if (inventoryDate && (lendingStockDate < inventoryDate.inventoryDate)) {
+            displayError("Date cannot be less than current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
+            return false;
+        } else {
+            $('#Pos_lendingStockNew').submit();
+        }
+        return false;
+    },
     'change [name="stockLocationId"]'(event, instance){
         debugger;
         let stockLocationId = $(event.currentTarget).val();
@@ -298,6 +330,9 @@ editTmpl.events({
     }
 });
 editTmpl.helpers({
+    lendingStockDate(){
+      return this.lendingStockDate;
+    },
     closeSwal(){
         setTimeout(function () {
             swal.close();

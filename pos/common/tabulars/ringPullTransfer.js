@@ -28,18 +28,24 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD');
         }
     },
-    {data: "total", title: "Total"},
+    {
+        data: "total",
+        title: "Total",
+        render: function (val) {
+            return numeral(val).format('0,0.00');
+        }
+    },
     {
         data: "_fromBranch",
         title: "From Branch",
-        render: function(val) {
+        render: function (val) {
             return `${val.khName}(${_.capitalize(val.enName)})`;
         }
     },
     {
         data: "_toBranch",
         title: "To Branch",
-        render: function(val) {
+        render: function (val) {
             return `${val.khName}(${_.capitalize(val.enName)})`;
         }
     },
@@ -47,10 +53,10 @@ tabularOpts.columns = [
     {
         data: "status",
         title: "Status",
-        render: function(val) {
-            if(val == 'active') {
+        render: function (val) {
+            if (val == 'active') {
                 return `<span class="label label-info">${val}</span>`;
-            }else if (val == 'declined') {
+            } else if (val == 'declined') {
                 return `<span class="label label-danger">${val}</span>`;
             }
             return `<span class="label label-success">${val}</span>`;
@@ -64,5 +70,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'fromBranchId','toBranchId','stockLocationId', 'toUserId', 'fromUserId'];
+tabularOpts.extraFields = ['items', 'fromBranchId', 'toBranchId', 'stockLocationId', 'toUserId', 'fromUserId'];
 export const RingPullTransferTabular = new Tabular.Table(tabularOpts);

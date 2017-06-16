@@ -125,7 +125,7 @@
                                 <td>{{item.itemName}}</td>
                                 <td>{{item.price}}</td>
                                 <td>{{item.qty}}</td>
-                                <td>{{item.amount}}</td>
+                                <td>{{numFormat item.amount '0,0.00'}}</td>
                             </tr>
                         {{/each}}
                     {{/each}}

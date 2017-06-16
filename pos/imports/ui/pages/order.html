@@ -13,7 +13,7 @@
 <!--Action-->
 <template name="Pos_orderAction">
     {{#columnAction}}
-        <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <!--<li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>-->
         <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
         <!--<li role="separator" class="divider"></li>-->
@@ -55,9 +55,6 @@
                                 {{> afQuickField name="voucherId"}}
                             </div>
                             <div class="col-md-12">
-                                {{> afQuickField name="deposit"}}
-                            </div>
-                            <div class="col-md-12">
                                 {{> afQuickField name="des"}}
                             </div>
                             <div class="col-md-12">
@@ -70,17 +67,17 @@
                 <div class="col-md-8">
                     <!--Item Temporary-->
                     {{> Pos_orderItems itemsCollection=itemsCollection}}<br>
-                    <!--<div class="col-md-12">
+                    <div class="col-md-12">
                         <div class="box  collapsed-box">
                             <div class="box-header with-border cursor-pointer hover-on-select-vendor" data-widget="collapse">
                                 <h3 class="box-title"> Select Vendor</h3>
-                                &lt;!&ndash;<div class="box-tools pull-right">&ndash;&gt;
-                                    &lt;!&ndash;<button type="button" class="btn btn-box-tool" data-widget="collapse"></i>&ndash;&gt;
-                                    &lt;!&ndash;</button>&ndash;&gt;
-                                &lt;!&ndash;</div>&ndash;&gt;
-                                &lt;!&ndash; /.box-tools &ndash;&gt;
+                                <!--<div class="box-tools pull-right">-->
+                                    <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"></i>-->
+                                    <!--</button>-->
+                                <!--</div>-->
+                                <!-- /.box-tools -->
                             </div>
-                            &lt;!&ndash; /.box-header &ndash;&gt;
+                            <!-- /.box-header -->
                             <div class="box-body" style="display: none;">
                                 <div class="row">
                                     <div class="col-md-5">
@@ -92,10 +89,10 @@
                                 </button>
                                 <label for="" class="warning-msg text-danger"></label>
                             </div>
-                            &lt;!&ndash; /.box-body &ndash;&gt;
+                            <!-- /.box-body -->
                         </div>
-                        &lt;!&ndash; /.box &ndash;&gt;
-                    </div>-->
+                        <!-- /.box -->
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 pull-right">
                             <!--{{> formFooterWithButton}}-->
@@ -135,7 +132,6 @@
                                 {{> afQuickField name="customerId"}}
                                 {{> afQuickField name="orderDate"}}
                                 {{> afQuickField name="voucherId"}}
-                                {{> afQuickField name="deposit"}}
                                 {{> afQuickField name="des"}}
 
                                 {{> afQuickField type="hidden" name="branchId"}}
@@ -155,9 +151,9 @@
                                     <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
                                         <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                                     </button>
-                                    <!-- <button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>
+                                    <button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>
                                         <i class="fa fa-floppy-o"></i> Save & Purchase
-                                    </button>-->
+                                    </button>
                                     <button type="reset" class="btn btn-default">
                                         <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
                                     </button>

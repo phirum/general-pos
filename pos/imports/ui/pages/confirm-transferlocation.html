@@ -13,10 +13,10 @@
             <span class="survey-country list-only">
               UK
             </span>
-            <span class="survey-name">
+                                <span class="survey-name">
               Transfered From {{_fromBranch.enName}}({{_fromBranch.khName}})
             </span>
-            <span class="survey-country grid-only">
+                                <span class="survey-country grid-only">
              <a class="text-gray cursor-pointer show-detail"><i class="fa fa-eye"></i> Show</a>
             </span>
 
@@ -39,23 +39,23 @@
                                         Request on: {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}} <br>
                                         by: {{_fromUser.username}}
                                     </small>
-            <span class="survey-stage">
+                                    <span class="survey-stage">
                 {{#if pending}}
                     <div class="pulse" data-status="running">
                         <div class="status">
                         </div>
                     </div>
                 {{/if}}
-                {{#if declined}}
-                    <i class="fa fa-ban" aria-hidden="true"></i>
+                                        {{#if declined}}
+                                            <i class="fa fa-ban" aria-hidden="true"></i>
                     <div class="pulse" data-status="running">
                     </div>
-                {{/if}}
-                {{#if accepted}}
-                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                                        {{/if}}
+                                        {{#if accepted}}
+                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                     <div class="pulse" data-status="running">
                     </div>
-                {{/if}}
+                                        {{/if}}
             </span>
                                 </div>
                             </li>
@@ -195,5 +195,28 @@
                 </div>
             </div>
         </div>
+    </div>
+</template>
+
+
+<template name="acceptForm">
+    <div class="box-body">
+        {{#autoForm schema=schemaName id="accept_form" doc=this type="method"
+                    meteormethod="locationTransferManageStock"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='id' readonly=true}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='date'}}
+                </div>
+            </div>
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary accept-transfer"><i class="fa fa-paper-plane-o"></i> {{_ "form.btnSubmit"}}</button>
+                <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> {{_ "form.btnReset"}}</button>
+            </div>
+        {{/autoForm}}
     </div>
 </template>

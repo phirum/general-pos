@@ -25,6 +25,8 @@ tabularOpts.columns = [
     {data: "name", title: "Name"},
     {data: "gender", title: "Gender"},
     {data: "telephone", title: "Telephone"},
+    {data: "position", title: "Position"},
     {data: "email", title: "Email"}
 ];
+tabularOpts.extraFields = ["status", "startDate", "salary", "address"]
 export const RepTabular = new Tabular.Table(tabularOpts);

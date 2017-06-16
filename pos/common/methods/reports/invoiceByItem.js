@@ -22,6 +22,7 @@ export const invoiceByItemReport = new ValidatedMethod({
             Meteor._sleepForMs(200);
             let selector = {};
             let project = {};
+            let itemSelector = {$exists: true};
             let data = {
                 title: {},
                 fields: [],
@@ -30,7 +31,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 footer: {}
             };
             let branchId = [];
-            if(params.branchId) {
+            if (params.branchId) {
                 branchId = params.branchId.split(',');
                 selector.branchId = {
                     $in: branchId
@@ -55,7 +56,10 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
             }
-            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Amount</th>'}];
+            if (params.itemId) {
+                itemSelector = {$in: [params.itemId]}
+            }
+            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'},{field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
             data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
 
             // project['$invoice'] = 'Invoice';
@@ -67,122 +71,54 @@ export const invoiceByItemReport = new ValidatedMethod({
                     $match: selector
                 },
                 {
-                    $project: {
-                        totalUsd: coefficient.usd,
-                        totalThb: coefficient.thb,
-                        totalKhr: coefficient.khr,
-                        customerId: 1,
-                        total: 1,
-                        _id: 1,
-                        dueDate: 1,
-                        invoiceDate: 1,
-                        branchId: 1,
-                        createdAt: 1,
-                        createdBy: 1,
-                        invoiceType: 1,
-                        items: 1,
-                        profit: 1,
-                        repId: 1,
-                        staffId: 1,
-                        stockLocationId: 1,
-                        totalCost: 1,
-                        status: 1
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$customerId',
-                        invoiceId: {$last: '$_id'},
-                        date: {$last: '$invoiceDate'},
-                        data: {
-                            $addToSet: '$$ROOT'
-                        },
-                        total: {$sum: '$totalUsd'},
-                        totalKhr: {$sum: '$totalKhr'},
-                        totalThb: {$sum: '$totalThb'}
-                    }
-                },
-
-                {$unwind: {path: '$data', preserveNullAndEmptyArrays: true}},
-                {$unwind: {path: '$data.items', preserveNullAndEmptyArrays: true}},
-                {
                     $lookup: {
-                        from: "pos_item",
-                        localField: "data.items.itemId",
-                        foreignField: "_id",
-                        as: "data.itemDoc"
+                        from: 'pos_customers',
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as: 'customerDoc'
                     }
                 },
-                {$unwind: {path: '$data.itemDoc', preserveNullAndEmptyArrays: true}},
                 {
-                    $group: {
-                        _id: {
-                            customerId: '$data.customerId',
-                            itemId: '$data.items.itemId'
-                        },
-                        invoiceId: {$last: '$invoiceId'},
-                        date: {$last: '$date'},
-                        customerId: {$last: '$data.customerId'},
-                        itemId: {$addToSet: '$data.items.itemId'},
-                        itemName: {$addToSet: '$data.itemDoc.name'},
-                        qty: {$sum: '$data.items.qty'},
-                        price: {$avg: '$data.items.price'},
-                        amount: {$sum: '$data.items.amount'},
-                        total: {$addToSet: '$total'},
-                        totalThb: {$addToSet: '$totalThb'},
-                        totalKhr: {$addToSet: '$totalKhr'}
-                    }
-                },
-                {$unwind: {path: '$itemId', preserveNullAndEmptyArrays: true}},
-                {$unwind: {path: '$itemName', preserveNullAndEmptyArrays: true}},
-                {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
-                {$unwind: {path: '$totalThb', preserveNullAndEmptyArrays: true}},
-                {$unwind: {path: '$totalKhr', preserveNullAndEmptyArrays: true}},
-                {
-                    $lookup: {
-                        from: "pos_customers",
-                        localField: "customerId",
-                        foreignField: "_id",
-                        as: "customerDoc"
-                    }
-                }, {
                     $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
                 },
-                {$sort: {'customerDoc.name': 1}},
                 {
-                    $group: {
-                        _id: '$customerId',
-                        items: {
-                            $addToSet: {
-                                invoiceId: '$invoiceId',
-                                date: '$date',
-                                customer: '$customerDoc.name',
-                                tel: '$customerDoc.telephone',
-                                address: '$customerDoc.address',
-                                itemName: '$itemName',
-                                qty: '$qty',
-                                price: '$price',
-                                amount: '$amount'
-                            }
-                        },
-                        totalQty: {$sum: '$qty'},
-                        total: {$addToSet: {totalUsd: '$total', totalThb: '$totalThb', totalKhr: '$totalKhr'}}
+                    $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
+                },
+                {$match: {'items.itemId': itemSelector}},
+                {
+                    $lookup: {
+                        from: 'pos_item',
+                        localField: 'items.itemId',
+                        foreignField: '_id',
+                        as: 'itemDoc'
                     }
                 },
-                {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
+                {
+                    $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                },
+                {
+                    $sort: {invoiceDate: 1}
+                },
+                {
+                    $project: {
+                        invoiceId: {$ifNull: ['$voucherId', '$_id']},
+                        _id: 0,
+                        invoiceDate: '$invoiceDate',
+                        customerDoc: 1,
+                        itemDoc: 1,
+                        items: 1
+                    }
+                },
                 {
                     $group: {
                         _id: null,
                         data: {
-                            $addToSet: '$$ROOT'
+                            $push: '$$ROOT'
                         },
-                        totalQty: {$sum: '$totalQty'},
-                        total: {$sum: '$total.totalUsd'},
-                        totalKhr: {$sum: '$total.totalKhr'},
-                        totalThb: {$sum: '$total.totalThb'}
+                        total: {$sum: '$items.amount'},
+                        totalQty: {$sum: '$items.qty'}
                     }
                 }
-
             ]);
             let invoiceItemSummary = Invoices.aggregate([
                 {
@@ -191,6 +127,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
                 },
+                {$match: {'items.itemId': itemSelector}},
                 {
                     $lookup: {
                         from: "pos_item",
@@ -220,8 +157,6 @@ export const invoiceByItemReport = new ValidatedMethod({
                     itemsSummary: invoiceItemSummary,
                     totalQty: invoices[0].totalQty,
                     total: invoices[0].total,
-                    totalKhr: invoices[0].totalKhr,
-                    totalThb: invoices[0].totalThb
                 }
             }
             return data

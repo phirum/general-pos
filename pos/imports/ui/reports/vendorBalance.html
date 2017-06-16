@@ -1,0 +1,88 @@
+<template name="pos_vendorBalanceSummaryReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading no-print">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in no-print">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='vendorBalanceSummary'}}
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        {{> afQuickField name="vendorId" label= 'Vendor'}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default fullScreen">Full Screen</a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>vendorBalanceSummaryReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="vendorBalanceSummaryReportData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <br>
+                <a class="no-print btn btn-default print"><i class="fa fa-print"></i> Print</a>
+            </div>
+        </div>
+        {{#with company}}
+            <div class="col-xs-12">
+                <h4 class="text-center">{{khName}}</h4>
+                <h5 class="text-aqua text-center"><u>Vendor Balance Summary</u></h5>
+            </div>
+        {{/with}}
+        <br>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <small>
+                            <address class="">
+                                <strong>Branch:</strong>
+                                <span>{{data.title.branch.khName}}</span><br>
+                                <strong>Vendor:</strong>
+                                <span>{{data.title.vendor}}</span>
+                            </address>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{#with data}}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Vendor</th>
+                    <th class="text-left">Balance</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each content}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td >{{numFormat balance '0,0.00'}}</td>
+                    </tr>
+                {{/each}}
+                <tr>
+                    <td class="text-right">Total: </td>
+                    <td><b>{{numFormat footer.totalBalance '0,0.00'}}</b></td>
+                </tr>
+                </tbody>
+            </table>
+        {{/with}}
+    </div>
+</template>

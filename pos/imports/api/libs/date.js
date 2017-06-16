@@ -1,3 +1,4 @@
+import {Closing} from '../collections/closing';
 export default class RangeDate {
     static today() {
         return {start: moment().startOf('days'), end: moment().endOf('days')}
@@ -40,5 +41,20 @@ export default class RangeDate {
 
     static addDayBy({date, amountOfAdd}) {
         return {date: moment(date).subtract(amountOfAdd, 'days')}
+    }
+
+    static checkMinPlusOneDay(elm) {
+        let closing = Closing.findOne({});
+        elm.data("DateTimePicker").minDate(closing ? moment(closing.closingDate).add(1, 'days').toDate() : false)
+    }
+
+    static checkMin(elm) {
+        let closing = Closing.findOne({});
+        elm.data("DateTimePicker").minDate(closing ? moment(closing.closingDate).toDate() : false)
+    }
+
+    static setMin(elm, date) {
+        elm.data("DateTimePicker") && elm.data("DateTimePicker").minDate(date ? moment(date).toDate() : false)
+
     }
 };

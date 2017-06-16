@@ -24,6 +24,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
+import {InventoryDates} from '../../api/collections/inventoryDate.js';
 import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
@@ -104,11 +105,37 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            ExchangeRingPulls,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
-        );
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
+        if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is less then current Transaction Date!",
+                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                swal.close();
+                destroyAction(
+                    ExchangeRingPulls,
+                    {_id: data._id},
+                    {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+                );
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        }
+        else {
+            destroyAction(
+                ExchangeRingPulls,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+            );
+        }
+
     },
     'click .js-display' (event, instance) {
         swal({
@@ -138,6 +165,37 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'click .save-exchange-ring-pull'(){
+        let branchId = Session.get('currentBranch');
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let exchangeRingPullDate = AutoForm.getFieldValue('exchangeRingPullDate', 'Pos_exchangeRingPullNew');
+        exchangeRingPullDate = moment(exchangeRingPullDate).startOf('days').toDate();
+        if (inventoryDate && (exchangeRingPullDate > inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is greater then current Date!",
+                text: "Do You want to continue to process to " + moment(exchangeRingPullDate).format('DD-MM-YYYY')
+                + "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                $('#Pos_exchangeRingPullNew').submit();
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        } else if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
+            displayError("Date cannot be less than current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
+            return false;
+        } else {
+            $('#Pos_exchangeRingPullNew').submit();
+        }
+        return false;
+    },
     'change [name="stockLocationId"]'(event, instance){
         debugger;
         let stockLocationId = $(event.currentTarget).val();
@@ -169,7 +227,7 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-  repId(){
+    repId(){
         if (Session.get('customerInfo')) {
             try {
                 return Session.get('customerInfo').repId;
@@ -248,7 +306,6 @@ editTmpl.onCreated(function () {
 
 editTmpl.events({
     'change [name="stockLocationId"]'(event, instance){
-        debugger;
         let invoice = instance.data;
         let stockLocationId = $(event.currentTarget).val();
         let items = itemsCollection.find().fetch();
@@ -291,14 +348,17 @@ editTmpl.helpers({
     data () {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
-            Meteor.call('getItem', value.itemId, (err, result)=> {
+        _.forEach(data.items, (value) => {
+            Meteor.call('getItem', value.itemId, (err, result) => {
                 value.name = result.name;
                 value.saleId = this.saleId;
                 itemsCollection.insert(value);
             })
         });
         return data;
+    },
+    exchangeRingPullDate(){
+        return this.exchangeRingPullDate;
     },
     itemsCollection(){
         return itemsCollection;
@@ -311,16 +371,16 @@ editTmpl.helpers({
 
         return {};
     },
-   /* repId(){
-        if (Session.get('customerInfo')) {
-            try {
-                return Session.get('customerInfo').repId;
-            } catch (e) {
+    /* repId(){
+     if (Session.get('customerInfo')) {
+     try {
+     return Session.get('customerInfo').repId;
+     } catch (e) {
 
-            }
-        }
-        return '';
-    },*/
+     }
+     }
+     return '';
+     },*/
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
@@ -401,16 +461,16 @@ showTmpl.helpers({
         return `<label class="label label-success">G</label>`
     },
     colorizeStatus(status){
-        if(status == 'active') {
+        if (status == 'active') {
             return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
+        } else if (status == 'partial') {
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
     }
 });
 showTmpl.events({
-    'click .print-exchangeRingPull-show'(event,instance){
+    'click .print-exchangeRingPull-show'(event, instance){
         $('#to-print').printThis();
     }
 });
@@ -429,7 +489,7 @@ let hooksObject = {
         insert: function (doc) {
             let items = [];
 
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -439,7 +499,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });

@@ -97,7 +97,7 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
+                            <button type="submit" class="btn btn-primary save-receive-item" id="save-receive-item" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
                             <button type="reset" class="btn btn-default">
@@ -160,7 +160,7 @@
                     </div>
                 {{/if}}-->
                 <div class="col-md-2">
-                    {{> afQuickField name="receiveItemDate"}}
+                    {{> afQuickField name="receiveItemDate" value=receiveItemDate}}
                 </div>
                 <div class="col-md-2">
                     {{> afQuickField name="dueDate" value=dueDate}}
@@ -276,7 +276,7 @@
                                         <tr>
                                             <td><a href="#">{{item.name}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
-                                            <td class="text-right">${{item.price}}</td>
+                                            <td class="text-right">${{numFormat item.price '0,0.00'}}</td>
                                             <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
                                         </tr>
                                     {{/each}}
@@ -284,7 +284,7 @@
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
                                         <td class="no-line text-right"><strong>Total</strong></td>
-                                        <td class="no-line text-right">${{numFormat total '0,0.00'}}</td>
+                                        <td class="no-line text-right">${{calcTotal items}}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -334,8 +334,8 @@
                         <td><span class="hidden prepaidOrderId">{{prepaidOrder._id}}</span></td>
                         <td>{{getItemName itemId}}</td>
                         <td>{{qty}}</td>
-                        <td>{{price}}</td>
-                        <td>{{amount}}</td>
+                        <td>{{numFormat price '0,0.00'}}</td>
+                        <td>{{numFormat amount '0,0.00'}}</td>
                         <td><input type="text" class="remain-qty" value="{{remainQty}}"></td>
                         <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
                     </tr>

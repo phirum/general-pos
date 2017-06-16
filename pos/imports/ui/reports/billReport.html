@@ -1,13 +1,13 @@
 <template name="Pos_billReport">
     <div class="panel-group" id="accordion1">
         <div class="panel panel-default">
-            <div class="panel-heading">
+            <div class="panel-heading no-print">
                 <h5 class="panel-title">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
                        href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
                 </h5>
             </div>
-            <div id="accordion1_1" class="panel-collapse collapse in">
+            <div id="accordion1_1" class="no-print panel-collapse collapse in">
                 <div class="panel-body">
                     <div class="container-fluid">
                         <div class="inbox-head report-header">
@@ -27,7 +27,8 @@
                                     </div>
 
                                 </div>
-                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -43,7 +44,7 @@
         <div class="row">
             <div class="col-md-4">
                 <br>
-                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                <a class="no-print btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
             </div>
         </div>
     </div>
@@ -59,23 +60,11 @@
         {{/with}}
         <div class="col-md-12" align="center"><h3>BILL REPORT</h3></div>
         <div class="row">
-            <div class="col-xs-12">
-                <hr>
-                <div class="row">
-                    <div class="col-xs-3">
-                        <address class="">
-                            <strong>Date:</strong>
-                            {{data.title.date}}
-                        </address>
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <!-- <address>
-                             <strong>Order Date:</strong><br>
-                             March 7, 2014<br><br>
-                         </address>-->
-                    </div>
-                </div>
-
+            <div class="col-md-3">
+                <small style="font-size: 9px;">
+                    <strong>Date:</strong>
+                    {{data.title.date}}
+                </small>
             </div>
         </div>
         <table class="table table-striped ">

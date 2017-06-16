@@ -85,7 +85,7 @@ itemsTmpl.helpers({
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`),
             fn(value, obj, key){
-                return FlowRouter.query.get('vendorId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
+                return  value;
             }
         }, {
             key: 'lostQty',
@@ -187,9 +187,7 @@ itemsTmpl.events({
             itemId: itemId
         });
         if (exist) {
-            qty += parseInt(exist.qty);
             amount = math.round(qty * price, 2);
-
             itemsCollection.update({
                 _id: exist._id
             }, {

@@ -31,11 +31,16 @@ export const exchangeRingPullReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             // selector.status = {$in: ['active', 'closed']};
+            if(params.branchId) {
+                selector.branchId = params.branchId;
+            }else{
+                return data;
+            }
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
-                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
+                data.title.date = moment(fromDate).format('DD/MM/YYYY') + ' - ' + moment(toDate).format('DD/MM/YYYY');
                 selector.exchangeRingPullDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.customer && params.customer != '') {

@@ -31,7 +31,7 @@ export const stockBalanceReport = new ValidatedMethod({
             if (params.date) {
                 let asOfDate = moment(params.date).toDate();
                 data.title.date = moment(asOfDate).format('YYYY-MMM-DD');
-                selector.createdAt = {$lte: asOfDate};
+                selector.inventoryDate = {$lte: asOfDate};
             }
             if (params.branch) {
                 selector.branchId = {$in: params.branch.split(',')};
@@ -90,7 +90,7 @@ export const stockBalanceReport = new ValidatedMethod({
             /****** Content *****/
             let inventories = AverageInventories.aggregate([
                 {$match: selector},
-                {$sort: {_id: 1, createdAt: 1}},
+                {$sort: {_id: 1, inventoryDate: 1}},
                 {
                     $lookup: {
                         from: "pos_item",
@@ -130,7 +130,7 @@ export const stockBalanceReport = new ValidatedMethod({
                 {
                     $project: {
                         itemId: 1,
-                        createdAt: 1,
+                        inventoryDate: 1,
                         itemDoc: 1,
                         branchDoc: 1,
                         locationDoc: 1,

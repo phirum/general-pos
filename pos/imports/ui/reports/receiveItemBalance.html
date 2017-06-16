@@ -1,0 +1,115 @@
+<template name="Pos_receiveItemBalanceReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading no-print">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="no-print panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='receiveItemBalanceReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="receiveType" label= 'Receie Type'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="asDate" label= 'As Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="itemId" label="Item"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <button class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i>
+                                    Print
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>receiveItemBalanceReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="receiveItemBalanceReportData">
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h4 class="text-center">{{khName}}</h4>
+                <h5 class="text-aqua text-center"><u>RECEIVE ITEMS BALANCE</u></h5>
+            </div>
+        {{/with}}
+        <br>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <small>
+                            <address class="">
+                                <strong>Date:</strong>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{data.title.date}}</span><br>
+                                <strong>Item:</strong>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{data.title.item}}</span>
+                                <br>
+                                <strong>Branch:</strong>
+                                <span>{{data.title.branch.khName}}</span><br>
+                                <strong>Type: </strong>
+                                <span>{{data.title.type}}</span>
+                            </address>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th class="text-center">Total Qty</th>
+                <th class="text-center">Receive Qty</th>
+                <th class="text-center">Remain Qty</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Amount</th>
+
+            </tr>
+            </thead>
+            {{#with data}}
+                <tbody>
+                {{#each content}}
+                    <tr>
+                        <td>{{itemDoc.name}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat totalQty '0,0'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat receiveQty '0,0'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat remainQty '0,0'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat price '0,0.00'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat amount '0,0.00'}}</td>
+                    </tr>
+                {{/each}}
+                {{#with footer}}
+                    <tr style="border-top: 1px solid #000;">
+                        <td class="text-right"><b>Total:</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalQty '0,0'}}</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalReceiveQty '0,0'}}</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalRemainQty '0,0'}}</b></td>
+                        <td></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalAmount '0,0.00'}}</b></td>
+                    </tr>
+                {{/with}}
+                </tbody>
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

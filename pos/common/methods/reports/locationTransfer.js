@@ -81,8 +81,8 @@ export const locationTransferMethods = new ValidatedMethod({
                     'fromUser': '$_fromUser.username',
                     'fromBranch': '$_fromBranch.enName',
                     'fromStockLocation': '$_fromStockLocation.name',
-                    'toBranch': '$_toBranch.enName',
                     'toUser': '$_toUser.username',
+                    'toBranch': '$_toBranch.enName',
                     'toStockLocation': '$_toStockLocation.name',
                     'total': '$total'
                 };
@@ -92,8 +92,8 @@ export const locationTransferMethods = new ValidatedMethod({
                     {field: 'From User'},
                     {field: 'From Branch'},
                     {field: 'From Location'},
-                    {field: 'To Branch'},
                     {field: 'To User'},
+                    {field: 'To Branch'},
                     {field: 'To Location'},
                     {field: 'Total'},
                 ];

@@ -79,6 +79,7 @@ exchangeGratisTmpl.events({
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -122,7 +123,7 @@ exchangeGratisTmpl.events({
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = this.qty * this.price;
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')

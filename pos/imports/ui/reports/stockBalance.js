@@ -62,13 +62,14 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            debugger
             if (obj.field == 'invoiceDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'remainQty' || obj.field == 'averagePrice' || obj.field == 'lastAmount') {
+            } else if (obj.field == 'averagePrice' || obj.field == 'lastAmount') {
                 data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+            }else if(obj.field == 'remainQty') {
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0')}</td>`;
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;

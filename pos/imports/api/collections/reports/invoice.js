@@ -99,4 +99,21 @@ export const invoiceSchema = new SimpleSchema({
             }
         }
     },
+    itemId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                create: true,
+                uniPlaceholder: 'All',
+                optionsMethod: 'pos.selectOptMethods.item',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        return {scheme: {$exists: false}};
+                    }
+                }
+            }
+        }
+    },
 });

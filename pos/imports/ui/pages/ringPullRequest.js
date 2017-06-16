@@ -136,7 +136,7 @@ indexTmpl.events({
         }).then(function () {
             Meteor.call('ringPullTransferManageStock', id, function (er, re) {
                 if (er) {
-                    alertify.error(er.message);
+                    alertify.warning(er.message);
                 } else {
                     swal({
                         title: "Accepted!",

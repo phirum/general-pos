@@ -26,7 +26,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ItemsSchema} from '../../api/collections/order-items.js';
+import {EnterBillItemsSchema} from '../../api/collections/order-items.js';
 import {PurchaseOrder} from '../../api/collections/purchaseOrder.js';
 
 // Declare template
@@ -106,7 +106,7 @@ itemsTmpl.helpers({
         return reactiveTableSettings;
     },
     schema() {
-        return ItemsSchema;
+        return EnterBillItemsSchema;
     },
     disabledAddItemBtn: function () {
         const instance = Template.instance();
@@ -229,7 +229,7 @@ editItemsTmpl.onCreated(function () {
 
 editItemsTmpl.helpers({
     schema() {
-        return ItemsSchema;
+        return EnterBillItemsSchema;
     },
     data: function () {
         let data = Template.currentData();

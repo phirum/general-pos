@@ -60,7 +60,7 @@ invoiceDataTmpl.helpers({
     },
     reduceField(){
         let td = ''
-        let fieldLength = this.displayFields.length - 6;
+        let fieldLength = this.displayFields.length - 7;
         for (let i = 0; i < fieldLength; i++) {
             td += '<td></td>';
         }
@@ -73,25 +73,26 @@ invoiceDataTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'vendor') {
                 data += `<td>${col.vendor.name}</td>`;
-            } else if(obj.field == 'vendorTelephone'){
-                data += `<td>${col.vendor.telephone}</td>`;
+            } else if (obj.field == 'vendorTelephone') {
+                let tel = col.vendor.telephone;
+                data += `<td>${ tel ? tel : ''}</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
-                data += `<td>${col[obj.field]}</td>`;
+                data += `<td>${col[obj.field] ? col[obj.field] : ''}</td>`;
             }
         });
 
         return data;
     },
-    getTotal(totalRemainQty, total){
+    getTotal(totalRemainQty, remainAmount, total){
         let string = '';
-        let fieldLength = this.displayFields.length - 3;
+        let fieldLength = this.displayFields.length - 4;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td></td><td><b>${numeral(remainAmount).format('0,0.00')}</b></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });
@@ -103,10 +104,14 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
+            }
+            if (doc.status) {
+                params.status = doc.status.join(',');
             }
             if (doc.vendor) {
                 params.vendor = doc.vendor

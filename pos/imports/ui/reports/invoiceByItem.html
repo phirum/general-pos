@@ -34,7 +34,10 @@
                                     <div class="col-md-2">
                                         {{> afQuickField name="customer" label="Customer"}}
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="itemId" label="Item"}}
+                                    </div>
+                                    <div class="col-md-2">
                                         {{> afQuickField name="branchId" label="Branch"}}
                                     </div>
 
@@ -93,15 +96,17 @@
                     </thead>
                     <tbody class="rpt-body">
                     {{#each col in content}}
-                        {{#each field in col.items}}
-                            <tr>
-                                {{{display field}}}
-                            </tr>
-                        {{/each}}
-                        <!--<tr>-->
-                        <!--{{{getTotal col.total.totalUsd}}}-->
-                        <!--</tr>-->
-
+                        <tr>
+                            <td>{{moFormat col.invoiceDate 'DD/MM/YYYY'}}</td>
+                            <td>{{col.invoiceId}}</td>
+                            <td>{{col.customerDoc.name}}</td>
+                            <td>{{col.customerDoc.address}}</td>
+                            <td>{{col.customerDoc.telephone}}</td>
+                            <td>{{col.itemDoc.name}}</td>
+                            <td class="text-right">{{numFormat col.items.qty '0,0.00'}}</td>
+                            <td class="text-right">{{numFormat col.items.price '0,0.00'}}</td>
+                            <td class="text-right">{{numFormat col.items.amount '0,0.00'}}</td>
+                        </tr>
                     {{/each}}
                     <hr>
 
@@ -119,7 +124,7 @@
                                                                        aria-hidden="true"></i> ITEMS SUMMARY</span>
                         </td>
                         <td style="background-color: #d0d0d0" class="text-right">Qty</td>
-                        <!--<td style="background-color: #d0d0d0" class="text-right">Price</td>-->
+                        <td style="background-color: #d0d0d0" class="text-right">Price</td>
                         <td colspan="" style="background-color: #d0d0d0" class="text-right">Amount</td>
                         <td colspan="5" style="background-color: #d0d0d0"></td>
                     </tr>
@@ -127,7 +132,7 @@
                         <tr>
                             <td>{{itemName}}</td>
                             <td class="text-right">{{numFormat qty '0,0.00'}}</td>
-                            <!--<td class="text-right">{{numFormat price '0,0.00'}}</td>-->
+                            <td class="text-right">{{numFormat price '0,0.00'}}</td>
                             <td class="text-right"><u>{{numFormat amount '0,0.00'}}</u></td>
                         </tr>
                     {{/each}}

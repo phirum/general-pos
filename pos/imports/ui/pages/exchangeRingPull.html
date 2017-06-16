@@ -51,7 +51,7 @@
                         <div class="col-sm-12 pull-right">
                             <!--{{> formFooterWithButton}}-->
                             {{#formFooter}}
-                                <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                                <button type="submit" class="btn btn-primary save-exchange-ring-pull" {{disabledSubmitBtn}}>
                                     <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                                 </button>
                                 <button type="reset" class="btn btn-default reset-button">
@@ -79,7 +79,7 @@
                         <div class="panel-heading">Exchange Ring Pull</div>
                         <div class="panel-body">
                             {{> afQuickField name="customerId"}}
-                            {{> afQuickField name="exchangeRingPullDate"}}
+                            {{> afQuickField name="exchangeRingPullDate" value=exchangeRingPullDate}}
                             {{> afQuickField name="repId" options=options label="Rep"}}
                             {{> afQuickField name="stockLocationId"}}
                             {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
@@ -179,7 +179,7 @@
                                         <tr>
                                             <td><a href="#">{{item.itemName}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
-                                            <td class="text-right">${{item.price}}</td>
+                                            <td class="text-right">${{numFormat item.price '0,0.00'}}</td>
                                             <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
                                         </tr>
                                     {{/each}}

@@ -21,10 +21,18 @@ tabularOpts.collection = Invoices;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_invoiceAction},
     {data: "_id", title: "ID"},
+    {data: "voucherId", title: "Voucher"},
     {
         data: "invoiceDate",
         title: "Date",
         render: function (val, type, doc) {
+            return moment(val).format('YYYY-MM-DD');
+        }
+    },
+    {
+        data: "deliveryDate",
+        title: "Delivery Date",
+        render: function (val) {
             return moment(val).format('YYYY-MM-DD');
         }
     },
@@ -62,7 +70,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = [
-    'customerId', 'items', 'dueDate', 'stockLocationId', 'repId', 'voucherId',
-    'invoiceType', 'saleId', 'paymentGroupId', 'staffId','isWholesale'];
+tabularOpts.extraFields = ['customerId', 'items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'invoiceType', 'saleId', 'paymentGroupId', 'staffId','branchId'];
 export const InvoiceTabular = new Tabular.Table(tabularOpts);

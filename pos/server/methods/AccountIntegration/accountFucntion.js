@@ -1,6 +1,5 @@
 Meteor.methods({
     insertAccountJournal(doc){
-        console.log(doc);
         let id;
         let data = {};
         data.journalDate = doc.journalDate;
@@ -21,7 +20,6 @@ Meteor.methods({
         return id;
     },
     updateAccountJournal(doc){
-        console.log(doc);
         let isTrue = false;
         let data = {};
         data.journalDate =doc.journalDate;

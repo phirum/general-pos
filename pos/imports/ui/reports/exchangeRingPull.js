@@ -70,11 +70,11 @@ invoiceDataTmpl.helpers({
         let data = '';
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'exchangeRingPullDate') {
-                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
+                data += `<td>${moment(col[obj.field]).format('DD/MM/YYYY')}</td>`
             } else if (obj.field == 'customerName') {
                 data += `<td>${col.customer.name}</td>`
             } else if (obj.field == 'customerTelephone') {
-                data += `<td>${col.customer.telephone}</td>`
+                data += `<td>${col.customer.telephone ? col.customer.telephone : ''}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -101,9 +101,10 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
             if (doc.customer) {

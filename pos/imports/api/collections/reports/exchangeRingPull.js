@@ -11,7 +11,7 @@ export const exchangeRingPullReportSchema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
+                    format: 'DD/MM/YYYY',
 
                 }
             }
@@ -24,7 +24,7 @@ export const exchangeRingPullReportSchema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
+                    format: 'DD/MM/YYYY',
 
                 }
             }

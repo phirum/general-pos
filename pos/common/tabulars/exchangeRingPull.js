@@ -28,7 +28,12 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD');
         }
     },
-    {data: "total", title: "Total"},
+    {
+        data: "total", title: "Total",
+        render: function (val) {
+            return numeral(val).format('0,0.00');
+        }
+    },
     {data: "des", title: "Description"},
     {
         data: "customerId",
@@ -57,5 +62,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'repId','stockLocationId'];
+tabularOpts.extraFields = ['items', 'repId', 'stockLocationId','branchId'];
 export const ExchangeRingPullTabular = new Tabular.Table(tabularOpts);

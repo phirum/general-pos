@@ -19,9 +19,9 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 
 ReceiveItems.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.receiveItemDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    if (doc.receiveItemDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -31,10 +31,10 @@ ReceiveItems.before.insert(function (userId, doc) {
 
 
 ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+ /*   let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
@@ -42,9 +42,9 @@ ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options)
     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
-    }
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
+    }*/
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -355,7 +355,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receiveItem-return',moment().toDate());
+        reduceFromInventory(doc, 'receiveItem-return',doc.receiveItemDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -539,3 +539,127 @@ function reduceFromInventory(receiveItem, type,receiveItemDate) {
     });
 
 }
+
+Meteor.methods({
+    correctAccountReceiveItem(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+
+        let receiveItems=ReceiveItems.find({});
+        receiveItems.forEach(function (doc) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            let transaction = [];
+            let type = '';
+            let total = 0;
+            let totalLostAmount = 0;
+            doc.items.forEach(function (item) {
+                total += item.qty * item.price;
+                totalLostAmount += item.lostQty * item.price;
+            });
+            doc.total = total;
+            //Account Integration
+            if (setting && setting.integrate) {
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
+
+
+                transaction.push({
+                    account: inventoryChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total
+                });
+                if (totalLostAmount > 0) {
+                    transaction.push({
+                        account: lostInventoryChartAccount.account,
+                        dr: totalLostAmount,
+                        cr: 0,
+                        drcr: totalLostAmount
+                    });
+                }
+            }
+            doc.total = doc.total + totalLostAmount;
+            if (doc.type == 'PrepaidOrder') {
+                //Account Integration
+                if (setting && setting.integrate) {
+                    type = 'PrepaidOrder-RI';
+                    let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+                    transaction.push({
+                        account: InventoryOwingChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total
+                    });
+                }
+
+            }
+            else if (doc.type == 'LendingStock') {
+                //Account Integration
+                if (setting && setting.integrate) {
+                    type = 'LendingStock-RI';
+                    let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+                    transaction.push({
+                        account: InventoryOwingChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total
+                    });
+                }
+
+            }
+            else if (doc.type == 'ExchangeGratis') {
+                //Account Integration
+                if (setting && setting.integrate) {
+                    type = 'Gratis-RI';
+                    let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
+                    transaction.push({
+                        account: InventoryOwingChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total
+                    });
+                }
+
+            }
+            else if (doc.type == 'CompanyExchangeRingPull') {
+                //Account Integration
+                if (setting && setting.integrate) {
+                    type = 'RingPull-RI';
+                    let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+                    transaction.push({
+                        account: InventoryOwingChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total
+                    });
+                }
+
+            }
+            else {
+                throw Meteor.Error('Require Receive Item type');
+            }
+
+
+
+            //Account Integration
+            if (setting && setting.integrate) {
+                let data = doc;
+                data.type = type;
+                data.transaction = transaction;
+                data.journalDate = data.receiveItemDate;
+
+                let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+                if (vendorDoc) {
+                    data.name = vendorDoc.name;
+                    data.des = data.des == "" || data.des == null ? ('ទទួលទំនិញពីក្រុមហ៊ុនៈ ' + data.name) : data.des;
+                }
+                Meteor.call('insertAccountJournal', data);
+            }
+            //End Account Integration
+        })
+    }
+})

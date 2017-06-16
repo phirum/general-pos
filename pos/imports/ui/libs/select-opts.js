@@ -88,7 +88,11 @@ export const SelectOpts = {
         return [
             {label: "(Select One)", value: ""},
             {label: "Seller", value: "Seller"},
-            {label: "Manager", value: "Manager"}
+            {label: "Sale Manager", value: "Manager"},
+            {label: "Sale Man", value: "SaleMan"},
+            {label: "Senior Sale", value: "SeniorSale"},
+            {label: "Sale Supervisor", value: "SaleSupervisor"},
+            {label: "CEO", value: "CEO"}
         ];
     },
     paymentType: function () {

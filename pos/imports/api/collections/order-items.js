@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { AutoForm } from 'meteor/aldeed:autoform';
-import { moment } from 'meteor/momentjs:moment';
+import {Meteor} from 'meteor/meteor';
+import {Mongo} from 'meteor/mongo';
+import {ReactiveVar} from 'meteor/reactive-var';
+import {SimpleSchema} from 'meteor/aldeed:simple-schema';
+import {AutoForm} from 'meteor/aldeed:autoform';
+import {moment} from 'meteor/momentjs:moment';
 
 // Lib
-import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Method
-import { itemInfo } from '../../../common/methods/item-info.js';
+import {itemInfo} from '../../../common/methods/item-info.js';
 
 // Item schema
 let defaultBaseUnit = new ReactiveVar();
@@ -19,7 +19,7 @@ Tracker.autorun(function () {
     if (Session.get('itemFilterState')) {
         itemFilterSelector.set(Session.get('itemFilterState'));
     }
-   
+
 });
 export const ItemsSchema = new SimpleSchema({
     itemId: {
@@ -36,7 +36,7 @@ export const ItemsSchema = new SimpleSchema({
                         if (!_.isEmpty(itemFilterSelector.get())) {
                             return itemFilterSelector.get();
                         } else {
-                            return { scheme: {} };
+                            return {};
                         }
                     }
                 }
@@ -51,7 +51,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.decimal();
+                return inputmaskOptions.integer();
             }
         }
     },
@@ -64,7 +64,7 @@ export const ItemsSchema = new SimpleSchema({
             type: 'inputmask',
             optional: true,
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 2});
             }
         }
     },
@@ -115,7 +115,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 2});
             }
         }
 
@@ -133,7 +133,7 @@ export const RingPullItemsSchema = new SimpleSchema({
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.item',
                 optionsMethodParams: function () {
-                    return { scheme: { $exists: false } };
+                    return { scheme: {$exists: false}, itemType: 'stock'};
                 }
             }
         }
@@ -241,10 +241,7 @@ export const EnterBillItemsSchema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         return {
-                            $or: [
-                                { scheme: { $exists: false } },
-                                { scheme: { $size: 0 } }
-                            ]
+                            scheme: {$exists: false}, itemType: 'stock'
                         };
                     }
                 }

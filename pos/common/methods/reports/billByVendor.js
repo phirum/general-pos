@@ -37,6 +37,11 @@ export const billByVendorReport = new ValidatedMethod({
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.billType = {$ne: 'group'};
             selector.status = {$in: ['active', 'partial', 'closed']};
+            if(params.branchId) {
+                selector.branchId = params.branchId;
+            }else {
+                return data;
+            }
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();

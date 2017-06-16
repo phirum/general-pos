@@ -445,7 +445,7 @@
         "qty": {
           "label": "Qty"
         },
-        "lostQty":{
+        "lostQty": {
           "label": "Lost Qty"
         },
         "price": {
@@ -693,14 +693,14 @@
         "fromBranchId": {
           "label": "From Branch"
         },
-        "toBranchId":{
-          "label":"To Branch"
+        "toBranchId": {
+          "label": "To Branch"
         },
         "fromUserId": {
           "label": "From User"
         },
-        "toUserId":{
-          "label":"To User"
+        "toUserId": {
+          "label": "To User"
         }
       }
     },
@@ -746,11 +746,11 @@
     "accountMapping": {
       "title": "Account Mapping"
     },
-    "stockAndAccountMapping":{
-      "title":"Stock And Account Mapping"
+    "stockAndAccountMapping": {
+      "title": "Stock And Account Mapping"
     },
-    "penalty":{
-      "title":"Penalty"
+    "penalty": {
+      "title": "Penalty"
     },
     "exchangeRate": {
       "title": "Exchange Rate",

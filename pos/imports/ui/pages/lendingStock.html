@@ -69,10 +69,10 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
+                            <!--<button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
                                 <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
-                            </button>
-                            <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
+                            </button>-->
+                            <button type="submit" class="btn btn-primary save-lending-stock" id="save-lending-stock" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
                             <button type="reset" class="btn btn-default">
@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    {{> afQuickField name="lendingStockDate"}}
+                    {{> afQuickField name="lendingStockDate" value=lendingStockDate}}
                 </div>
                 <div class="col-md-2">
                     {{> afQuickField name="stockLocationId"}}

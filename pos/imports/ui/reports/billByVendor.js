@@ -107,6 +107,7 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');

@@ -31,12 +31,20 @@ export const lendingStockReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
+            if (params.status) {
+                selector.status = {$in: params.status.split(',')}
+            }
             if (params.date) {
-                let dateAsArray = params.date.split(',')
+                let dateAsArray = params.date.split(',');
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
-                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
+                data.title.date = moment(fromDate).format('YYYY-MMM-DD') + ' - ' + moment(toDate).format('YYYY-MMM-DD');
                 selector.lendingStockDate = {$gte: fromDate, $lte: toDate};
+            }
+            if (params.branchId) {
+                selector.branchId = params.branchId;
+            }else{
+                return data;
             }
             if (params.vendor && params.vendor != '') {
                 selector.vendorId = params.vendor;
@@ -63,8 +71,8 @@ export const lendingStockReport = new ValidatedMethod({
                     'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Telephone'},{field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'lendingStockDate'}, {field: 'vendor'}, {field: 'vendorTelephone'},{field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Telephone'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: ''}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'lendingStockDate'}, {field: 'vendor'}, {field: 'vendorTelephone'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: ''}, {field: 'total'}];
             }
 
             /****** Title *****/
@@ -110,28 +118,33 @@ export const lendingStockReport = new ValidatedMethod({
                                 itemId: '$items.itemId',
                                 itemName: '$itemDoc.name',
                                 remainQty: '$items.remainQty',
+                                remainAmount: {$sum: {$multiply: ["$items.remainQty", "$items.price"]}},
                             }
-                        }
+                        },
+                        total: {$last: '$total'},
+                        totalRemainQty: {$last: '$sumRemainQty'},
+                        remainAmount: {$sum: {$multiply: ["$items.remainQty", "$items.price"]}}
                     }
-                }]);
-            let total = LendingStocks.aggregate(
-                [
-                    {
-                        $match: selector
-                    },
-                    {
-                        $group: {
-                            _id: null, total: {$sum: '$total'},
-                            totalRemainQty: {$sum: '$sumRemainQty'}
-                        }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        data: {
+                            $push: '$$ROOT'
+                        },
+                        total: {$sum: '$total'},
+                        totalRemainQty: {$sum: '$totalRemainQty'},
+                        remainAmount: {$sum: '$remainAmount'}
                     }
-                ]);
+                }
+            ]);
             if (lendingStocks.length > 0) {
-                let sortData = _.sortBy(lendingStocks[0].data, '_id');
-                lendingStocks[0].data = sortData;
-                data.content = lendingStocks;
-                data.footer.total = total[0].total;
-                data.footer.totalRemainQty = total[0].totalRemainQty
+                let sortData = _.sortBy(lendingStocks[0].data.data, '_id');
+                lendingStocks[0].data.data = sortData;
+                data.content = lendingStocks[0].data;
+                data.footer.total = lendingStocks[0].total;
+                data.footer.remainAmount = lendingStocks[0].remainAmount;
+                data.footer.totalRemainQty = lendingStocks[0].totalRemainQty
             }
             return data
         }

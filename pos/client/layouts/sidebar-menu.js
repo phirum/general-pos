@@ -24,6 +24,9 @@ Template.Pos_sidebarMenu.helpers({
     termBalance() {
         return `/pos/report/termCustomerBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },
+    customerHistory() {
+        return `/pos/report/customerHistory?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
+    },
     customerDebtTracking() {
         return `/pos/report/customer-debt-tracking?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
@@ -55,26 +58,32 @@ Template.Pos_sidebarMenu.helpers({
         return `/pos/report/unpaidGroupInvoiceOverdue?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`
     },
     // Vendor
+    vendorBalanceSummary() {
+        return `/pos/report/vendor-balance-summary?branchId=${Session.get('currentBranch')}`;
+    },
     bill() {
         return `/pos/report/billReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     billByItem() {
-        return `/pos/report/billByItemReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&type=Term`;
+        return `/pos/report/billByItemReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&type=Term&branchId=${Session.get('currentBranch')}`;
     },
     billByVendor() {
-        return `/pos/report/billByVendorReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+        return `/pos/report/billByVendorReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     groupBill() {
         return `/pos/report/groupBillReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     payEnterBill() {
-        return '#'
+        return `/pos/report/payBill?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     prepaidOrder() {
         return `/pos/report/prepaidOrderReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
     },
     prepaidOrderDetail() {
         return `/pos/report/prepaid-order-detail?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branchId=${Session.get('currentBranch')}`;
+    },
+    prepaidOrderBalance() {
+        return `/pos/report/prepaid-order-balance?date=${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branchId=${Session.get('currentBranch')}`;
     },
     // Data
     companyExchangeRingPull() {
@@ -90,7 +99,7 @@ Template.Pos_sidebarMenu.helpers({
         return `/pos/report/exchangeRingPullStockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     lendingStock() {
-        return `/pos/report/lendingStockReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD hh:mm:ss')}&branch=${Session.get('currentBranch')}`;
+        return `/pos/report/lendingStockReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD hh:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     locationTransfer() {
         return `/pos/report/locationTransfer?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&fromBranch=${Session.get('currentBranch')}`;
@@ -109,5 +118,11 @@ Template.Pos_sidebarMenu.helpers({
     },
     stockDetail(){
         return `/pos/report/stockDetail?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+    },
+    ringPullSummary(){
+        return `/pos/report/ringpullSummary?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;
+    },
+    receiveItemBalance(){
+        return `/pos/report/receiveItemBalance?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;
     }
 });

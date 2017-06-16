@@ -50,7 +50,7 @@ insertTmpl.helpers({
 
 editTmpl.helpers({
     collection(){
-        return QuantityRangeMapping;
+        return TargetItem;
     },
     data(){
         return this;
@@ -60,14 +60,14 @@ editTmpl.helpers({
 actionTmpl.events({
     'click .js-update'(event, instance){
         let data = this;
-        alertify.quantityRangeMapping(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
+        alertify.targetItem(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
     },
     'click .js-display'(event, instance){
-        alertify.quantityRangeMapping(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
+        alertify.targetItem(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
     },
     'click .js-destroy'(event, instance) {
         destroyAction(
-            QuantityRangeMapping,
+            TargetItem,
             {_id: this._id},
             {title: 'Remove Unit', itemTitle: this._id}
         );
@@ -77,7 +77,7 @@ actionTmpl.events({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.quantityRangeMapping().close();
+            alertify.targetItem().close();
         }
         displaySuccess();
     },

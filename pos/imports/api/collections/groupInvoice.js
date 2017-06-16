@@ -37,3 +37,5 @@ GroupInvoice_schema = new SimpleSchema({
         optional: true
     }
 });
+
+GroupInvoice.attachSchema(GroupInvoice_schema);

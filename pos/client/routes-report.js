@@ -418,7 +418,7 @@ PosRoutes.route('/report/unpaidInvoiceOverdue', {
     name: 'pos.unpaidInvoiceOverdue',
     title: 'Unpaid Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Invoice Overdue',
@@ -431,7 +431,7 @@ PosRoutes.route('/report/unpaidInvoiceOverdue', {
     name: 'pos.unpaidInvoiceOverdue',
     title: 'Unpaid Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Invoice Overdue',
@@ -445,7 +445,7 @@ PosRoutes.route('/report/unpaidGroupInvoiceOverdue', {
     name: 'pos.unpaidGroupInvoiceOverdue',
     title: 'Unpaid Group Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidGroupInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidGroupInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Group Invoice Overdue',
@@ -458,7 +458,7 @@ PosRoutes.route('/report/prepaid-order-detail', {
     name: 'pos.prepaidOrderDetail',
     title: 'Prepaid Order Detail',
     action: function (params, queryParams) {
-        Layout.main('Pos_prepaidOrderDetail');
+        Layout.customReportLayout('Pos_prepaidOrderDetail');
     },
     breadcrumb: {
         title: 'Prepaid Order Detail',
@@ -471,7 +471,7 @@ PosRoutes.route('/report/customer-debt-tracking', {
     name: 'pos.customerDebtTracking',
     title: 'Customer Debt Tracking Report',
     action: function (params, queryParams) {
-        Layout.main('Pos_customerDebtTracking');
+        Layout.customReportLayout('Pos_customerDebtTracking');
     },
     breadcrumb: {
         title: 'Customer Debt Tracking',
@@ -484,7 +484,7 @@ PosRoutes.route('/report/customer-total-credit', {
     name: 'pos.customerTotalCredit',
     title: 'Total Credit',
     action: function (params, queryParams) {
-        Layout.main('Pos_customerTotalCredit');
+        Layout.customReportLayout('Pos_customerTotalCredit');
     },
     breadcrumb: {
         title: 'Total Credit',
@@ -497,11 +497,112 @@ PosRoutes.route('/report/stockDetail', {
     name: 'pos.stockDetail',
     title: 'Stock Detail',
     action: function (params, queryParams) {
-        Layout.main('Pos_stockDetailReport');
+        Layout.customReportLayout('Pos_stockDetailReport');
     },
     breadcrumb: {
         title: 'Stock Detail',
         icon: '',
         parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/customerHistory';
+PosRoutes.route('/report/customerHistory', {
+    name: 'pos.customerHistory',
+    title: 'Customer History',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_customerHistory');
+    },
+    breadcrumb: {
+        title: 'Customer History',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/ringpullDetail';
+PosRoutes.route('/report/ringpullDetail', {
+    name: 'pos.ringpullDetailReport',
+    title: 'RingPull Detail Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_ringpullDetailReport');
+    },
+    breadcrumb: {
+        title: 'RingPull Detail Report',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/ringPullSummary';
+PosRoutes.route('/report/ringpullSummary', {
+    name: 'pos.ringPullSummaryReport',
+    title: 'RingPull Summary Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_ringPullSummaryReport');
+    },
+    breadcrumb: {
+        title: 'RingPull Summary Report',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/prepaidOrderBalance';
+PosRoutes.route('/report/prepaid-order-balance', {
+    name: 'pos.prepaidOrderBalanceReport',
+    title: 'Prepaid Order Balance Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_prepaidOrderBalance');
+    },
+    breadcrumb: {
+        title: 'Prepaid Order Balance Report',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/payBill';
+PosRoutes.route('/report/payBill', {
+    name: 'pos.payBillReport',
+    title: 'Paybill Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_payBillReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Paybill Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
+import '../imports/ui/reports/vendorBalance';
+PosRoutes.route('/report/vendor-balance-summary', {
+    name: 'pos.vendorBalanceSummary',
+    title: 'Vendor Balance Summary Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('pos_vendorBalanceSummaryReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Vendor Balance Summary Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
+import '../imports/ui/reports/receiveItemBalance';
+PosRoutes.route('/report/receiveItemBalance', {
+    name: 'pos.receiveItemBalance',
+    title: 'Receive Item Balance',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_receiveItemBalanceReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Receive Item Balance',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
     }
 });

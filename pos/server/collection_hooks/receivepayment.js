@@ -11,51 +11,6 @@ ReceivePayment.before.insert(function (userId, doc) {
     console.log(doc._id);
     doc._id = idGenerator.genWithPrefix(ReceivePayment, `${doc.branchId}-`, 9);
 });
-ReceivePayment.after.insert(function (userId, doc) {
-    Meteor.defer(function () {
-        //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
-        if (setting && setting.integrate) {
-            let transaction = [];
-            let data = doc;
-            data.type = "ReceivePayment";
-            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
-            let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-            let discountAmount = doc.dueAmount * doc.discount / 100;
-            data.total = doc.paidAmount + discountAmount;
-            transaction.push({
-                account: cashChartAccount.account,
-                dr: doc.paidAmount,
-                cr: 0,
-                drcr: doc.paidAmount
-            });
-            if (discountAmount > 0) {
-                transaction.push({
-                    account: saleDiscountChartAccount.account,
-                    dr: discountAmount,
-                    cr: 0,
-                    drcr: discountAmount
-                });
-            }
-            transaction.push({
-                account: arChartAccount.account,
-                dr: 0,
-                cr: doc.paidAmount + discountAmount,
-                drcr: -doc.paidAmount + discountAmount
-            });
-            data.transaction = transaction;
-            let customerDoc = Customers.findOne({_id: doc.customerId});
-            if (customerDoc) {
-                data.name = customerDoc.name;
-                data.des = data.des == "" || data.des == null ? ('ទទួលការបង់ប្រាក់ពីអតិថិជនៈ ' + data.name) : data.des;
-            }
-            data.journalDate = data.paymentDate;
-            Meteor.call('insertAccountJournal', data);
-        }
-        //End Account Integration
-    });
-});
 
 ReceivePayment.after.update(function (userId, doc) {
     let preDoc = this.previous;
@@ -155,3 +110,58 @@ ReceivePayment.after.remove(function (userId, doc) {
 function updateInvoiceOrInvoiceGroup({_id, selector, collection}) {
     collection.direct.update(_id, selector);
 }
+
+Meteor.methods({
+    correctAccountReceivePayment(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+
+        let receivePayments=ReceivePayment.find({});
+        receivePayments.forEach(function (obj) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = obj;
+                data.type = "ReceivePayment";
+                let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+                let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+                let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
+                let discountAmount = obj.dueAmount * obj.discount / 100;
+                data.total = obj.paidAmount + discountAmount;
+                transaction.push({
+                    account: cashChartAccount.account,
+                    dr: obj.paidAmount,
+                    cr: 0,
+                    drcr: obj.paidAmount
+                });
+                if (discountAmount > 0) {
+                    transaction.push({
+                        account: saleDiscountChartAccount.account,
+                        dr: discountAmount,
+                        cr: 0,
+                        drcr: discountAmount
+                    });
+                }
+                transaction.push({
+                    account: arChartAccount.account,
+                    dr: 0,
+                    cr: obj.paidAmount + discountAmount,
+                    drcr: -obj.paidAmount + discountAmount
+                });
+                data.transaction = transaction;
+                let customerDoc = Customers.findOne({_id: obj.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                    data.des = data.des == "" || data.des == null ? ('ទទួលការបង់ប្រាក់ពីអតិថិជនៈ ' + data.name) : data.des;
+                }
+                data.journalDate = data.paymentDate;
+                Meteor.call('insertAccountJournal', data);
+            }
+        })
+
+    }
+})

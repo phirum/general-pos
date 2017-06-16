@@ -107,9 +107,9 @@ invoiceDataTmpl.helpers({
             if (obj.field == 'prepaidOrderDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
-                data += `<td>${col._customer.name}</td>`
+                data += `<td>${col && col._customer.name}</td>`
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col && col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;

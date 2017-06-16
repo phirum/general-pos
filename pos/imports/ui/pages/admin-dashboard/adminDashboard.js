@@ -158,7 +158,7 @@ dailyCash.onCreated(function () {
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.dailyCash', (err, result) => {
-                if (result) {
+                if (!err) {
                     this.dailyCashData.set({
                         notReady: false,
                         data: result

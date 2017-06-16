@@ -40,7 +40,7 @@ export const billByItemReport = new ValidatedMethod({
                 let dateAsArray = params.date.split(',');
                 fromDate = moment(dateAsArray[0]).toDate();
                 toDate = moment(dateAsArray[1]).toDate();
-                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
+                data.title.date = moment(fromDate).format('DD/MM/YYYY') + ' - ' + moment(toDate).format('DD/MM/YYYY');
                 data.title.exchange = `USD = ${coefficient.usd.$multiply[1]} $, KHR = ${coefficient.khr.$multiply[1]}<small> ៛</small>, THB = ${coefficient.thb.$multiply[1]} B`;
             }
             if (params.type == 'Term') {
@@ -59,6 +59,11 @@ export const billByItemReport = new ValidatedMethod({
                 } else {
                     selector.vendorOrCustomerId = params.vendor;
                 }
+            }
+            if(params.branchId) {
+                selector.branchId = params.branchId;
+            }else{
+                return data;
             }
             data.fields = [
                 {field: 'Date'},

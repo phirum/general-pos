@@ -61,8 +61,6 @@ lendingStockTmpl.events({
                     let lendingStockIdExist = _.find(tmpCollection, function (o) {
                         return o.lendingStockId == lendingStockId;
                     });
-                    console.log(lendingStockId);
-                    console.log(tmpCollection);
                     if (lendingStockIdExist) {
                         insertLendingStockItem({
                             self: this,
@@ -81,6 +79,7 @@ lendingStockTmpl.events({
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -124,7 +123,7 @@ lendingStockTmpl.events({
                         this.name = result.name;
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
-                        this.amount = this.qty * this.price;
+                        this.amount = this.exactQty * this.price;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')

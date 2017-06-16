@@ -1,0 +1,232 @@
+<template name="Pos_customerHistory">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="no-print panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="no-print panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='customerHistoryReport'}}
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        {{> afQuickField name="date" value=fromDate label= 'As Date'}}
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        {{> afQuickField name="filterDate" label= 'Filter Month'}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default printReport">Print</a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>customerHistoryData}}
+        </div>
+    </div>
+</template>
+
+<template name="customerHistoryData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4">
+                <br>
+                <!--<a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>-->
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h4 class="text-center text-aqua">{{khName}}</h4>
+            </div>
+        {{/with}}
+        <div class="col-xs-12" align="center">
+            <h4 text-aqua>
+                <u>របាយការណ៍តាមដានបំណុលអតិថិជន</u>
+            </h4>
+            <p class="text-center">
+                <strong>Date:</strong>
+                {{data.title.date}}
+            </p>
+        </div>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="text-left" style="padding: 5px;"><u>Customer:</u></td>
+                    <td class="text-left" style="padding: 5px;"><u>{{data.title.customer.name}}</u></td>
+                </tr>
+                <tr >
+                    <td class="text-left" style="padding: 5px;"><u>Telephone:</u></td>
+                    <td class="text-left" style="padding: 5px;"><u>{{data.title.customer.telephone}}</u></td>
+                </tr>
+                <tr>
+                    <td class="text-left" style="padding: 5px;"><u>Address:</u></td>                        
+                    <td class="text-left" style="padding: 5px;"><u>{{data.title.customer.address}}</u></td>                        
+                </tr>
+            </tbody>
+        </table>
+        {{#with data}}
+            <table class="table table-responsive fixed-table">
+                <thead>
+                <tr class="bg-aqua" style="border-top: 1px solid black ">
+                    <!--<th>អតិថិជន</th>-->
+                    <th>ថ្ងៃខែ</th>
+                    <th>វិក័យប័ត្រ</th>
+                    <th>បរិយាយ</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                    <th>សរុប</th>
+                    <th>ទូរទាត់</th>
+                    <th>សមតុល្យ</th>
+                    <!--<th>សមតុល្យ</th>-->
+                </tr>
+                </thead>
+                <tbody class="rpt-body">
+                {{#each field in content}}
+                    {{#if hasFilterDate field.date}}
+                        <tr>
+                            <td class="text-right">
+                                <u><b>Date: {{moFormat field.date 'MM/YYYY'}}</b></u>
+                            </td>
+                        </tr>
+                        {{#each col in field.data}}
+                            <tr>
+                                {{#if col.inv}}
+                                    <!--<td>{{field.customer.name}}</td>-->
+                                    <td>
+                                        {{moFormat col.date 'DD/MM/YYYY'}}
+                                    </td>
+                                {{else}}
+                                    {{#if firstIndex @index col.date field.data}}
+                                        <td>
+                                            {{moFormat col.date 'DD/MM/YYYY'}}
+                                        </td>
+                                    {{/if}}
+                                {{/if}}
+                                    {{#if col.inv}}
+                                        <td>
+                                            {{concatInvoiceId col._id}}
+                                        </td>
+                                    {{else}}
+                                        {{#if firstIndex @index col.date field.data}}
+                                            <td><a style="cursor: pointer;" class="displayRp" value="{{col.date}}">Receive Payment</a></td>
+                                        {{/if}}
+                                    {{/if}}
+                                
+                                {{#if col.inv}}
+                                    <td>INV</td>
+                                {{/if}}
+                                {{#if col.inv}}
+                                    {{#each item in col.firstItem}}
+                                        <td>{{item.itemName}}</td>
+                                        <td class="text-right">{{numFormat item.qty '0,0.00'}}</td>
+                                        <td class="text-right">{{numFormat item.price '0,0.00'}}</td>
+                                        <td class="text-right">{{numFormat item.amount '0,0.00'}}</td>
+                                    {{/each}}
+                                    <td class="text-right">{{numFormat col.total '0,0.00'}}</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"><b>{{numFormat col.beginningBalance '0,0.00'}}</b></td>
+                                    <!--<td class="text-right">{{numFormat col.total '0,0.00'}}</td>-->
+                                {{else}}
+                                    {{#if firstIndex @index col.date field.data}}
+                                        <td>{{item.itemName}}</td>
+                                        <td class="text-right"></td>
+                                        <td class="text-right"></td>
+                                        <td class="text-right"></td>
+                                        <td class="text-right"></td>
+                                        {{#with  displayByDay col.date @index}}
+                                            <td class="text-right"></td>
+                                            <td class="text-right">{{numFormat paidAmount '0,0.00'}}</td>
+                                            <td class="text-right"><b>{{numFormat beginningBalance '0,0.00'}}</b></td>
+                                        {{/with}}
+                                    {{/if}}
+                                    <!--<td class="text-right">{{numFormat col.balanceAmount '0,0.00'}}</td>-->
+                                {{/if}}
+
+                            </tr>
+
+                            {{#if col.inv}}
+                                {{#each item in col.secondItem}}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{item.itemName}}</td>
+                                        <td class="text-right">{{item.qty}}</td>
+                                        <td class="text-right">{{numFormat item.price '0,0.00'}}</td>
+                                        <td class="text-right">{{numFormat item.amount '0,0.00'}}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {{/each}}
+                            {{/if}}
+                        {{/each}}
+                    {{/if}}
+                {{/each}}
+                <tr class="sub-body">
+                    <td colspan="3"></td>
+                    <td><b><u>Grand Total:</u></b></td>
+                    <td colspan="3"></td>
+                    <td style="border-top: 1px solid black;" class="text-right"><b>{{numFormat footer.totalAmount
+                                                                                               '0,0.00'}}$</b></td>
+                    <td style="border-top: 1px solid black;" class="text-right"><b>{{numFormat footer.totalPaidAmount
+                                                                                               '0,0.00'}}$</b></td>
+                    <td style="border-top: 1px solid black;" class="text-right"><b>{{numFormat footer.totalBalance
+                                                                                               '0,0.00'}}$</b></td>
+                </tr>
+                </tbody>
+            </table>
+        {{/with}}
+        {{> ReportSignFooter}}
+    </div>
+</template>
+
+
+<template name="customerHistoryShowRp">
+        <table class="table striped">
+            <thead>
+                <th>ID</th>
+                <th>Invoice ID</th>
+                <th>Invoice Number</th>
+                <th>Date</th>
+                <th class="text-center">Paid</th>
+                <th class="text-center">Balance</th>
+            </thead>
+            <tbody>
+            {{#each data.payments}}
+                <tr>
+                    <td>{{_id}}</td>
+                    <td>{{invoiceId}}</td>
+                    <td>{{voucherId}}</td>
+                    <td>{{moFormat date 'DD/MM/YYYY'}}</td>
+                    <td class="text-right">{{numFormat paidAmount '0,0.00'}}</td>
+                    <td class="text-right">{{numFormat balanceAmount '0,0.00'}}</td>
+                </tr>
+            {{/each}}  
+            <tr>
+                <td colspan="4">Total</td>
+                <td style="border-top: 1px solid black;" class="text-right">{{numFormat data.totalPaid '0,0.00'}}</td>
+                <td style="border-top: 1px solid black;" class="text-right">{{numFormat data.totalBalance '0,0.00'}}</td>
+            </tr>
+            </tbody>
+        </table>
+</template>

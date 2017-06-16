@@ -49,7 +49,6 @@
 <!--Update-->
 <template name="Pos_repEdit">
     <div class="box-body">
-        {{#if Template.subscriptionsReady}}
             {{#autoForm collection=collection id="Pos_repEdit" doc=data type="update"}}
                 <div class="row">
                     <div class="col-md-6">
@@ -70,9 +69,6 @@
 
                 {{> formFooterWithButton}}
             {{/autoForm}}
-        {{else}}
-            {{> loading}}
-        {{/if}}
     </div>
 </template>
 

@@ -23,6 +23,7 @@ tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_paymentTransactionAction},
     {data: "_id", title: '#ID'},
     {data: "invoiceId", title: "Invoice ID"},
+    {data: "voucherId", title: "Voucher"},
     {
         data: "paymentDate",
         title: "Date",

@@ -22,11 +22,16 @@ tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_itemAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
-    {data: "barcode", title: "Barcode"},
     {data: "_unit.name", title: "Unit"},
     {
         data: "price",
         title: "Price",
+        render: function (val, type, doc) {
+            return numeral(val).format('$ 0,0.00');
+        }
+    },{
+        data: "purchasePrice",
+        title: "Purchase Price",
         render: function (val, type, doc) {
             return numeral(val).format('$ 0,0.00');
         }
@@ -46,5 +51,5 @@ tabularOpts.columns = [
         }
     }
 ];
-tabularOpts.extraFields = ['mappingEnable','sellingUnit', 'scheme', 'unitId', 'categoryId', 'itemType','purchasePrice','wholesalePrice'];
+tabularOpts.extraFields = ['mappingEnable','sellingUnit', 'scheme', 'unitId', 'categoryId', 'itemType','purchasePrice'];
 export const ItemTabular = new Tabular.Table(tabularOpts);

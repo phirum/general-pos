@@ -1,0 +1,171 @@
+<template name="Pos_prepaidOrderBalance">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='prepaidOrderBalance'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="toDate" label='To Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="vendor" label="Vendor"}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <label for="">Goto:</label>
+                                    <select id="go-to-prepaid-order-detail" class="form-group">
+                                        <option value="">--Please Select--</option>
+                                        <option value="prepaidOrderDetail">Prepaid Order Detail</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>prepaidOrderBalanceData}}
+        </div>
+    </div>
+</template>
+<template name="prepaidOrderBalanceData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <table class="table">
+                <tr>
+                    <td class="text-center"><h3 class="text-center">{{khName}}</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h4 class="text-center">{{enName}}</h4></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center">{{khAddress}}</h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}
+                    </h5></td>
+                </tr>
+            </table>
+        {{/with}}
+        <table class="table">
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-center"><h3><u>PREPAID ORDER BALANCE REPORT</u></h3></td>
+            </tr>
+            <tr>
+                <td class="text-left"><strong>Date: </strong>{{data.title.date}}</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+        <table class="table table-striped">
+            <thead class="sub-header">
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+
+            </tr>
+            </thead>
+            <tbody class="sub-body">
+            {{#with data}}
+                {{#each obj in content}}
+                    {{#each obj.data}}
+                        <tr style="background: #dddddd">
+                            <td>{{_id}}</td>
+                            <td>{{moFormat prepaidOrderDate 'YYYY/MM/DD'}}</td>
+                            <td>{{vendor}}</td>
+                            <td>{{vendorDoc.telephone}}</td>
+                            <td>{{status}}</td>
+                            <td>{{sumRemainQty}}</td>
+                            <td>{{total}}</td>
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        <th></th>
+                        <th>ITEM</th>
+                        <th>Order</th>
+                        <th>Receive</th>
+                        <th>Balance</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                    {{#each item in obj.items}}
+                        <tr>
+                            <td></td>
+                            <td>{{item.itemName}}</td>
+                            <td>{{order}}</td>
+                            <td>{{receive}}</td>
+                            <td>{{balance}}</td>
+                            <td>{{price}}</td>
+                            <td>{{numFormat amount '0,0.00'}}</td>
+                            <!--<td>{{item.remainQty}}</td>-->
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total}}}
+                    </tr>
+                {{/each}}
+                <br>
+            {{/with}}
+            </tbody>
+        </table>
+        <table class="table">
+            <thead class="sub-header">
+            <tr>
+                <th colspan="5">SUMMARY</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody class="sub-body">
+            {{#each data.summary}}
+                <tr>
+                    <td colspan="5"></td>
+                    <td>{{itemName}}</td>
+                    <td class="text-right">{{numFormat balance '0,0.00'}}</td>
+                    <td class="text-right">{{numFormat amount '0,0.00'}}</td>
+                </tr>
+            {{/each}}
+            <tr>
+                <td colspan="5"></td>
+                <td style="border-top: 1px dotted black" class="text-right"><b>TOTAL:</b></td>
+                <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.qty
+                                                                                        '0,0.00'}}</td>
+                <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.total
+                                                                                        '0,0.00'}}</td>
+            </tr>
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

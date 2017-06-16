@@ -28,12 +28,14 @@ Tracker.autorun(function () {
             billSub = Meteor.subscribe('pos.activeEnterBills', {
                 vendorId: Session.get('vendorIdState'),
                 status: {$in: ['active', 'partial']},
-                billType: 'term'
+                billType: 'term',
+                branchId: Session.get('currentBranch')
             });
         } else {
             billSub = Meteor.subscribe('pos.activeGroupBills', {
                 vendorOrCustomerId: Session.get('vendorIdState'),
-                status: {$in: ['active', 'partial']}
+                status: {$in: ['active', 'partial']},
+                branchId: Session.get('currentBranch')
             });
         }
         if (billSub.ready()) {
@@ -44,7 +46,8 @@ Tracker.autorun(function () {
             billId: {
                 $in: Session.get('invoices')
             },
-            status: {$in: ['active', 'partial']}
+            status: {$in: ['active', 'partial']},
+            branchId: Session.get('currentBranch')
         });
     }
 });

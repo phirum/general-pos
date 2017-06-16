@@ -11,7 +11,7 @@ export const exchangeGratisReportSchema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
+                    format: 'DD/MM/YYYY',
 
                 }
             }
@@ -24,7 +24,7 @@ export const exchangeGratisReportSchema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
+                    format: 'DD/MM/YYYY',
 
                 }
             }
@@ -44,6 +44,19 @@ export const exchangeGratisReportSchema = new SimpleSchema({
                         return {branchId: currentBranch};
                     }
                 }
+            }
+        }
+    },
+    status: {
+        type: [String],
+        autoform: {
+            type: 'universe-select',
+            multiple: true,
+            options(){
+                return [
+                    {label: 'Active', value: 'active'},
+                    {label: 'Closed', value: 'closed'}
+                ]
             }
         }
     },
